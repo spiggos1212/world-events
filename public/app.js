@@ -163,6 +163,9 @@
     storyWiki: $("#story-wiki"),
     storyLinks: $("#story-links"),
     storyFeature: $("#story-feature"),
+    postcard: $("#postcard"),
+    postcardImg: $("#postcard-img"),
+    postcardCap: $("#postcard-cap"),
     featuredOnly: $("#featured-only"),
     featuredCount: $("#featured-count"),
 
@@ -254,8 +257,7 @@
     .sort((a, b) => a.s - b.s);
   // Κορυφαία γεγονότα με βίντεο / 3D / μίνι ιστορία (featured.js)
   const FEATURED = window.WORLD_FEATURED || {};
-  const isMajor = (ev) => !!FEATURED[ev.id]; // αναπαράσταση μόνο για τα κορυφαία
-  const SCENES = window.WORLD_SCENES || {};
+  const isMajor = (ev) => !!FEATURED[ev.id] || ev.type === "disaster"; // αναπαράσταση: κορυφαία + όλες οι φυσικές καταστροφές
   // Κείμενα ανά γλώσσα: τα ελληνικά είναι στα αρχεία δεδομένων, τα αγγλικά στο window.WORLD_EVENTS_EN
   {
     const EN = window.WORLD_EVENTS_EN || {};
@@ -301,7 +303,6 @@
   const gEvents = gRoot.append("g").attr("class", "events-layer");
   const gFx = gRoot.append("g").attr("class", "fx");
   const gTour = gRoot.append("g").attr("class", "tour-layer");
-  const gScene = gRoot.append("g").attr("class", "scene-layer");
 
   let countriesFeatures = [];
   let countryColors = new Map();
@@ -319,7 +320,7 @@
       gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
       rasterFollow(ev.transform);
-      positionScene();
+      positionPostcard();
       gTour.selectAll("g.tour-stop").attr("transform", (d) => "translate(" + d[0] + "," + d[1] + ") scale(" + bodyScale() + ")");
     })
     .on("end", () => { if (state.style === "real") scheduleRaster(); });
@@ -340,7 +341,7 @@
     els.svg.call(zoom.transform, d3.zoomTransform(els.svg.node()));
     redrawMap();
     if (state.style === "real") scheduleRaster(0);
-    positionScene();
+    positionPostcard();
     if (tour) drawTour(tour.f.stops.slice(0, tour.i + 1), tour.f.color);
   }
 
@@ -451,7 +452,7 @@
   let storyEv = null;
   let storySeq = 0;
   let tour = null;     // { ev, f, i } ενεργή μίνι ιστορία
-  let sceneAt = null;  // { lng, lat } της ζωγραφισμένης σκηνής πάνω στον χάρτη
+  let postcardAt = null; // { lng, lat } της καρτ ποστάλ πάνω στον χάρτη
   const isMobile = () => window.matchMedia("(max-width: 820px)").matches;
   function fetchSummary(lang, title) {
     const key = lang + ":" + title;
@@ -471,7 +472,7 @@
   }
   function setStoryCollapsed(v) {
     els.story.classList.toggle("collapsed", v);
-    if (v) { storyEv = null; endTour(); clearScene(); }
+    if (v) { storyEv = null; endTour(); hidePostcard(); }
   }
   els.storyClose.addEventListener("click", () => setStoryCollapsed(true));
   async function openStory(ev) {
@@ -489,14 +490,14 @@
     els.storyLinks.innerHTML = "";
     els.storyFeature.innerHTML = "";
     els.storyBody.scrollTop = 0;
-    endTour(); clearScene();
+    endTour(); hidePostcard();
     setStoryCollapsed(false);
     setPanelCollapsed(true);
     if (isMobile()) setSidebarCollapsed(true);
     // Κορυφαίο γεγονός: βίντεο, 3D ή μίνι ιστορία
     const f = FEATURED[ev.id];
     if (f && f.kind === "video") renderVideo(f);
-    else if (f && f.kind === "scene") { showScene(f.scene, ev.lng, ev.lat); els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>"; }
+    else if (f && f.kind === "photo") els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>";
     else if (f && f.kind === "tour") startTour(ev, f);
     const skipImage = !!(f && f.kind === "video");
 
@@ -512,7 +513,7 @@
     if (img && !skipImage) {
       const im = new Image();
       im.alt = got.title || ev.title;
-      im.onload = () => { if (seq === storySeq) { els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
+      im.onload = () => { if (seq === storySeq) { if (f && f.kind === "photo") showPostcard(ev.lng, ev.lat, img, capOf(f)); els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
       im.onerror = () => { const small = (got.thumbnail && got.thumbnail.source) || (sEn && sEn.thumbnail && sEn.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
       im.src = img;
     }
@@ -534,24 +535,42 @@
     els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>" +
       '<div class="story-credit">' + esc(t("videoCredit")) + " " + esc(f.credit) + ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a></div>';
   }
-  // Ζωγραφισμένη σκηνή (scenes.js) πάνω στον χάρτη, με τα «πόδια» στο σημείο του γεγονότος
-  function showScene(name, lng, lat) {
-    clearScene();
-    const draw = SCENES[name];
-    if (!draw) return;
-    sceneAt = { lng, lat };
-    const [x, y] = projection([lng, lat]);
-    const g = gScene.append("g").attr("class", "scene").attr("transform", "translate(" + x + "," + y + ") scale(" + bodyScale() + ")");
-    draw(g, state.lang);
+  // Καρτ ποστάλ: φωτογραφία με λεζάντα, «καρφιτσωμένη» δίπλα στο σημείο του γεγονότος (μόνο σε μεγάλη οθόνη)
+  function showPostcard(lng, lat, src, caption) {
+    if (isMobile()) return;
+    postcardAt = { lng, lat };
+    els.postcardImg.src = src;
+    els.postcardCap.textContent = caption || "";
+    els.postcard.style.animation = "none";
+    void els.postcard.offsetWidth; // επανεκκίνηση του animation εισόδου
+    els.postcard.style.animation = "";
+    els.postcard.classList.remove("collapsed");
+    positionPostcard();
   }
-  function clearScene() {
-    sceneAt = null;
-    gScene.selectAll("*").remove();
+  function hidePostcard() {
+    postcardAt = null;
+    els.postcard.classList.add("collapsed");
+    els.postcardImg.removeAttribute("src");
   }
-  function positionScene() {
-    if (!sceneAt) return;
-    const [x, y] = projection([sceneAt.lng, sceneAt.lat]);
-    gScene.select("g.scene").attr("transform", "translate(" + x + "," + y + ") scale(" + bodyScale() + ")");
+  function positionPostcard() {
+    if (!postcardAt) return;
+    const tr = d3.zoomTransform(els.svg.node());
+    const [mx, my] = projection([postcardAt.lng, postcardAt.lat]);
+    if (!isFinite(mx) || !isFinite(my)) return;
+    const x = tr.applyX(mx), y = tr.applyY(my);
+    const w = els.postcard.offsetWidth || 300, h = els.postcard.offsetHeight || 260;
+    let left = x - w - 24, top = y - h - 10;
+    if (left < 8) left = Math.min(width() - w - 8, x + 24);
+    top = Math.max(8, Math.min(height() - h - 8, top));
+    els.postcard.style.left = left + "px";
+    els.postcard.style.top = top + "px";
+  }
+  // Φωτογραφία για στάση μίνι ιστορίας: από άρθρο της Wikipedia (st.photo = αγγλικός τίτλος)
+  async function showStopPhoto(st) {
+    const s = await fetchSummary("en", st.photo);
+    if (!tour || tour.f.stops[tour.i] !== st) return;
+    const img = pickImage(s);
+    if (img) showPostcard(st.lng, st.lat, img, (st[state.lang] || st.el)[0]);
   }
   // Μίνι ιστορία: στάσεις με κάμερα, χρόνο, κείμενο και διαδρομή στον χάρτη
   function startTour(ev, f) {
@@ -579,8 +598,8 @@
     const k = st.k || 3;
     els.svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k));
     drawTour(stops.slice(0, i + 1), f.color);
-    clearScene();
-    if (st.scene) showScene(st.scene, st.lng, st.lat);
+    hidePostcard();
+    if (st.photo) showStopPhoto(st);
     els.storyTitle.textContent = ev.title;
     els.storyMeta.innerHTML = '<span class="tour-step">' + esc(t("tourStop")) + " " + (i + 1) + " / " + stops.length + "</span>";
     els.storyDesc.innerHTML = "<strong>" + esc(txt[0]) + "</strong><br>" + esc(txt[1]);

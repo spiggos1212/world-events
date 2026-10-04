@@ -155,12 +155,21 @@ g.hist-year.out { opacity: 0; }
 .tour-route { fill: none; stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; filter: url(#glow); }
 .tour-stop circle { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .tour-stop text { font-size: 10px; font-weight: 800; fill: #111; text-anchor: middle; dominant-baseline: central; }
-/* Ζωγραφισμένες σκηνές πάνω στον χάρτη (scenes.js) */
-.scene { pointer-events: none; }
-.scene text { font-weight: 700; fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,0.65); stroke-width: 3px; text-anchor: middle; dominant-baseline: central; }
-.scene text.ink { fill: #111; stroke: none; }
-.scene .sway { animation: sway 4s ease-in-out infinite; transform-origin: 0 0; }
-@keyframes sway { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+/* Καρτ ποστάλ: η φωτογραφία του γεγονότος πάνω στον χάρτη */
+.postcard {
+  position: absolute; z-index: 5; width: 300px; padding: 10px 10px 8px;
+  background: #fbf7ee; border-radius: 4px; pointer-events: none;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.4);
+  transform: rotate(-3deg); transform-origin: 50% 100%;
+  animation: postcard-in 700ms cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+.postcard.collapsed { display: none; }
+.postcard img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #222; }
+.postcard-cap { font-family: Georgia, "Times New Roman", serif; font-style: italic; color: #2a2620; font-size: 12.5px; line-height: 1.35; padding: 8px 2px 0; }
+@keyframes postcard-in {
+  from { opacity: 0; transform: rotate(-10deg) scale(0.5) translateY(30px); }
+  to { opacity: 1; transform: rotate(-3deg) scale(1) translateY(0); }
+}
 
 /* Ζωντανές αναπαραστάσεις πάνω στον χάρτη */
 .fx { pointer-events: none; }
@@ -788,6 +797,7 @@ g.hist-year.out { opacity: 0; }
   }
   .sidebar.collapsed, .panel.collapsed, .story.collapsed { transform: translateY(110%); opacity: 0; }
   .story-media { aspect-ratio: 2 / 1; }
+  .postcard { display: none !important; }
 
   /* λαβή συρσίματος στην κορυφή του φύλλου */
   .sidebar::before, .panel::before, .story::before {
