@@ -2,7 +2,12 @@
 <html lang="el">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1b3a" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <title>World Events</title>
   <meta name="description" content="Η ιστορία του κόσμου από το 3000 π.Χ. έως σήμερα, πάνω σε έναν διαδραστικό χάρτη με timeline." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -64,7 +69,7 @@
         <p class="sb-credit"><span data-i18n="borders">Σύνορα:</span> <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> <span data-i18n="creditNote">(GPL-3.0, κατά προσέγγιση)</span></p>
       </div>
     </aside>
-    <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων" data-i18n-aria="showFilters" data-i18n="filtersBtn">☰ Φίλτρα</button>
+    <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων" data-i18n-aria="showFilters"><span class="ico">☰</span><span class="full" data-i18n="filters">Φίλτρα</span></button>
     <span id="hist-loading" class="hist-loading" data-i18n="loadingBorders">Φόρτωση συνόρων…</span>
 
     <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">

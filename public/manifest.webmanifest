@@ -1,0 +1,14 @@
+{
+  "name": "World Events",
+  "short_name": "World Events",
+  "description": "The history of the world, 3000 BC – today, on an interactive map with a timeline.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070d1f",
+  "theme_color": "#0d1b3a",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

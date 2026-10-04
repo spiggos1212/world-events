@@ -55,7 +55,9 @@
     },
   };
   const t = (k) => (UI[state.lang] && UI[state.lang][k]) || UI.el[k] || k;
-  const MAX_LABELS = 9; // μέγιστες ετικέτες ταυτόχρονα στον χάρτη
+  // Μέγιστες ετικέτες ταυτόχρονα στον χάρτη (λιγότερες σε μικρές οθόνες)
+  const maxLabels = () => (width() < 600 ? 4 : width() < 1000 ? 6 : 9);
+  const MIN_VISIBLE = 5; // σε αραιές περιόδους μένουν ορατά τα πιο πρόσφατα γεγονότα
 
   // label = τρέχουσα γλώσσα (ορίζεται από το setLang)
   const TYPES = {
@@ -250,9 +252,18 @@
         fresh: age < vis / 4,
       });
     }
+    // Σε αραιές περιόδους κράτα ορατά τα πιο πρόσφατα γεγονότα, ώστε ο χάρτης να μην αδειάζει
+    if (out.length < MIN_VISIBLE) {
+      const have = new Set(out.map((a) => a.ev.id));
+      for (let i = EVENTS.length - 1; i >= 0 && out.length < MIN_VISIBLE; i--) {
+        const ev = EVENTS[i];
+        if (ev.s > t || have.has(ev.id) || state.hiddenTypes.has(ev.type)) continue;
+        out.push({ ev, age: t - ev.s, labeled: true, opacity: 0.8, fresh: false, lingering: true });
+      }
+    }
     // Ετικέτες μόνο για τα πιο πρόσφατα
     const labeled = out.filter((a) => a.labeled).sort((a, b) => a.age - b.age);
-    labeled.forEach((a, i) => { if (i >= MAX_LABELS) a.labeled = false; });
+    labeled.forEach((a, i) => { if (i >= maxLabels()) a.labeled = false; });
     return out;
   }
 
@@ -715,7 +726,10 @@
   // ---------- Panel ----------
   const openBtn = document.createElement("button");
   openBtn.className = "panel-open-btn";
-  openBtn.textContent = t("now");
+  function renderOpenBtn() {
+    openBtn.innerHTML = `<span class="ico">📋</span><span class="full">${esc(t("now"))}</span><span class="cnt">${esc(els.panelCount.textContent || "0")}</span>`;
+  }
+  renderOpenBtn();
   openBtn.addEventListener("click", () => setPanelCollapsed(false));
   els.mapWrap.appendChild(openBtn);
 
@@ -724,13 +738,15 @@
     openBtn.classList.toggle("show", v);
   }
   els.panelToggle.addEventListener("click", () => setPanelCollapsed(true));
-  if (window.matchMedia("(max-width: 820px)").matches) setPanelCollapsed(true);
+  setPanelCollapsed(true); // κλειστό εξ ορισμού· ανοίγει μόνο αν το ζητήσει ο χρήστης
 
   function updatePanel(data) {
     const key = data.map((a) => a.ev.id + (a.labeled ? "*" : "")).join("|");
     if (key === state.panelKey) return;
     state.panelKey = key;
     els.panelCount.textContent = data.length;
+    const oc = openBtn.querySelector(".cnt");
+    if (oc) oc.textContent = data.length;
     const sorted = data.slice().sort((a, b) => b.ev.s - a.ev.s);
     if (!sorted.length) {
       els.panelList.innerHTML = `<li class="panel-empty">${esc(t("pressPlay"))}</li>`;
@@ -900,7 +916,7 @@
     });
     els.lang.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
     applyStaticTexts();
-    openBtn.textContent = t("now");
+    renderOpenBtn();
     if (init) return;
     // ξαναχτίζουμε ό,τι έχει κείμενο
     gEvents.selectAll("g.ev").remove();
