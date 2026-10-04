@@ -49,6 +49,7 @@
     zoomK: 1,
     hiddenTypes: new Set(),
     panelKey: "",
+    historical: true,
   };
 
   // ---------- DOM ----------
@@ -79,6 +80,8 @@
     panelList: $("#panel-list"),
     panelCount: $("#panel-count"),
     panelToggle: $("#panel-toggle"),
+    histToggle: $("#hist-toggle"),
+    histLoading: $("#hist-loading"),
   };
 
   // ---------- Time helpers ----------
@@ -193,6 +196,7 @@
   const gSphere = gRoot.append("path").attr("class", "sphere");
   const gGrat = gRoot.append("path").attr("class", "graticule");
   const gCountries = gRoot.append("g").attr("class", "countries");
+  const gHist = gRoot.append("g").attr("class", "hist-layer");
   const gEvents = gRoot.append("g").attr("class", "events-layer");
 
   let countriesFeatures = [];
@@ -228,6 +232,7 @@
       .attr("class", "country")
       .attr("fill", (d) => countryColors.get(d.id) || LAND_PALETTE[0])
       .attr("d", path);
+    redrawHist();
     gEvents.selectAll("g.ev").each(function (a) { layoutEvent(d3.select(this), a.ev, false); });
     placeLabels();
   }
@@ -271,6 +276,198 @@
       if (!name) return hideTooltip();
       const [x, y] = d3.pointer(ev, els.mapWrap);
       showTooltipHTML(`<div class="tt-title">${esc(name)}</div>`, x, y, "");
+    })
+    .on("mouseleave", hideTooltip);
+
+
+  // ---------- Ιστορικά σύνορα ----------
+  // Dataset: aourednik/historical-basemaps (GPL-3.0), ένας χάρτης ανά έτος-σταθμό.
+  const BASEMAP_BASE = "https://cdn.jsdelivr.net/gh/aourednik/historical-basemaps@master/geojson/";
+  const BASEMAP_YEARS = [
+    -3000, -2000, -1500, -1000, -700, -500, -400, -323, -300, -200, -100, -1,
+    100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1279, 1300, 1400, 1492,
+    1500, 1530, 1600, 1650, 1700, 1715, 1783, 1800, 1815, 1878, 1880, 1900, 1914, 1920, 1930,
+    1938, 1945, 1960, 1994, 2000, 2010,
+  ];
+  // Περιοχές χωρίς κρατική οργάνωση (κυνηγοί-τροφοσυλλέκτες, νομάδες κ.λπ.) σχεδιάζονται ουδέτερα
+  const WILD_RE = /hunter|gatherer|nomad|uninhabited|unpopulated|pastoral|forager|horticultur|tribes|peoples|cultures?|farmers|herders|fishers|aborigin|inuit|pygm|khoisan|bantu|celts|germanic|slavs|scythian|sarmatian|berber|bedouin/i;
+  const STATE_RE = /kingdom|empire|state|sultanate|caliphate|khanate|dynasty|republic/i;
+  const histCache = new Map(); // έτος -> Promise<{features}>
+  let histCurrentYear = null;
+  let histLoadToken = 0;
+  let histLoading = 0;
+  let histFeatures = [];
+
+  function basemapYearFor(astroYear) {
+    const hist = astroYear <= 0 ? astroYear - 1 : astroYear;
+    let best = BASEMAP_YEARS[0];
+    for (const y of BASEMAP_YEARS) {
+      if (y <= hist) best = y;
+      else break;
+    }
+    return best;
+  }
+  function basemapFile(y) {
+    return BASEMAP_BASE + "world_" + (y < 0 ? "bc" + -y : y) + ".geojson";
+  }
+  function isWild(p) {
+    const n = (p.NAME || "") + " " + (p.SUBJECTO || "");
+    if (!n.trim() || /^\s*\d+\s*$/.test(n)) return true; // ανώνυμες περιοχές
+    return WILD_RE.test(n) && !STATE_RE.test(n);
+  }
+  // Το d3 θέλει τα εξωτερικά δακτυλίδια «μικρά» (< μισή σφαίρα), αλλιώς γεμίζει όλη τη σφαίρα.
+  function rewind(feature) {
+    const g = feature.geometry;
+    if (!g) return;
+    const fixPoly = (rings) => {
+      rings.forEach((ring, i) => {
+        const a = d3.geoArea({ type: "Polygon", coordinates: [ring] });
+        const big = a > 2 * Math.PI;
+        if ((i === 0 && big) || (i > 0 && !big)) ring.reverse();
+      });
+    };
+    if (g.type === "Polygon") fixPoly(g.coordinates);
+    else if (g.type === "MultiPolygon") g.coordinates.forEach(fixPoly);
+  }
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  // Ομαδοποίηση ανά κυρίαρχο κράτος (SUBJECTO), ώστε π.χ. η Ρωμαϊκή Αυτοκρατορία να φαίνεται ενιαία.
+  // Το χρώμα προκύπτει από hash του ονόματος (σταθερό από χάρτη σε χάρτη) και αλλάζει μόνο αν συγκρούεται με γείτονα.
+  function colorFeatures(features) {
+    const groups = new Map();
+    for (const f of features) {
+      f._key = null;
+      if (isWild(f.properties)) continue;
+      const sub = f.properties.SUBJECTO && !/^\d+$/.test(String(f.properties.SUBJECTO).trim()) ? f.properties.SUBJECTO : null;
+      const key = sub || f.properties.NAME;
+      f._key = key;
+      let g = groups.get(key);
+      if (!g) {
+        g = { key, boxes: [], color: -1 };
+        groups.set(key, g);
+      }
+      try { g.boxes.push(d3.geoBounds(f)); } catch (_) { /* ignore */ }
+    }
+    const touches = (A, B) =>
+      A.some(([[ax0, ay0], [ax1, ay1]]) =>
+        B.some(([[bx0, by0], [bx1, by1]]) => !(ax1 < bx0 || ax0 > bx1 || ay1 < by0 || ay0 > by1)));
+    const list = [...groups.values()];
+    for (const g of list) {
+      const used = new Set();
+      for (const o of list) if (o !== g && o.color >= 0 && touches(g.boxes, o.boxes)) used.add(o.color);
+      const pref = hashStr(g.key) % LAND_PALETTE.length;
+      g.color = pref;
+      for (let k = 0; k < LAND_PALETTE.length; k++) {
+        const c = (pref + k) % LAND_PALETTE.length;
+        if (!used.has(c)) { g.color = c; break; }
+      }
+    }
+    for (const f of features) f._color = f._key ? LAND_PALETTE[groups.get(f._key).color] : null;
+  }
+
+  function loadBasemap(y) {
+    if (histCache.has(y)) return histCache.get(y);
+    histLoading++;
+    els.histLoading.classList.add("show");
+    const p = d3
+      .json(basemapFile(y))
+      .then((geo) => {
+        geo.features.forEach(rewind);
+        colorFeatures(geo.features);
+        return { features: geo.features };
+      })
+      .catch((err) => {
+        console.error("Basemap load failed", y, err);
+        histCache.delete(y);
+        return null;
+      })
+      .finally(() => {
+        if (--histLoading <= 0) { histLoading = 0; els.histLoading.classList.remove("show"); }
+      });
+    histCache.set(y, p);
+    return p;
+  }
+
+  async function ensureBasemap(astroYear) {
+    if (!state.historical) return;
+    const y = basemapYearFor(astroYear);
+    if (y === histCurrentYear) return;
+    histCurrentYear = y;
+    const token = ++histLoadToken;
+    const entry = await loadBasemap(y);
+    if (token !== histLoadToken) return; // ήρθε νεότερο αίτημα στο μεταξύ
+    histFeatures = entry ? entry.features : [];
+    renderHist(true);
+    applyLayerVisibility();
+    const next = BASEMAP_YEARS[BASEMAP_YEARS.indexOf(y) + 1];
+    if (next != null) loadBasemap(next); // προφόρτωση του επόμενου
+  }
+
+  function renderHist(animate) {
+    const old = gHist.selectAll("g.hist-year");
+    const layer = gHist.append("g").attr("class", "hist-year" + (animate ? "" : " in"));
+    layer
+      .selectAll("path")
+      .data(histFeatures)
+      .join("path")
+      .attr("class", (f) => "hcountry" + (f._color ? "" : " wild") + " p" + (f.properties.BORDERPRECISION || 2))
+      .attr("fill", (f) => f._color || null)
+      .attr("d", path);
+    if (animate) {
+      // CSS crossfade (δουλεύει και σε background tab, αντίθετα με τα d3 transitions)
+      requestAnimationFrame(() => layer.classed("in", true));
+      old.classed("out", true);
+      setTimeout(() => old.remove(), 800);
+    } else {
+      old.remove();
+    }
+  }
+  function redrawHist() {
+    if (histFeatures.length) renderHist(false);
+  }
+  function applyLayerVisibility() {
+    const showHist = state.historical && histFeatures.length > 0;
+    gCountries.style("display", showHist ? "none" : null);
+    gHist.style("display", state.historical ? null : "none");
+  }
+  function setHistorical(on) {
+    state.historical = on;
+    try { localStorage.setItem("we-historical-borders", on ? "1" : "0"); } catch (_) { /* ignore */ }
+    els.histToggle.setAttribute("aria-pressed", String(on));
+    els.histToggle.querySelector(".state").textContent = on ? "ON" : "OFF";
+    if (on) {
+      histCurrentYear = null;
+      ensureBasemap(monthsToDate(state.t).year);
+    }
+    applyLayerVisibility();
+  }
+  function initHistoricalToggle() {
+    let on = true;
+    try { on = localStorage.getItem("we-historical-borders") !== "0"; } catch (_) { /* ignore */ }
+    state.historical = on;
+    els.histToggle.setAttribute("aria-pressed", String(on));
+    els.histToggle.querySelector(".state").textContent = on ? "ON" : "OFF";
+    els.histToggle.addEventListener("click", () => setHistorical(!state.historical));
+    applyLayerVisibility();
+  }
+
+  gHist
+    .on("mousemove", (ev) => {
+      const target = ev.target;
+      if (!target.classList || !target.classList.contains("hcountry")) return hideTooltip();
+      const p = d3.select(target).datum().properties || {};
+      const name = p.NAME || "";
+      if (!name) return hideTooltip();
+      const sub = p.SUBJECTO && p.SUBJECTO !== name ? `<div class="tt-desc">υπό: ${esc(p.SUBJECTO)}</div>` : "";
+      const [x, y] = d3.pointer(ev, els.mapWrap);
+      showTooltipHTML(`<div class="tt-title">${esc(name)}</div>${sub}`, x, y, "");
     })
     .on("mouseleave", hideTooltip);
 
@@ -574,6 +771,7 @@
     els.year.textContent = yearLabel(year);
     els.month.textContent = MONTHS_EL[month];
     els.era.textContent = eraLabel(year);
+    ensureBasemap(year);
     const u = monthsToTrack(state.t);
     els.track.value = Math.round(u);
     els.track.style.setProperty("--pct", (u / TRACK_MAX) * 100 + "%");
@@ -660,7 +858,7 @@
   window.WorldEventsApp = {
     get date() { return monthsToDate(state.t); },
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
-    play, pause, setSpeed, focusEvent,
+    play, pause, setSpeed, focusEvent, setHistorical,
     refreshEvents: renderEvents,
     projection,
     events: EVENTS,
@@ -669,6 +867,7 @@
 
   // ---------- Init ----------
   buildLegend();
+  initHistoricalToggle();
   buildTicks();
   fitProjection();
   updateUI();

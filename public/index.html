@@ -14,6 +14,7 @@
     <h1>World Events</h1>
     <p class="sub">Η ιστορία του κόσμου, 3000 π.Χ. – σήμερα</p>
     <p class="hint">Σύρε για μετακίνηση · Scroll για zoom · <kbd>Space</kbd> Play/Pause · <kbd>←</kbd><kbd>→</kbd> βήμα</p>
+    <p class="credit">Ιστορικά σύνορα: <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> (GPL-3.0, κατά προσέγγιση)</p>
   </header>
 
   <main id="map-wrap" aria-label="World map">
@@ -43,7 +44,14 @@
       <button id="zoom-reset" class="icon-btn" title="Reset view" aria-label="Reset view">⌂</button>
     </div>
 
-    <div id="legend" class="legend" aria-label="Υπόμνημα"></div>
+    <div class="bottom-left">
+      <button id="hist-toggle" class="toggle hist-toggle" aria-pressed="true"
+              title="Τα σύνορα αλλάζουν ανάλογα με την εποχή. Απενεργοποίησέ το για τα σημερινά σύνορα.">
+        🗺 Ιστορικά σύνορα <span class="state">ON</span>
+      </button>
+      <span id="hist-loading" class="hist-loading">Φόρτωση συνόρων…</span>
+      <div id="legend" class="legend" aria-label="Υπόμνημα"></div>
+    </div>
 
     <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">
       <div class="panel-head">

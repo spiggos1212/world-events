@@ -45,6 +45,8 @@ body {
 .brand h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.01em; }
 .brand .sub { margin: 2px 0 0; font-size: 13px; color: var(--accent); font-weight: 600; }
 .brand .hint { margin: 6px 0 0; font-size: 11.5px; color: var(--muted); }
+.brand .credit { margin: 3px 0 0; font-size: 10.5px; color: var(--muted); opacity: 0.8; }
+.brand .credit a { color: var(--muted); pointer-events: auto; }
 kbd {
   font-family: inherit;
   font-size: 10.5px;
@@ -70,6 +72,18 @@ kbd {
   transition: filter 150ms ease;
 }
 .country:hover { filter: brightness(1.25); }
+.hcountry {
+  stroke: rgba(8, 12, 30, 0.85);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+  transition: filter 150ms ease;
+}
+.hcountry.p1 { stroke-opacity: 0.45; }
+g.hist-year { opacity: 0; transition: opacity 700ms ease; }
+g.hist-year.in { opacity: 1; }
+g.hist-year.out { opacity: 0; }
+.hcountry.wild { fill: #27335a; stroke: rgba(8, 12, 30, 0.35); }
+.hcountry:hover { filter: brightness(1.25); }
 
 /* Events on the map */
 .ev { pointer-events: none; }
@@ -154,17 +168,29 @@ kbd {
 }
 .icon-btn:hover { background: var(--bg-elev); border-color: rgba(255,255,255,0.2); }
 .icon-btn.small { width: 34px; height: 34px; font-size: 22px; box-shadow: none; }
+.hist-toggle { white-space: nowrap; backdrop-filter: blur(8px); background: var(--panel); color: var(--text); padding: 6px 10px; border-radius: 999px; }
+.hist-toggle[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent); }
+.hist-toggle .state { display: inline-block; min-width: 28px; margin-left: 4px; padding: 1px 6px; border-radius: 999px; background: rgba(255,255,255,0.1); font-size: 10.5px; text-align: center; }
+.hist-toggle[aria-pressed="true"] .state { background: rgba(0,0,0,0.18); }
+.hist-loading { display: none; font-size: 11px; color: var(--muted); padding: 4px 8px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); }
+.hist-loading.show { display: inline-block; }
 
 /* ---------- Legend ---------- */
-.legend {
+.bottom-left {
   position: absolute;
   left: 16px;
   bottom: 14px;
   z-index: 4;
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  max-width: calc(100% - 360px);
+}
+.legend {
+  display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-width: 60%;
 }
 .legend button {
   display: inline-flex;
@@ -447,11 +473,12 @@ kbd {
   .tick-label { display: none; }
   .range-labels { display: flex; }
   .track-wrap { padding-bottom: 4px; }
-  .brand .hint, .brand .sub { display: none; }
+  .brand .hint, .brand .sub, .brand .credit { display: none; }
+  .hist-toggle { font-size: 11px; padding: 6px 8px; }
   .speed-label { display: none; }
   .panel { left: 16px; right: 16px; width: auto; top: auto; bottom: 60px; max-height: 38%; }
   .panel-open-btn { top: auto; bottom: 14px; }
-  .legend { max-width: 100%; bottom: 14px; }
+  .bottom-left { max-width: 100%; }
   .legend button span.txt { display: none; }
   .legend button { padding: 6px; }
 }
