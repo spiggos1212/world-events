@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>World Events</title>
+  <meta name="description" content="Interactive world map with a playable timeline of world events." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="brand">
+    <h1>World Events</h1>
+    <p class="hint">Σύρε για μετακίνηση · Scroll για zoom · <kbd>Space</kbd> Play/Pause</p>
+  </header>
+
+  <main id="map-wrap" aria-label="World map">
+    <svg id="map" role="img" aria-label="Παγκόσμιος χάρτης"></svg>
+    <div class="map-controls">
+      <button id="zoom-in" class="icon-btn" title="Zoom in" aria-label="Zoom in">+</button>
+      <button id="zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out">−</button>
+      <button id="zoom-reset" class="icon-btn" title="Reset view" aria-label="Reset view">⌂</button>
+    </div>
+    <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+    <div id="loading" class="loading">Φόρτωση χάρτη…</div>
+  </main>
+
+  <footer class="timeline" aria-label="Timeline">
+    <div class="tl-left">
+      <button id="play" class="play-btn" aria-label="Play" title="Play / Pause (Space)">
+        <svg class="ico-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+        <svg class="ico-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" fill="currentColor"/></svg>
+      </button>
+      <button id="step-back" class="icon-btn small" title="−1 έτος" aria-label="Previous year">‹</button>
+      <button id="step-fwd" class="icon-btn small" title="+1 έτος" aria-label="Next year">›</button>
+    </div>
+
+    <div class="tl-center">
+      <div class="year-display">
+        <span id="year" class="year">1900</span>
+        <span id="month" class="month"></span>
+      </div>
+      <div class="track-wrap">
+        <div id="ticks" class="ticks" aria-hidden="true"></div>
+        <input id="track" class="track" type="range" min="0" max="1" step="1" value="0"
+               aria-label="Θέση στο timeline" />
+        <div class="range-labels" aria-hidden="true">
+          <span id="label-start"></span>
+          <span id="label-end"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-right">
+      <label class="speed-label" for="speed">Ταχύτητα</label>
+      <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής">
+        <button data-speed="0.5">0.5×</button>
+        <button data-speed="1" class="active">1×</button>
+        <button data-speed="2">2×</button>
+        <button data-speed="5">5×</button>
+        <button data-speed="10">10×</button>
+      </div>
+      <button id="loop" class="toggle" aria-pressed="false" title="Επανάληψη στο τέλος">Loop</button>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="events.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
