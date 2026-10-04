@@ -34,11 +34,14 @@
     economy: { label: "Οικονομία", icon: "💰" },
     tragedy: { label: "Ανθρωπογενής καταστροφή", icon: "☢️" },
     disaster: { label: "Φυσική καταστροφή", icon: "🌋" },
+    crop: { label: "Καλλιέργειες & φυτά", icon: "🌾" },
+    tree: { label: "Δέντρα", icon: "🌳" },
+    spice: { label: "Ποτά & μπαχαρικά", icon: "☕" },
   };
   // Κατηγορίες φίλτρων (sidebar): κάθε τύπος ανήκει σε μία κατηγορία
   const CATEGORIES = [
     { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "tragedy"] },
-    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster"] },
+    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice"] },
   ];
 
   // Παλέτα χωρών (ήπια «ζωγραφισμένα» χρώματα πάνω σε σκούρο ωκεανό)
@@ -77,9 +80,6 @@
     labelEnd: $("#label-end"),
     speed: $("#speed"),
     speedInput: $("#speed-input"),
-    zoomIn: $("#zoom-in"),
-    zoomOut: $("#zoom-out"),
-    zoomReset: $("#zoom-reset"),
     filters: $("#filters"),
     filtersAll: $("#filters-all"),
     filtersNone: $("#filters-none"),
@@ -500,9 +500,6 @@
     }
   }
 
-  els.zoomIn.addEventListener("click", () => els.svg.transition().duration(250).call(zoom.scaleBy, 1.6));
-  els.zoomOut.addEventListener("click", () => els.svg.transition().duration(250).call(zoom.scaleBy, 1 / 1.6));
-  els.zoomReset.addEventListener("click", () => els.svg.transition().duration(350).call(zoom.transform, d3.zoomIdentity));
 
   function focusEvent(ev) {
     const [x, y] = projection([ev.lng, ev.lat]);

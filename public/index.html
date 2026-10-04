@@ -13,8 +13,6 @@
   <header class="brand">
     <h1>World Events</h1>
     <p class="sub">Η ιστορία του κόσμου, 3000 π.Χ. – σήμερα</p>
-    <p class="hint">Σύρε για μετακίνηση · Scroll για zoom · <kbd>Space</kbd> Play/Pause · <kbd>←</kbd><kbd>→</kbd> βήμα</p>
-    <p class="credit">Ιστορικά σύνορα: <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> (GPL-3.0, κατά προσέγγιση)</p>
   </header>
 
   <main id="map-wrap" aria-label="World map">
@@ -37,12 +35,6 @@
         </marker>
       </defs>
     </svg>
-
-    <div class="map-controls">
-      <button id="zoom-in" class="icon-btn" title="Zoom in" aria-label="Zoom in">+</button>
-      <button id="zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out">−</button>
-      <button id="zoom-reset" class="icon-btn" title="Reset view" aria-label="Reset view">⌂</button>
-    </div>
 
     <aside id="sidebar" class="sidebar" aria-label="Φίλτρα">
       <div class="sb-head">
@@ -68,6 +60,7 @@
           </h3>
           <div id="filters" class="filters" aria-label="Φίλτρα γεγονότων"></div>
         </section>
+        <p class="sb-credit">Σύνορα: <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> (GPL-3.0, κατά προσέγγιση)</p>
       </div>
     </aside>
     <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων">☰ Φίλτρα</button>
@@ -129,6 +122,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   <script src="events.js"></script>
+  <script src="plants.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
