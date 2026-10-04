@@ -42,7 +42,7 @@
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
-      map: "Χάρτης", projection: "Προβολή", projNatural: "Φυσικός", projFlat: "Επίπεδος",
+      map: "Χάρτης", projection: "Προβολή", projNatural: "Φυσικός", projFlat: "Επίπεδος", projGlobe: "Υδρόγειος",
       style: "Στυλ", styleSimple: "Απλός", styleReal: "Ρεαλιστικός",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
@@ -62,7 +62,7 @@
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
-      map: "Map", projection: "Projection", projNatural: "Natural", projFlat: "Flat",
+      map: "Map", projection: "Projection", projNatural: "Natural", projFlat: "Flat", projGlobe: "Globe",
       style: "Style", styleSimple: "Simple", styleReal: "Realistic",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
@@ -291,7 +291,18 @@
   const height = () => els.mapWrap.clientHeight;
 
   // Προβολές: «φυσικός» (Natural Earth) ή «επίπεδος» (ισαπέχουσα ορθογώνια)
-  const PROJECTIONS = { natural: () => d3.geoNaturalEarth1(), flat: () => d3.geoEquirectangular() };
+  const PROJECTIONS = {
+    natural: () => d3.geoNaturalEarth1(),
+    flat: () => d3.geoEquirectangular(),
+    globe: () => d3.geoOrthographic().clipAngle(90).rotate([-20, -28, 0]).precision(0.3),
+  };
+  const isGlobe = () => state.proj === "globe";
+  // Κέντρο της ορατής πλευράς της υδρογείου (lng, lat)
+  const globeCenter = () => { const r = projection.rotate(); return [-r[0], -r[1]]; };
+  // Είναι το σημείο στην ορατή πλευρά της υδρογείου;
+  const onFront = (lng, lat) => !isGlobe() || d3.geoDistance([lng, lat], globeCenter()) < Math.PI / 2 - 0.03;
+  // Κεντραρισμένη κλιμάκωση (η υδρόγειος μένει πάντα στο κέντρο· η μετακίνηση γίνεται περιστροφή)
+  const centeredTransform = (k) => d3.zoomIdentity.translate(((1 - k) * width()) / 2, ((1 - k) * height()) / 2).scale(k);
   let projection = PROJECTIONS.natural();
   let path = d3.geoPath(projection);
 
@@ -311,19 +322,61 @@
   const zoom = d3
     .zoom()
     .scaleExtent([1, 14])
+    .on("start", () => { rotStart = projection.rotate(); })
     .on("zoom", (ev) => {
-      gRoot.attr("transform", ev.transform);
-      state.zoomK = ev.transform.k;
+      let tr = ev.transform;
+      if (isGlobe()) {
+        const c = centeredTransform(tr.k);
+        const dx = tr.x - c.x, dy = tr.y - c.y; // σωρευτική μετατόπιση από την αρχή της κίνησης
+        if (ev.sourceEvent && rotStart && (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01)) {
+          const s = 75 / (projection.scale() * tr.k);
+          projection.rotate([rotStart[0] + dx * s, Math.max(-90, Math.min(90, rotStart[1] - dy * s)), 0]);
+          redrawGlobe();
+        }
+        els.svg.node().__zoom = c; // η υδρόγειος παραμένει κεντραρισμένη
+        tr = c;
+      }
+      gRoot.attr("transform", tr);
+      state.zoomK = tr.k;
       gEvents.selectAll("g.ev .body").attr("transform", bodyTransform);
       // κουκκίδα και παλμός κρατούν σταθερό μέγεθος στην οθόνη
       gEvents.selectAll("g.ev .anchor").attr("r", 3.2 * bodyScale());
       gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
-      rasterFollow(ev.transform);
+      rasterFollow(tr);
       positionPostcard();
       gTour.selectAll("g.tour-stop").attr("transform", (d) => "translate(" + d[0] + "," + d[1] + ") scale(" + bodyScale() + ")");
     })
     .on("end", () => { if (state.style === "real") scheduleRaster(); });
+  let rotStart = null;
+  // Επανασχεδίαση μετά από περιστροφή της υδρογείου (σύνορα, γεγονότα, διαδρομή tour, raster)
+  function redrawGlobe() {
+    redrawMap();
+    positionPostcard();
+    if (tour) drawTour(tour.f.stops.slice(0, tour.i + 1), tour.f.color);
+    if (state.style === "real") { els.raster.classList.add("stale"); scheduleRaster(250); }
+  }
+  // Ομαλή περιστροφή της υδρογείου ώστε το σημείο να έρθει στο κέντρο
+  function rotateTo(lng, lat, dur = 900) {
+    if (!isGlobe()) return;
+    const r0 = projection.rotate();
+    const r1 = [-lng, -lat, 0];
+    while (r1[0] - r0[0] > 180) r1[0] -= 360;
+    while (r1[0] - r0[0] < -180) r1[0] += 360;
+    const ip = d3.interpolate([r0[0], r0[1], 0], r1);
+    els.svg.transition("rotate").duration(dur).ease(d3.easeCubicInOut)
+      .tween("rotate", () => (t) => { projection.rotate(ip(t)); redrawGlobe(); });
+  }
+  let lastAutoRotate = 0;
+  // Κατά την αναπαραγωγή, αν ένα νέο γεγονός είναι στην πίσω πλευρά, η υδρόγειος γυρίζει προς αυτό
+  function autoRotateTo(ev) {
+    if (!isGlobe() || !state.playing) return;
+    if (d3.geoDistance([ev.lng, ev.lat], globeCenter()) < Math.PI * 0.4) return;
+    const now = performance.now();
+    if (now - lastAutoRotate < 1500) return;
+    lastAutoRotate = now;
+    rotateTo(ev.lng, ev.lat, 1200);
+  }
   els.svg.call(zoom).on("dblclick.zoom", null);
   els.svg.on("dblclick", (e) => {
     e.preventDefault();
@@ -441,6 +494,7 @@
       }
     }
     ctx.putImageData(out, 0, 0);
+    els.raster.classList.remove("stale");
     rasterTransform = tr;
     els.raster.style.transform = "";
     els.mapWrap.classList.add("raster-ready");
@@ -557,6 +611,7 @@
     const tr = d3.zoomTransform(els.svg.node());
     const [mx, my] = projection([postcardAt.lng, postcardAt.lat]);
     if (!isFinite(mx) || !isFinite(my)) return;
+    els.postcard.style.visibility = onFront(postcardAt.lng, postcardAt.lat) ? "" : "hidden";
     const x = tr.applyX(mx), y = tr.applyY(my);
     const w = els.postcard.offsetWidth || 300, h = els.postcard.offsetHeight || 260;
     let left = x - w - 24, top = y - h - 10;
@@ -596,7 +651,8 @@
     setTime(dateToMonths(st.date), { fromUser: true });
     const [x, y] = projection([st.lng, st.lat]);
     const k = st.k || 3;
-    els.svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k));
+    if (isGlobe()) { rotateTo(st.lng, st.lat, 900); els.svg.transition().duration(900).call(zoom.transform, centeredTransform(k)); }
+    else els.svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k));
     drawTour(stops.slice(0, i + 1), f.color);
     hidePostcard();
     if (st.photo) showStopPhoto(st);
@@ -859,6 +915,7 @@
     projection = PROJECTIONS[kind]();
     path = d3.geoPath(projection);
     els.proj.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.proj === kind));
+    els.mapWrap.classList.toggle("globe", kind === "globe");
     if (persist) { try { localStorage.setItem(PROJ_KEY, kind); } catch (_) { /* ignore */ } }
     els.svg.call(zoom.transform, d3.zoomIdentity);
     fitProjection();
@@ -1124,8 +1181,13 @@
 
 
   function focusEvent(ev, minK = 3) {
-    const [x, y] = projection([ev.lng, ev.lat]);
     const k = Math.max(state.zoomK, minK);
+    if (isGlobe()) {
+      rotateTo(ev.lng, ev.lat, 700);
+      els.svg.transition().duration(600).call(zoom.transform, centeredTransform(k));
+      return;
+    }
+    const [x, y] = projection([ev.lng, ev.lat]);
     const tr = d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k);
     els.svg.transition().duration(600).call(zoom.transform, tr);
   }
@@ -1206,6 +1268,7 @@
   }
 
   function layoutEvent(g, ev, restartMotion) {
+    g.style("display", onFront(ev.lng, ev.lat) ? null : "none");
     const [x, y] = projection([ev.lng, ev.lat]);
     g.select(".pulse").attr("cx", x).attr("cy", y);
     g.select(".anchor").attr("cx", x).attr("cy", y);
@@ -1242,7 +1305,7 @@
     const obstacles = [];
     gEvents.selectAll("g.ev").each(function (a) {
       const p = a.ev._pos;
-      if (!p) return;
+      if (!p || this.style.display === "none") return;
       const r = 13 * s;
       obstacles.push({ x0: p.x - r, y0: p.y - r, x1: p.x + r, y1: p.y + r, owner: a.ev });
       if (a.labeled && a.ev._lbl) nodes.push({ node: this, a });
@@ -1284,7 +1347,7 @@
               const g = d3.select(this);
               buildEvent(g, a.ev);
               layoutEvent(g, a.ev, true);
-              if (state.playing) playScene(a.ev);
+              if (state.playing) { playScene(a.ev); if (a.labeled) autoRotateTo(a.ev); }
             }),
         (update) => update,
         (exit) => exit.remove()
@@ -1672,6 +1735,7 @@
     setStoryCollapsed(true);
     setTime(target.s, { fromUser: true });
     if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+    rotateTo(target.lng, target.lat, 700);
     playScene(target);
   }
 
