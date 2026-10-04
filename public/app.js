@@ -305,6 +305,10 @@
     const h = height();
     els.svg.attr("viewBox", `0 0 ${w} ${h}`).attr("width", w).attr("height", h);
     projection.fitExtent([[12, 12], [w - 12, h - 12]], { type: "Sphere" });
+    // Στο πλήρες zoom out ο χάρτης μένει κεντραρισμένος· μετακίνηση μόνο όταν έχει γίνει zoom in,
+    // και ποτέ πέρα από τα όρια του χάρτη.
+    zoom.extent([[0, 0], [w, h]]).translateExtent([[0, 0], [w, h]]);
+    els.svg.call(zoom.transform, d3.zoomTransform(els.svg.node()));
     redrawMap();
   }
 
