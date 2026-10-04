@@ -515,8 +515,8 @@
       if (kw(ev, /πυρκαγ|fire|καίγ|burn|φωτιά|καίει/)) { fire(pt, 2800); done(3000); return; }
       rings(pt, color, 3, 1800); done(2000); return;
     }
-    if (T === "war") { clash(pt, color, 2600); done(2800); return; }
-    if (T === "revolution") { fire(pt, 2600); sparks(pt, color); done(2800); return; }
+    if (T === "war") { clash(pt, color, 2600); fires(pt, 3000); done(3200); return; }
+    if (T === "revolution") { fist(pt, 2800); fire(pt, 2600); sparks(pt, color); done(3000); return; }
     if (T === "exploration") { if (ev.from) voyage(g, ev, 3200); else radar(pt, color, 2400); done(3400); return; }
     if (T === "science") { formula(pt, scienceText(ev), 3000); rays(pt, "#fff", 1600); done(3200); return; }
     if (T === "culture") { rays(pt, color, 2200); glitter(pt, color, 2400); done(2600); return; }
@@ -568,6 +568,22 @@
         .transition().delay(200 + i * (dur / 10)).duration(dur * 0.6).ease(d3.easeQuadOut)
         .attr("cy", -70).attr("cx", (Math.random() - 0.5) * 40).attr("r", 14).attr("opacity", 0);
     }
+  }
+  // Πολλές μικρές φωτιές γύρω από το σημείο της μάχης
+  function fires(g, dur) {
+    for (let k = 0; k < 5; k++) {
+      const a = Math.random() * Math.PI * 2, d = 18 + Math.random() * 40;
+      const fg = g.append("g").attr("transform", "translate(" + Math.cos(a) * d + "," + Math.sin(a) * d + ") scale(0.6)").attr("opacity", 0);
+      fg.transition().delay(400 + k * 250).duration(300).attr("opacity", 1);
+      setTimeout(() => fire(fg, dur * 0.7), 400 + k * 250);
+    }
+  }
+  // Γροθιά που υψώνεται και μεγαλώνει
+  function fist(g, dur) {
+    g.append("text").text("✊").attr("y", 0).attr("font-size", 14).attr("opacity", 0).attr("transform", "scale(0.4)")
+      .transition().duration(dur * 0.45).ease(d3.easeBackOut).attr("opacity", 1).attr("transform", "scale(2.6)").attr("y", -22)
+      .transition().duration(dur * 0.25).attr("transform", "scale(2.9)")
+      .transition().duration(dur * 0.3).attr("opacity", 0).attr("transform", "scale(3.4)").attr("y", -30);
   }
   function sparks(g, color) {
     for (let i = 0; i < 10; i++) {
