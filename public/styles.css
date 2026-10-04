@@ -66,7 +66,15 @@ kbd {
 
 /* ---------- Map ---------- */
 #map-wrap { position: relative; flex: 1; min-height: 0; background: var(--bg); }
-#map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; position: relative; z-index: 1; }
+/* ρεαλιστικός χάρτης: raster υφή της Γης κάτω από το SVG */
+.raster { position: absolute; left: 0; top: 0; pointer-events: none; transform-origin: 0 0; display: none; z-index: 0; }
+.realistic.raster-ready .raster { display: block; }
+.realistic.raster-ready .sphere { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 1; }
+.realistic.raster-ready .graticule { stroke: rgba(255,255,255,0.09); }
+.realistic.raster-ready .country, .realistic.raster-ready .hcountry { fill-opacity: 0.26; stroke: rgba(255,255,255,0.65); stroke-width: 0.7; }
+.realistic.raster-ready .hcountry.wild { fill: rgba(30,40,70,0.3); stroke: rgba(255,255,255,0.3); }
+.realistic.raster-ready .country:hover, .realistic.raster-ready .hcountry:hover { fill-opacity: 0.5; filter: none; }
 button, input, label { touch-action: manipulation; }
 #map:active { cursor: grabbing; }
 
@@ -247,6 +255,14 @@ g.hist-year.out { opacity: 0; }
 .sb-actions { margin-left: auto; display: inline-flex; gap: 8px; text-transform: none; letter-spacing: 0; }
 .sb-link { border: 0; background: none; color: var(--accent); font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; padding: 0; }
 .sb-link:hover { text-decoration: underline; }
+/* επιλογές χάρτη */
+.seg-row { display: flex; align-items: center; gap: 8px; padding: 3px 2px; }
+.seg-label { flex: 1; font-size: 12.5px; color: var(--text); }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 11.5px; font-weight: 600; padding: 5px 10px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button:hover { color: var(--text); }
+.seg button.active { background: var(--accent); color: var(--accent-ink); }
 
 .sb-row {
   display: flex;

@@ -21,6 +21,7 @@
   </header>
 
   <main id="map-wrap" aria-label="World map">
+    <canvas id="raster" class="raster" aria-hidden="true"></canvas>
     <svg id="map" role="img" aria-label="Παγκόσμιος χάρτης">
       <defs>
         <radialGradient id="ocean-grad" cx="50%" cy="45%" r="70%">
@@ -56,6 +57,23 @@
                  autocomplete="off" spellcheck="false" aria-label="Αναζήτηση" data-i18n-aria="search" />
           <div id="search-meta" class="search-meta"></div>
           <ul id="search-results" class="search-results" role="listbox"></ul>
+        </section>
+        <section class="sb-sec sb-map">
+          <h3 class="sb-sec-title"><span data-i18n="map">Χάρτης</span></h3>
+          <div class="seg-row">
+            <span class="seg-label" data-i18n="projection">Προβολή</span>
+            <div id="proj" class="seg" role="group" aria-label="Προβολή χάρτη">
+              <button data-proj="natural" data-i18n="projNatural">Φυσικός</button>
+              <button data-proj="flat" data-i18n="projFlat">Επίπεδος</button>
+            </div>
+          </div>
+          <div class="seg-row">
+            <span class="seg-label" data-i18n="style">Στυλ</span>
+            <div id="style" class="seg" role="group" aria-label="Στυλ χάρτη">
+              <button data-style="simple" data-i18n="styleSimple">Απλός</button>
+              <button data-style="real" data-i18n="styleReal">Ρεαλιστικός</button>
+            </div>
+          </div>
         </section>
         <section class="sb-sec">
           <h3 class="sb-sec-title"><span data-i18n="events">Γεγονότα</span>
@@ -125,10 +143,14 @@
   <script src="plants.js"></script>
   <script src="animals.js"></script>
   <script src="religions.js"></script>
+  <script src="americas.js"></script>
+  <script src="regions.js"></script>
   <script src="en/events.js"></script>
   <script src="en/plants.js"></script>
   <script src="en/animals.js"></script>
   <script src="en/religions.js"></script>
+  <script src="en/americas.js"></script>
+  <script src="en/regions.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

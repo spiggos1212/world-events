@@ -37,6 +37,8 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
+      map: "Χάρτης", projection: "Προβολή", projNatural: "Φυσικός", projFlat: "Επίπεδος",
+      style: "Στυλ", styleSimple: "Απλός", styleReal: "Ρεαλιστικός",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
     },
@@ -50,6 +52,8 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
+      map: "Map", projection: "Projection", projNatural: "Natural", projFlat: "Flat",
+      style: "Style", styleSimple: "Simple", styleReal: "Realistic",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
     },
@@ -97,6 +101,8 @@
     panelKey: "",
     historical: true,
     lang: "el",
+    proj: "natural",
+    style: "real",
   };
 
   // ---------- DOM ----------
@@ -132,6 +138,9 @@
     panelCount: $("#panel-count"),
     panelToggle: $("#panel-toggle"),
     lang: $("#lang"),
+    proj: $("#proj"),
+    styleSel: $("#style"),
+    raster: $("#raster"),
     histLoading: $("#hist-loading"),
   };
 
@@ -249,8 +258,10 @@
   const width = () => els.mapWrap.clientWidth;
   const height = () => els.mapWrap.clientHeight;
 
-  const projection = d3.geoNaturalEarth1();
-  const path = d3.geoPath(projection);
+  // Προβολές: «φυσικός» (Natural Earth) ή «επίπεδος» (ισαπέχουσα ορθογώνια)
+  const PROJECTIONS = { natural: () => d3.geoNaturalEarth1(), flat: () => d3.geoEquirectangular() };
+  let projection = PROJECTIONS.natural();
+  let path = d3.geoPath(projection);
 
   const gRoot = els.svg.append("g").attr("class", "root");
   const gSphere = gRoot.append("path").attr("class", "sphere");
@@ -274,7 +285,9 @@
       gEvents.selectAll("g.ev .anchor").attr("r", 3.2 * bodyScale());
       gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
-    });
+      rasterFollow(ev.transform);
+    })
+    .on("end", () => { if (state.style === "real") scheduleRaster(); });
   els.svg.call(zoom).on("dblclick.zoom", null);
   els.svg.on("dblclick", (e) => {
     e.preventDefault();
@@ -291,6 +304,136 @@
     zoom.extent([[0, 0], [w, h]]).translateExtent([[0, 0], [w, h]]);
     els.svg.call(zoom.transform, d3.zoomTransform(els.svg.node()));
     redrawMap();
+    if (state.style === "real") scheduleRaster(0);
+  }
+
+  // ---------- Ρεαλιστικός χάρτης: raster υφή της Γης, επαναπροβολή σε canvas ----------
+  const RASTER_URL = "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
+  let rasterSrc = null;          // { data, w, h } pixels της ισαπέχουσας εικόνας
+  let rasterLoading = false;
+  let rasterTransform = d3.zoomIdentity; // ο zoom μετασχηματισμός με τον οποίο σχεδιάστηκε το canvas
+  let rasterTimer = 0;
+  function loadRaster() {
+    if (rasterSrc || rasterLoading) return;
+    rasterLoading = true;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const c = document.createElement("canvas");
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        const cx = c.getContext("2d", { willReadFrequently: true });
+        cx.drawImage(img, 0, 0);
+        rasterSrc = { data: cx.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height };
+      } catch (e) { console.warn("Raster texture unavailable", e); }
+      rasterLoading = false;
+      renderRaster();
+    };
+    img.onerror = () => { rasterLoading = false; console.warn("Raster texture failed to load"); };
+    img.src = RASTER_URL;
+  }
+  // Κατά το zoom/pan το canvas ακολουθεί με CSS transform (σχετικά με τον μετασχηματισμό σχεδίασής του)
+  function rasterFollow(tr) {
+    if (state.style !== "real") return;
+    const r = rasterTransform, s = tr.k / r.k;
+    els.raster.style.transform = "translate(" + (tr.x - s * r.x) + "px, " + (tr.y - s * r.y) + "px) scale(" + s + ")";
+  }
+  function scheduleRaster(delay = 120) {
+    clearTimeout(rasterTimer);
+    rasterTimer = setTimeout(renderRaster, delay);
+  }
+  function renderRaster() {
+    if (state.style !== "real") return;
+    if (!rasterSrc) { loadRaster(); return; }
+    const tr = d3.zoomTransform(els.svg.node());
+    const w = width(), h = height();
+    if (!w || !h) return;
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const W = Math.max(1, Math.round(w * dpr)), H = Math.max(1, Math.round(h * dpr));
+    const cv = els.raster;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    cv.style.width = w + "px"; cv.style.height = h + "px";
+    const ctx = cv.getContext("2d");
+    const out = ctx.createImageData(W, H), od = out.data;
+    const sd = rasterSrc.data, sw = rasterSrc.w, sh = rasterSrc.h;
+    // Αντιστροφή της προβολής: οθόνη → χάρτης → (lng, lat). null έξω από τη σφαίρα.
+    const inv = (px, py) => {
+      const mx = (px - tr.x) / tr.k, my = (py - tr.y) / tr.k;
+      const p = projection.invert([mx, my]);
+      if (!p || !isFinite(p[0]) || !isFinite(p[1])) return null;
+      if (p[0] < -180 || p[0] > 180 || p[1] < -90 || p[1] > 90) return null;
+      const q = projection(p);
+      if (!q || Math.abs(q[0] - mx) > 0.5 || Math.abs(q[1] - my) > 0.5) return null;
+      return p;
+    };
+    // Αραιό πλέγμα (κάθε G pixels) και διγραμμική παρεμβολή ανάμεσα: 16× λιγότερες αντιστροφές
+    const G = 4;
+    const gw = Math.ceil(W / G) + 1, gh = Math.ceil(H / G) + 1;
+    const glng = new Float64Array(gw * gh), glat = new Float64Array(gw * gh), gok = new Uint8Array(gw * gh);
+    for (let gy = 0; gy < gh; gy++) {
+      for (let gx = 0; gx < gw; gx++) {
+        const p = inv((gx * G) / dpr, (gy * G) / dpr);
+        if (p) { const i = gy * gw + gx; glng[i] = p[0]; glat[i] = p[1]; gok[i] = 1; }
+      }
+    }
+    const sample = (lng, lat, o) => {
+      let sx = Math.floor(((lng + 180) / 360) * sw), sy = Math.floor(((90 - lat) / 180) * sh);
+      if (sx < 0) sx = 0; else if (sx >= sw) sx = sw - 1;
+      if (sy < 0) sy = 0; else if (sy >= sh) sy = sh - 1;
+      const si = (sy * sw + sx) * 4;
+      od[o] = sd[si]; od[o + 1] = sd[si + 1]; od[o + 2] = sd[si + 2]; od[o + 3] = 255;
+    };
+    for (let y = 0; y < H; y++) {
+      const gy = Math.floor(y / G), fy = (y - gy * G) / G;
+      for (let x = 0; x < W; x++) {
+        const gx = Math.floor(x / G), fx = (x - gx * G) / G;
+        const i00 = gy * gw + gx, i10 = i00 + 1, i01 = i00 + gw, i11 = i01 + 1;
+        const o = (y * W + x) * 4;
+        if (gok[i00] && gok[i10] && gok[i01] && gok[i11]) {
+          const l0 = glng[i00], l1 = glng[i10], l2 = glng[i01], l3 = glng[i11];
+          if (Math.max(l0, l1, l2, l3) - Math.min(l0, l1, l2, l3) < 90) { // όχι πάνω στον αντιμεσημβρινό
+            const lng = (l0 * (1 - fx) + l1 * fx) * (1 - fy) + (l2 * (1 - fx) + l3 * fx) * fy;
+            const lat = (glat[i00] * (1 - fx) + glat[i10] * fx) * (1 - fy) + (glat[i01] * (1 - fx) + glat[i11] * fx) * fy;
+            sample(lng, lat, o);
+            continue;
+          }
+        }
+        const p = inv((x + 0.5) / dpr, (y + 0.5) / dpr); // άκρα της σφαίρας: ακριβής υπολογισμός
+        if (p) sample(p[0], p[1], o);
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+    rasterTransform = tr;
+    els.raster.style.transform = "";
+    els.mapWrap.classList.add("raster-ready");
+  }
+
+  // ---------- Επιλογές χάρτη (προβολή / στυλ) ----------
+  const PROJ_KEY = "we-proj", STYLE_KEY = "we-style";
+  function setProjection(kind, { persist = true } = {}) {
+    if (!PROJECTIONS[kind]) kind = "natural";
+    state.proj = kind;
+    projection = PROJECTIONS[kind]();
+    path = d3.geoPath(projection);
+    els.proj.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.proj === kind));
+    if (persist) { try { localStorage.setItem(PROJ_KEY, kind); } catch (_) { /* ignore */ } }
+    els.svg.call(zoom.transform, d3.zoomIdentity);
+    fitProjection();
+  }
+  function setMapStyle(style, { persist = true } = {}) {
+    state.style = style === "simple" ? "simple" : "real";
+    els.mapWrap.classList.toggle("realistic", state.style === "real");
+    els.styleSel.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.style === state.style));
+    if (persist) { try { localStorage.setItem(STYLE_KEY, state.style); } catch (_) { /* ignore */ } }
+    if (state.style === "real") renderRaster();
+  }
+  function initMapOptions() {
+    let p = "natural", s = "real";
+    try { p = localStorage.getItem(PROJ_KEY) || p; s = localStorage.getItem(STYLE_KEY) || s; } catch (_) { /* ignore */ }
+    els.proj.addEventListener("click", (e) => { const b = e.target.closest("button[data-proj]"); if (b) setProjection(b.dataset.proj); });
+    els.styleSel.addEventListener("click", (e) => { const b = e.target.closest("button[data-style]"); if (b) setMapStyle(b.dataset.style); });
+    setMapStyle(s, { persist: false });
+    setProjection(p, { persist: false });
   }
 
   function redrawMap() {
@@ -1150,7 +1293,8 @@
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
     play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
-    projection,
+    get projection() { return projection; },
+    setProjection, setMapStyle,
     events: EVENTS,
     config: { START_YEAR, END_YEAR, SEGMENTS },
   };
@@ -1162,6 +1306,7 @@
   initSidebar();
   enableSwipeToClose(els.sidebar, els.sidebar.querySelector(".sb-body"), () => setSidebarCollapsed(true));
   enableSwipeToClose(els.panel, els.panelList, () => setPanelCollapsed(true));
+  initMapOptions();
   applyLayerVisibility();
   buildTicks();
   fitProjection();
