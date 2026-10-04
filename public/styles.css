@@ -701,6 +701,12 @@ g.hist-year.out { opacity: 0; }
     border-bottom: 0;
   }
   .sidebar.collapsed, .panel.collapsed { transform: translateY(110%); opacity: 0; }
+  /* λαβή συρσίματος στην κορυφή του φύλλου */
+  .sidebar::before, .panel::before {
+    content: ""; position: absolute; top: 6px; left: 50%; width: 38px; height: 4px; margin-left: -19px;
+    border-radius: 2px; background: rgba(255,255,255,0.28);
+  }
+  .sb-head, .panel-head { padding-top: 16px; }
   .sb-body, .panel-list { -webkit-overflow-scrolling: touch; }
   .search-results { max-height: 150px; }
   .sb-row, .subs .sb-row { padding: 8px 2px; }

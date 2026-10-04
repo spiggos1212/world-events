@@ -953,6 +953,37 @@
     });
   }
 
+  // Κινητό: σύρσιμο προς τα κάτω κλείνει το φύλλο (φίλτρα / συμβαίνει τώρα)
+  function enableSwipeToClose(sheet, scrollEl, close) {
+    let startY = 0, dy = 0, active = false, inScroll = false;
+    const isMobile = () => window.matchMedia("(max-width: 820px)").matches;
+    sheet.addEventListener("touchstart", (e) => {
+      if (!isMobile() || e.touches.length !== 1) return;
+      startY = e.touches[0].clientY; dy = 0; active = true;
+      inScroll = scrollEl.contains(e.target);
+    }, { passive: true });
+    sheet.addEventListener("touchmove", (e) => {
+      if (!active) return;
+      const y = e.touches[0].clientY - startY;
+      if (inScroll && scrollEl.scrollTop > 0) { dy = 0; return; } // αφήνουμε τη λίστα να κάνει scroll
+      if (y <= 0) { dy = 0; sheet.style.transform = ""; sheet.style.transition = ""; return; }
+      dy = y;
+      sheet.style.transition = "none";
+      sheet.style.transform = "translateY(" + y + "px)";
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+    const end = () => {
+      if (!active) return;
+      active = false;
+      sheet.style.transition = "";
+      sheet.style.transform = "";
+      if (dy > 90) { if (document.activeElement) document.activeElement.blur(); close(); }
+      dy = 0;
+    };
+    sheet.addEventListener("touchend", end);
+    sheet.addEventListener("touchcancel", end);
+  }
+
   // Άνοιγμα/κλείσιμο sidebar (θυμάται την επιλογή)
   const SIDEBAR_KEY = "we-sidebar";
   function setSidebarCollapsed(v, persist = true) {
@@ -1143,9 +1174,12 @@
   loadHiddenTypes();
   buildFilters();
   initSidebar();
+  enableSwipeToClose(els.sidebar, els.sidebar.querySelector(".sb-body"), () => setSidebarCollapsed(true));
+  enableSwipeToClose(els.panel, els.panelList, () => setPanelCollapsed(true));
   applyLayerVisibility();
   buildTicks();
   fitProjection();
+  state.t = dateToMonths("1500"); // η σελίδα ανοίγει στο 1500 μ.Χ.
   updateUI();
   initSpeed();
   loadWorld();
