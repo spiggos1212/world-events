@@ -100,6 +100,23 @@
       <ul id="panel-list" class="panel-list"></ul>
     </aside>
 
+    <aside id="story" class="story collapsed" aria-label="Ιστορία γεγονότος" data-i18n-aria="storyAria">
+      <div class="story-head">
+        <span id="story-type" class="story-type"></span>
+        <button id="story-close" class="panel-toggle" aria-label="Κλείσιμο" data-i18n-aria="close" title="Κλείσιμο" data-i18n-title="close">×</button>
+      </div>
+      <div id="story-body" class="story-body">
+        <div id="story-media" class="story-media"></div>
+        <div class="story-text">
+          <h2 id="story-title" class="story-title"></h2>
+          <div id="story-meta" class="story-meta"></div>
+          <p id="story-desc" class="story-desc"></p>
+          <div id="story-wiki" class="story-wiki"></div>
+          <div id="story-links" class="story-links"></div>
+        </div>
+      </div>
+    </aside>
+
     <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
     <div id="loading" class="loading" data-i18n="loadingMap">Φόρτωση χάρτη…</div>
   </main>
@@ -151,6 +168,7 @@
   <script src="en/religions.js"></script>
   <script src="en/americas.js"></script>
   <script src="en/regions.js"></script>
+  <script src="wiki.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

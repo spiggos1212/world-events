@@ -37,6 +37,9 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
+      storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
+      wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
+      wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
       map: "Χάρτης", projection: "Προβολή", projNatural: "Φυσικός", projFlat: "Επίπεδος",
       style: "Στυλ", styleSimple: "Απλός", styleReal: "Ρεαλιστικός",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
@@ -52,6 +55,9 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
+      storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
+      wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
+      wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
       map: "Map", projection: "Projection", projNatural: "Natural", projFlat: "Flat",
       style: "Style", styleSimple: "Simple", styleReal: "Realistic",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
@@ -141,6 +147,16 @@
     proj: $("#proj"),
     styleSel: $("#style"),
     raster: $("#raster"),
+    story: $("#story"),
+    storyType: $("#story-type"),
+    storyClose: $("#story-close"),
+    storyBody: $("#story-body"),
+    storyMedia: $("#story-media"),
+    storyTitle: $("#story-title"),
+    storyMeta: $("#story-meta"),
+    storyDesc: $("#story-desc"),
+    storyWiki: $("#story-wiki"),
+    storyLinks: $("#story-links"),
     histLoading: $("#hist-loading"),
   };
 
@@ -269,6 +285,7 @@
   const gCountries = gRoot.append("g").attr("class", "countries");
   const gHist = gRoot.append("g").attr("class", "hist-layer");
   const gEvents = gRoot.append("g").attr("class", "events-layer");
+  const gFx = gRoot.append("g").attr("class", "fx");
 
   let countriesFeatures = [];
   let countryColors = new Map();
@@ -406,6 +423,283 @@
     rasterTransform = tr;
     els.raster.style.transform = "";
     els.mapWrap.classList.add("raster-ready");
+  }
+
+  // ---------- Ιστορία γεγονότος: popup με κείμενο και εικόνα από τη Wikipedia ----------
+  const WIKI = window.WORLD_WIKI || {};
+  const wikiCache = new Map();
+  let storyEv = null;
+  let storySeq = 0;
+  function fetchSummary(lang, title) {
+    const key = lang + ":" + title;
+    if (!wikiCache.has(key)) {
+      const url = "https://" + lang + ".wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title.replace(/ /g, "_"));
+      wikiCache.set(key, fetch(url, { headers: { Accept: "application/json" } }).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    }
+    return wikiCache.get(key);
+  }
+  // Μεγαλύτερη εικόνα από το thumbnail, χωρίς να ξεπεράσει το πρωτότυπο
+  function pickImage(sum) {
+    if (!sum || !sum.thumbnail || !sum.thumbnail.source) return null;
+    const ow = sum.originalimage ? sum.originalimage.width : 0;
+    const target = Math.min(900, ow || 320);
+    return sum.thumbnail.source.replace(/\/(\d+)px-/, "/" + target + "px-");
+  }
+  function setStoryCollapsed(v) {
+    els.story.classList.toggle("collapsed", v);
+    if (v) storyEv = null;
+  }
+  els.storyClose.addEventListener("click", () => setStoryCollapsed(true));
+  async function openStory(ev) {
+    storyEv = ev;
+    const seq = ++storySeq;
+    const type = TYPES[ev.type];
+    els.story.style.setProperty("--c", "var(--c-" + ev.type + ")");
+    els.storyType.textContent = type.icon + " " + type.label;
+    els.storyTitle.textContent = ev.title;
+    els.storyMeta.textContent = yearOf(ev.start) + (ev.end ? " – " + yearOf(ev.end) : "");
+    els.storyDesc.textContent = ev.description || "";
+    els.storyMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
+    els.storyWiki.innerHTML = '<span class="loading">' + esc(t("wikiLoading")) + "</span>";
+    els.storyLinks.innerHTML = "";
+    els.storyBody.scrollTop = 0;
+    setStoryCollapsed(false);
+    setPanelCollapsed(true);
+    if (window.matchMedia("(max-width: 820px)").matches) setSidebarCollapsed(true);
+
+    const w = WIKI[ev.id] || [null, null];
+    if (!w[0] && !w[1]) { els.storyWiki.innerHTML = ""; return; }
+    const [sEl, sEn] = await Promise.all([w[1] ? fetchSummary("el", w[1]) : null, w[0] ? fetchSummary("en", w[0]) : null]);
+    if (seq !== storySeq) return; // άνοιξε άλλο γεγονός στο μεταξύ
+    const pref = state.lang === "el" ? [sEl, sEn] : [sEn, sEl];
+    const got = pref.find((s) => s && s.extract && s.type !== "disambiguation");
+    if (!got) { els.storyWiki.innerHTML = '<span class="note">' + esc(t("wikiFail")) + "</span>"; return; }
+    const gotLang = got === sEl ? "el" : "en";
+    const img = pickImage(got) || pickImage(sEn) || pickImage(sEl);
+    if (img) {
+      const im = new Image();
+      im.alt = got.title || ev.title;
+      im.onload = () => { if (seq === storySeq) { els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
+      im.src = img;
+    }
+    const paras = got.extract.split(/\n+/).filter(Boolean).slice(0, 3);
+    els.storyWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") +
+      (gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "");
+    const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
+    els.storyLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
+  }
+
+  // ---------- Ζωντανές αναπαραστάσεις πάνω στον χάρτη (ανά τύπο γεγονότος) ----------
+  let fxCount = 0;
+  const FX_MAX = 4;
+  const kw = (ev, re) => re.test([ev.title, ev.description, ev.en && ev.en.title, ev.en && ev.en.description].filter(Boolean).join(" ").toLowerCase());
+  const typeColor = (type) => getComputedStyle(document.documentElement).getPropertyValue("--c-" + type).trim() || "#fff";
+  function playScene(ev) {
+    if (fxCount >= FX_MAX) return;
+    const [x, y] = projection([ev.lng, ev.lat]);
+    if (!isFinite(x) || !isFinite(y)) return;
+    const s = bodyScale(); // 1 pixel οθόνης σε μονάδες χάρτη
+    const color = typeColor(ev.type);
+    const T = ev.type;
+    const g = gFx.append("g").attr("class", "fx-" + T);
+    const pt = g.append("g").attr("transform", "translate(" + x + "," + y + ") scale(" + s + ")"); // σημειακά εφέ
+    fxCount++;
+    const done = (ms) => setTimeout(() => { g.remove(); fxCount--; }, ms);
+    if (T === "disaster" || T === "tragedy") {
+      if (kw(ev, /σεισμ|earthquake|quake/)) { shake(); rings(pt, "#ffd36b", 4, 1800); done(2000); return; }
+      if (kw(ev, /τσουνάμι|tsunami|πλημμ|flood|κατακλυσμ/)) { rings(pt, "#5ec8ff", 5, 2600); done(2800); return; }
+      if (kw(ev, /επιδημ|πανδημ|πανώλη|λοιμ|γρίπη|plague|pandemic|epidemic|flu|cholera|χολέρα|ebola|aids|smallpox|ευλογιά/)) { plague(pt, 2800); done(3000); return; }
+      if (kw(ev, /ηφαίστ|έκρηξη|volcan|erupt|explosion|bomb|βόμβα|ατομικ|nuclear|πυρηνικ|chernobyl|τσερνόμπιλ/)) { explosion(pt, color, 3000, kw(ev, /ηφαίστ|volcan|erupt/)); done(3200); return; }
+      if (kw(ev, /πυρκαγ|fire|καίγ|burn|φωτιά|καίει/)) { fire(pt, 2800); done(3000); return; }
+      rings(pt, color, 3, 1800); done(2000); return;
+    }
+    if (T === "war") { clash(pt, color, 2600); done(2800); return; }
+    if (T === "revolution") { fire(pt, 2600); sparks(pt, color); done(2800); return; }
+    if (T === "exploration") { if (ev.from) voyage(g, ev, 3200); else radar(pt, color, 2400); done(3400); return; }
+    if (T === "science") { formula(pt, scienceText(ev), 3000); rays(pt, "#fff", 1600); done(3200); return; }
+    if (T === "culture") { rays(pt, color, 2200); glitter(pt, color, 2400); done(2600); return; }
+    if (T === "politics") { seal(pt, color, 2000); done(2200); return; }
+    if (T === "economy") { coins(pt, 2400); done(2600); return; }
+    // θρησκείες, φυτά, ζώα: κύμα κατά μήκος του βέλους ή ήπια λάμψη
+    if (ev.from) { travelPulse(g, ev, color, 2600); done(2800); return; }
+    rings(pt, color, 3, 2000); done(2200);
+  }
+  function shake() {
+    els.mapWrap.classList.remove("shake");
+    void els.mapWrap.offsetWidth;
+    els.mapWrap.classList.add("shake");
+    setTimeout(() => els.mapWrap.classList.remove("shake"), 700);
+  }
+  function rings(g, color, n, dur) {
+    for (let i = 0; i < n; i++) {
+      g.append("circle").attr("r", 4).attr("fill", "none").attr("stroke", color).attr("stroke-width", 2.5).attr("opacity", 0.9)
+        .transition().delay(i * (dur / (n + 1))).duration(dur * 0.7).ease(d3.easeCubicOut)
+        .attr("r", 70).attr("stroke-width", 0.5).attr("opacity", 0);
+    }
+  }
+  function explosion(g, color, dur, volcano) {
+    g.append("circle").attr("r", 2).attr("fill", "#fff").attr("opacity", 1)
+      .transition().duration(500).ease(d3.easeExpOut).attr("r", 40).attr("opacity", 0);
+    rings(g, "#ffb347", 2, dur * 0.6);
+    for (let i = 0; i < 26; i++) {
+      const a = volcano ? -Math.PI / 2 + (Math.random() - 0.5) * 1.2 : Math.random() * Math.PI * 2;
+      const d = 30 + Math.random() * 60;
+      const r0 = 2 + Math.random() * 3;
+      g.append("circle").attr("r", r0).attr("fill", volcano ? "#9a9a9a" : i % 3 ? "#ff7a3d" : "#ffd36b").attr("opacity", 0.9)
+        .transition().delay(Math.random() * 300).duration(dur * (0.6 + Math.random() * 0.4)).ease(d3.easeCubicOut)
+        .attr("cx", Math.cos(a) * d).attr("cy", Math.sin(a) * d - (volcano ? 20 : 0)).attr("r", r0 * (volcano ? 4 : 2)).attr("opacity", 0);
+    }
+    if (!volcano) {
+      g.append("circle").attr("r", 6).attr("fill", color).attr("opacity", 0.35)
+        .transition().duration(dur).ease(d3.easeCubicOut).attr("r", 110).attr("opacity", 0);
+    }
+  }
+  function fire(g, dur) {
+    for (let i = 0; i < 18; i++) {
+      const dx = (Math.random() - 0.5) * 16;
+      g.append("circle").attr("cx", dx).attr("cy", 0).attr("r", 3 + Math.random() * 3).attr("fill", i % 2 ? "#ff6a2a" : "#ffc63a").attr("opacity", 0.95)
+        .transition().delay(i * (dur / 24)).duration(dur * 0.45).ease(d3.easeQuadOut)
+        .attr("cy", -(30 + Math.random() * 30)).attr("cx", dx * 2).attr("r", 0.5).attr("opacity", 0);
+    }
+    for (let i = 0; i < 8; i++) {
+      g.append("circle").attr("cy", -10).attr("r", 4).attr("fill", "#888").attr("opacity", 0.5)
+        .transition().delay(200 + i * (dur / 10)).duration(dur * 0.6).ease(d3.easeQuadOut)
+        .attr("cy", -70).attr("cx", (Math.random() - 0.5) * 40).attr("r", 14).attr("opacity", 0);
+    }
+  }
+  function sparks(g, color) {
+    for (let i = 0; i < 10; i++) {
+      const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 50;
+      g.append("circle").attr("r", 2).attr("fill", color).attr("opacity", 1)
+        .transition().delay(600 + Math.random() * 600).duration(900).ease(d3.easeCubicOut)
+        .attr("cx", Math.cos(a) * d).attr("cy", Math.sin(a) * d).attr("opacity", 0);
+    }
+  }
+  function plague(g, dur) {
+    for (let i = 0; i < 40; i++) {
+      const a = Math.random() * Math.PI * 2, d = 10 + Math.random() * 80;
+      g.append("circle").attr("r", 0).attr("fill", "#b36bff").attr("opacity", 0.9)
+        .transition().delay((d / 90) * dur * 0.6 + Math.random() * 200).duration(700)
+        .attr("cx", Math.cos(a) * d).attr("cy", Math.sin(a) * d).attr("r", 2.5)
+        .transition().duration(900).attr("opacity", 0);
+    }
+  }
+  function clash(g, color, dur) {
+    const mk = (side) => {
+      for (let i = -1; i <= 1; i++) {
+        g.append("line").attr("x1", side * 70).attr("y1", i * 14).attr("x2", side * 70).attr("y2", i * 14)
+          .attr("stroke", side < 0 ? "#ff5c5c" : "#5c9dff").attr("stroke-width", 2.5).attr("stroke-linecap", "round").attr("marker-end", "url(#arrowhead)")
+          .transition().duration(dur * 0.45).ease(d3.easeCubicIn).attr("x2", side * 10).attr("y2", i * 4)
+          .transition().duration(400).attr("opacity", 0);
+      }
+    };
+    mk(-1); mk(1);
+    g.append("circle").attr("r", 0).attr("fill", "#fff").attr("opacity", 0)
+      .transition().delay(dur * 0.45).duration(600).ease(d3.easeExpOut).attr("r", 34).attr("opacity", 0.9)
+      .transition().duration(600).attr("opacity", 0);
+    for (let i = 0; i < 14; i++) {
+      const a = Math.random() * Math.PI * 2, d = 20 + Math.random() * 40;
+      g.append("circle").attr("r", 2).attr("fill", color).attr("opacity", 0)
+        .transition().delay(dur * 0.45).attr("opacity", 1)
+        .transition().duration(800).ease(d3.easeCubicOut).attr("cx", Math.cos(a) * d).attr("cy", Math.sin(a) * d).attr("opacity", 0);
+    }
+  }
+  function voyage(gp, ev, dur) {
+    const d = arrowPath(ev);
+    if (!d) return;
+    const p = gp.append("path").attr("d", d).attr("fill", "none").attr("stroke", "#ffe9a8").attr("stroke-width", 2).attr("vector-effect", "non-scaling-stroke").attr("opacity", 0.9);
+    const len = p.node().getTotalLength();
+    p.attr("stroke-dasharray", len).attr("stroke-dashoffset", len).transition().duration(dur).ease(d3.easeSinInOut).attr("stroke-dashoffset", 0);
+    const s = bodyScale();
+    const ship = gp.append("text").text("⛵").attr("font-size", 18 * s);
+    ship.transition().duration(dur).ease(d3.easeSinInOut)
+      .attrTween("transform", () => (tt) => { const q = p.node().getPointAtLength(tt * len); return "translate(" + q.x + "," + q.y + ")"; });
+    gp.transition().delay(dur).duration(400).style("opacity", 0);
+  }
+  function travelPulse(gp, ev, color, dur) {
+    const d = arrowPath(ev);
+    if (!d) return;
+    const pth = gp.append("path").attr("d", d).attr("fill", "none").attr("stroke", "none");
+    const len = pth.node().getTotalLength();
+    const s = bodyScale();
+    for (let i = 0; i < 3; i++) {
+      gp.append("circle").attr("r", 5 * s).attr("fill", color).attr("opacity", 0)
+        .transition().delay(i * 350).duration(dur * 0.8).ease(d3.easeSinInOut).attr("opacity", 0.9)
+        .attrTween("transform", () => (tt) => { const q = pth.node().getPointAtLength(tt * len); return "translate(" + q.x + "," + q.y + ")"; })
+        .transition().duration(300).attr("opacity", 0);
+    }
+  }
+  function radar(g, color, dur) {
+    for (let i = 0; i < 3; i++) {
+      g.append("circle").attr("r", 2).attr("fill", "none").attr("stroke", color).attr("stroke-width", 2).attr("opacity", 0.8)
+        .transition().delay(i * 400).duration(dur * 0.7).attr("r", 60).attr("opacity", 0);
+    }
+    g.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", -55).attr("stroke", color).attr("stroke-width", 2).attr("opacity", 0.8)
+      .transition().duration(dur).ease(d3.easeLinear).attrTween("transform", () => (tt) => "rotate(" + tt * 720 + ")").attr("opacity", 0);
+  }
+  function rays(g, color, dur) {
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      g.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 0).attr("stroke", color).attr("stroke-width", 2).attr("stroke-linecap", "round").attr("opacity", 0.9)
+        .transition().duration(dur * 0.5).ease(d3.easeCubicOut)
+        .attr("x1", Math.cos(a) * 14).attr("y1", Math.sin(a) * 14).attr("x2", Math.cos(a) * 46).attr("y2", Math.sin(a) * 46)
+        .transition().duration(dur * 0.5).attr("opacity", 0);
+    }
+  }
+  function glitter(g, color, dur) {
+    for (let i = 0; i < 16; i++) {
+      const a = Math.random() * Math.PI * 2, d = 15 + Math.random() * 45;
+      g.append("text").text("✦").attr("fill", color).attr("font-size", 10 + Math.random() * 8).attr("x", Math.cos(a) * d).attr("y", Math.sin(a) * d).attr("opacity", 0)
+        .transition().delay(Math.random() * dur * 0.5).duration(500).attr("opacity", 1)
+        .transition().duration(700).attr("opacity", 0).attr("y", Math.sin(a) * d - 12);
+    }
+  }
+  function seal(g, color, dur) {
+    g.append("rect").attr("x", -18).attr("y", -18).attr("width", 36).attr("height", 36).attr("rx", 6).attr("fill", "none").attr("stroke", color).attr("stroke-width", 3).attr("opacity", 0).attr("transform", "scale(2.2) rotate(15)")
+      .transition().duration(dur * 0.35).ease(d3.easeBackOut).attr("opacity", 1).attr("transform", "scale(1) rotate(0)")
+      .transition().delay(dur * 0.3).duration(dur * 0.3).attr("opacity", 0);
+    rings(g, color, 2, dur);
+  }
+  function coins(g, dur) {
+    for (let i = 0; i < 12; i++) {
+      const dx = (Math.random() - 0.5) * 50;
+      g.append("text").text("●").attr("fill", "#ffd36b").attr("font-size", 10).attr("x", dx).attr("y", 10).attr("opacity", 0)
+        .transition().delay(i * (dur / 14)).duration(dur * 0.5).ease(d3.easeQuadOut).attr("opacity", 1).attr("y", -40 - Math.random() * 30)
+        .transition().duration(300).attr("opacity", 0);
+    }
+  }
+  function formula(g, text, dur) {
+    g.append("text").text(text).attr("y", -26).attr("font-size", 16).attr("opacity", 0).attr("transform", "scale(0.6)")
+      .transition().duration(600).ease(d3.easeBackOut).attr("opacity", 1).attr("transform", "scale(1)").attr("y", -40)
+      .transition().delay(dur * 0.5).duration(500).attr("opacity", 0).attr("y", -60);
+  }
+  function scienceText(ev) {
+    const tests = [
+      [/einstein|αϊνστάιν|relativ|σχετικότ/, "E = mc²"],
+      [/newton|νεύτων|gravit|βαρύτ/, "F = G·m₁m₂ / r²"],
+      [/pythag|πυθαγ/, "a² + b² = c²"],
+      [/archimed|αρχιμήδ/, "ΕΥΡΗΚΑ!"],
+      [/euclid|ευκλείδ/, "Q.E.D."],
+      [/\bdna\b/, "DNA 🧬"],
+      [/darwin|δαρβίν|evolution|εξέλιξ/, "🐢 → 🦎 → 🐒"],
+      [/moon|σελήν|apollo|gagarin|γκαγκάριν|sputnik|σπούτνικ|rocket|πύραυλ|space|διάστημ/, "🚀"],
+      [/print|τυπογραφ|gutenberg|γουτεμβέργ|τυπώνει/, "Aa"],
+      [/\bzero\b|μηδέν|aryabhata|αριαμπάτα/, "0"],
+      [/telescope|τηλεσκόπ|galile|γαλιλα|copernic|κοπέρνικ|kepler|κέπλερ|planet|πλανήτ/, "☉ ☿ ♀ ⊕ ♂"],
+      [/penicill|πενικιλ|vaccin|εμβόλ|medicine|ιατρικ/, "⚕"],
+      [/electric|ηλεκτρ|edison|έντισον|tesla|τέσλα|lightbulb|λαμπτήρ/, "⚡"],
+      [/comput|υπολογιστ|internet|arpanet|web|transistor|τρανζίστορ|iphone|google/, "0 1 0 1 1 0"],
+      [/steam|ατμο/, "♨"],
+      [/flight|πτήση|wright|ράιτ|aviation|αεροπλάν/, "✈"],
+      [/writing|γραφή|alphabet|αλφάβητ|hangul|χανγκούλ|cuneiform|σφηνοειδ|hieroglyph|ιερογλυφ/, "Α Β Γ"],
+      [/map|χάρτ|geograph|γεωγραφ|seismo|σεισμογρ/, "🧭"],
+      [/calendar|ημερολόγ|clock|ρολό/, "⌚"],
+      [/railway|σιδηρόδρομ|train|τρένο|shinkansen/, "🚆"],
+      [/dam|φράγμα|canal|διώρυγ/, "🌊"],
+      [/atom|ατομ|trinity|nuclear|πυρηνικ/, "☢"],
+    ];
+    for (const [re, txt] of tests) if (kw(ev, re)) return txt;
+    return "✦ " + yearOf(ev.start);
   }
 
   // ---------- Επιλογές χάρτη (προβολή / στυλ) ----------
@@ -759,7 +1053,7 @@
         );
       })
       .on("mouseleave", hideTooltip)
-      .on("click", () => focusEvent(ev));
+      .on("click", () => showEvent(ev));
   }
 
   function layoutEvent(g, ev, restartMotion) {
@@ -841,6 +1135,7 @@
               const g = d3.select(this);
               buildEvent(g, a.ev);
               layoutEvent(g, a.ev, true);
+              if (state.playing) playScene(a.ev);
             }),
         (update) => update,
         (exit) => exit.remove()
@@ -902,7 +1197,7 @@
     const li = e.target.closest("li[data-id]");
     if (!li) return;
     const ev = EVENTS.find((x) => x.id === li.dataset.id);
-    if (ev) focusEvent(ev);
+    if (ev) showEvent(ev);
   });
 
   // ---------- Sidebar: φίλτρα ----------
@@ -1007,12 +1302,21 @@
     }).join("");
   }
   function jumpToEvent(ev) {
-    pause();
-    if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
-    setTime(ev.s, { fromUser: true });
-    focusEvent(ev, 2.5);
     // Σε κινητό το φύλλο των φίλτρων κλείνει για να φανεί ο χάρτης
     if (window.matchMedia("(max-width: 820px)").matches) { els.search.blur(); setSidebarCollapsed(true); }
+    showEvent(ev);
+  }
+
+  // Μετάβαση σε γεγονός: παύση, σωστή χρονιά, zoom κοντά, popup με την ιστορία και αναπαράσταση στον χάρτη
+  function showEvent(ev, { zoom = 2.5 } = {}) {
+    pause();
+    if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
+    const sameYear = Math.floor(state.t / 12) === Math.floor(ev.s / 12);
+    const inRange = ev.e != null && state.t >= ev.s && state.t < ev.e;
+    if (!sameYear && !inRange) setTime(ev.s, { fromUser: true });
+    focusEvent(ev, zoom);
+    openStory(ev);
+    playScene(ev);
   }
   els.search.addEventListener("input", renderSearch);
   els.search.addEventListener("keydown", (e) => {
@@ -1062,6 +1366,7 @@
     buildTicks();
     updateUI();
     renderSearch();
+    if (storyEv) openStory(storyEv);
   }
   function initLang() {
     let lang = "el";
@@ -1218,8 +1523,7 @@
       }
     }
     if (!target) return;
-    pause();
-    setTime(target.s, { fromUser: true });
+    showEvent(target, { zoom: Math.max(1.6, state.zoomK) });
   }
 
   function tick(now) {
@@ -1276,6 +1580,7 @@
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
       case "ArrowRight": if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
       case "ArrowLeft": if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
+      case "Escape": setStoryCollapsed(true); break;
       case "Home": setTime(0, { fromUser: true }); break;
       case "End": setTime(TOTAL_MONTHS - 1, { fromUser: true }); break;
     }
@@ -1294,7 +1599,7 @@
     play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
     get projection() { return projection; },
-    setProjection, setMapStyle,
+    setProjection, setMapStyle, showEvent, openStory, playScene,
     events: EVENTS,
     config: { START_YEAR, END_YEAR, SEGMENTS },
   };
@@ -1306,6 +1611,7 @@
   initSidebar();
   enableSwipeToClose(els.sidebar, els.sidebar.querySelector(".sb-body"), () => setSidebarCollapsed(true));
   enableSwipeToClose(els.panel, els.panelList, () => setPanelCollapsed(true));
+  enableSwipeToClose(els.story, els.storyBody, () => setStoryCollapsed(true));
   initMapOptions();
   applyLayerVisibility();
   buildTicks();

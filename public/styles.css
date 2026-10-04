@@ -100,6 +100,47 @@ g.hist-year.out { opacity: 0; }
 .hcountry.wild { fill: #27335a; stroke: rgba(8, 12, 30, 0.35); }
 .hcountry:hover { filter: brightness(1.25); }
 
+/* Ιστορία γεγονότος (popup) */
+.story {
+  position: absolute; right: 16px; top: 72px; width: 360px; max-height: calc(100% - 90px);
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow); backdrop-filter: blur(10px); z-index: 6; overflow: hidden;
+  transition: transform 250ms ease, opacity 250ms ease;
+}
+.story.collapsed { transform: translateX(calc(100% + 16px)); opacity: 0; pointer-events: none; }
+.story-head { display: flex; align-items: center; gap: 8px; padding: 10px 10px 8px 14px; border-bottom: 1px solid var(--border); }
+.story-type { flex: 1; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c, var(--muted)); }
+.story-body { overflow-y: auto; min-height: 0; scrollbar-width: thin; }
+.story-media { position: relative; width: 100%; aspect-ratio: 16 / 9; background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.01)); display: grid; place-items: center; overflow: hidden; }
+.story-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 500ms ease; }
+.story-media img.in { opacity: 1; }
+.story-media .ph { font-size: 56px; opacity: 0.45; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6)); }
+.story-media .credit { position: absolute; right: 6px; bottom: 4px; font-size: 9px; color: rgba(255,255,255,0.7); text-shadow: 0 1px 2px #000; }
+.story-text { padding: 12px 14px 14px; }
+.story-title { margin: 0 0 4px; font-size: 18px; line-height: 1.2; }
+.story-meta { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+.story-desc { margin: 0 0 10px; font-size: 13px; line-height: 1.45; }
+.story-wiki { font-size: 12.5px; line-height: 1.5; color: #d7ddf0; }
+.story-wiki p { margin: 0 0 8px; }
+.story-wiki .loading { color: var(--muted); font-style: italic; }
+.story-wiki .note { color: var(--muted); font-size: 11px; margin-top: 4px; }
+.story-links { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+.story-links a { font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; border: 1px solid var(--border); border-radius: 8px; padding: 5px 9px; }
+.story-links a:hover { background: var(--bg-elev); }
+
+/* Ζωντανές αναπαραστάσεις πάνω στον χάρτη */
+.fx { pointer-events: none; }
+.fx text { font-weight: 800; fill: #fff; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,0.65); stroke-width: 3px; }
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-4px, 2px); }
+  40% { transform: translate(4px, -2px); }
+  60% { transform: translate(-3px, -2px); }
+  80% { transform: translate(3px, 2px); }
+}
+#map-wrap.shake { animation: shake 0.6s ease-in-out; }
+
 /* Events on the map */
 .ev { pointer-events: none; }
 .ev .arrow {
@@ -706,19 +747,20 @@ g.hist-year.out { opacity: 0; }
   .hist-loading { bottom: 56px; }
 
   /* sidebar και πάνελ ως φύλλα από κάτω */
-  .sidebar, .panel {
+  .sidebar, .panel, .story {
     left: 0; right: 0; bottom: 0; top: auto; width: auto;
     max-height: 70%;
     border-radius: 16px 16px 0 0;
     border-bottom: 0;
   }
-  .sidebar.collapsed, .panel.collapsed { transform: translateY(110%); opacity: 0; }
+  .sidebar.collapsed, .panel.collapsed, .story.collapsed { transform: translateY(110%); opacity: 0; }
+  .story-media { aspect-ratio: 2 / 1; }
   /* λαβή συρσίματος στην κορυφή του φύλλου */
-  .sidebar::before, .panel::before {
+  .sidebar::before, .panel::before, .story::before {
     content: ""; position: absolute; top: 6px; left: 50%; width: 38px; height: 4px; margin-left: -19px;
     border-radius: 2px; background: rgba(255,255,255,0.28);
   }
-  .sb-head, .panel-head { padding-top: 16px; }
+  .sb-head, .panel-head, .story-head { padding-top: 16px; }
   .sb-body, .panel-list { -webkit-overflow-scrolling: touch; }
   .search-results { max-height: 150px; }
   .sb-row, .subs .sb-row { padding: 8px 2px; }
@@ -753,5 +795,5 @@ g.hist-year.out { opacity: 0; }
   .nav-btn .txt-long { display: none; }
   .nav-btn .txt-short { display: inline; }
   .year { font-size: 22px; }
-  .sidebar, .panel { max-height: 78%; }
+  .sidebar, .panel, .story { max-height: 78%; }
 }
