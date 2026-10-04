@@ -673,9 +673,11 @@ g.hist-year.out { opacity: 0; }
     border-radius: 999px; font-size: 12px;
     box-shadow: var(--shadow);
   }
-  .sidebar-open-btn .full, .panel-open-btn .full { display: none; }
-  .sidebar-open-btn { right: 12px; width: 36px; padding: 0; justify-content: center; font-size: 16px; }
-  .panel-open-btn { right: 56px; padding: 0 8px; }
+  .panel-open-btn .full { display: none; }
+  .panel-open-btn { right: 12px; padding: 0 8px; }
+  /* κουμπί φίλτρων κάτω αριστερά, με κείμενο */
+  .sidebar-open-btn { top: auto; bottom: 12px; left: 12px; right: auto; padding: 0 14px 0 12px; }
+  .hist-loading { left: auto; right: 12px; transform: none; }
 
   /* sidebar και πάνελ ως φύλλα από κάτω */
   .sidebar, .panel {
