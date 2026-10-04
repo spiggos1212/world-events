@@ -35,7 +35,7 @@
       borders: "Σύνορα:", creditNote: "(GPL-3.0, κατά προσέγγιση)", loadingBorders: "Φόρτωση συνόρων…",
       now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε Play για να ξεκινήσει η ιστορία.",
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
-      prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", trackAria: "Θέση στο timeline",
+      prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "Έτη / δευτ.", speedAria: "Έτη ανά δευτερόλεπτο", speedTitle: "Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
@@ -48,7 +48,7 @@
       borders: "Borders:", creditNote: "(GPL-3.0, approximate)", loadingBorders: "Loading borders…",
       now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press Play to start the story.",
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
-      prevYear: "Previous event", nextYear: "Next event", trackAria: "Timeline position",
+      prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "Years / sec", speedAria: "Years per second", speedTitle: "Type how many years per second you want",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
@@ -57,7 +57,6 @@
   const t = (k) => (UI[state.lang] && UI[state.lang][k]) || UI.el[k] || k;
   // Μέγιστες ετικέτες ταυτόχρονα στον χάρτη (λιγότερες σε μικρές οθόνες)
   const maxLabels = () => (width() < 600 ? 4 : width() < 1000 ? 6 : 9);
-  const MIN_VISIBLE = 5; // σε αραιές περιόδους μένουν ορατά τα πιο πρόσφατα γεγονότα
 
   // label = τρέχουσα γλώσσα (ορίζεται από το setLang)
   const TYPES = {
@@ -211,11 +210,6 @@
   function playRate() {
     return 12 * state.speed;
   }
-  // Πόσους μήνες μένει ορατό/με ετικέτα ένα γεγονός: ~3 δευτ. αναπαραγωγής (τουλάχιστον 2 έτη),
-  // λίγο περισσότερο σε μεγάλες ταχύτητες ώστε να προλαβαίνει να διαβαστεί
-  function visibleMonthsAt() {
-    return Math.max(24, 3 * playRate() * Math.max(1, Math.sqrt(state.speed / 2)));
-  }
   // Βήμα με τα βελάκια: 1 έτος, ή μισό δευτερόλεπτο αναπαραγωγής σε μεγάλες ταχύτητες
   function stepMonths() {
     return Math.max(12, Math.round((playRate() * 0.5) / 12) * 12);
@@ -240,27 +234,12 @@
     for (const ev of EVENTS) {
       if (ev.s > t) break; // ταξινομημένα κατά έναρξη
       if (state.hiddenTypes.has(ev.type)) continue;
-      const vis = visibleMonthsAt(ev.s);
-      const end = ev.e != null ? Math.max(ev.e, ev.s + vis / 3) : ev.s + vis;
-      const fade = vis / 6;
-      if (t > end + fade) continue;
+      // ορατό μόνο μέσα στο ημερολογιακό έτος που ξεκίνησε (ή ως το τέλος του, αν διαρκεί περισσότερο)
+      const yearEnd = (Math.floor(ev.s / 12) + 1) * 12;
+      const end = ev.e != null ? Math.max(ev.e, yearEnd) : yearEnd;
+      if (t >= end) continue;
       const age = t - ev.s;
-      out.push({
-        ev,
-        age,
-        labeled: age <= vis,
-        opacity: t > end ? 1 - (t - end) / fade : 1,
-        fresh: age < vis / 4,
-      });
-    }
-    // Σε αραιές περιόδους κράτα ορατά τα πιο πρόσφατα γεγονότα, ώστε ο χάρτης να μην αδειάζει
-    if (out.length < MIN_VISIBLE) {
-      const have = new Set(out.map((a) => a.ev.id));
-      for (let i = EVENTS.length - 1; i >= 0 && out.length < MIN_VISIBLE; i--) {
-        const ev = EVENTS[i];
-        if (ev.s > t || have.has(ev.id) || state.hiddenTypes.has(ev.type)) continue;
-        out.push({ ev, age: t - ev.s, labeled: true, opacity: 0.8, fresh: false, lingering: true });
-      }
+      out.push({ ev, age, labeled: true, opacity: 1, fresh: age < 6 });
     }
     // Ετικέτες μόνο για τα πιο πρόσφατα
     const labeled = out.filter((a) => a.labeled).sort((a, b) => a.age - b.age);
@@ -1119,14 +1098,7 @@
     if (!Number.isFinite(s) || s <= 0) return;
     s = Math.min(1000, Math.max(0.1, Math.round(s * 10) / 10));
     state.speed = s;
-    let preset = false;
-    els.speed.querySelectorAll("button").forEach((b) => {
-      const on = Number(b.dataset.speed) === s;
-      preset = preset || on;
-      b.classList.toggle("active", on);
-    });
     if (document.activeElement !== els.speedInput) els.speedInput.value = String(s);
-    els.speedInput.classList.toggle("custom", !preset);
     try { localStorage.setItem(SPEED_KEY, String(s)); } catch (_) { /* ignore */ }
     renderEvents();
   }
@@ -1145,10 +1117,6 @@
   els.track.max = TRACK_MAX;
   els.track.addEventListener("input", () => setTime(trackToMonths(Number(els.track.value)), { fromUser: true }));
 
-  els.speed.addEventListener("click", (ev) => {
-    const btn = ev.target.closest("button[data-speed]");
-    if (btn) setSpeed(Number(btn.dataset.speed));
-  });
   els.speedInput.addEventListener("input", () => {
     const v = Number(els.speedInput.value);
     if (v > 0) setSpeed(v);
