@@ -8,19 +8,19 @@
 Στατική σελίδα, δεν χρειάζεται build:
 
 ```
-npx serve .
+npm run start
 ```
 
-ή άνοιξε απλώς το `index.html`.
+ή άνοιξε απλώς το `public/index.html`.
 
 ## Δομή
 
-- `index.html` – layout (χάρτης + μπάρα timeline)
-- `styles.css` – στυλ
-- `app.js` – χάρτης (d3 + world-atlas), timeline, Play/ταχύτητα, events layer
-- `events.js` – τα δεδομένα των events (`window.WORLD_EVENTS`), προς συμπλήρωση
+- `public/index.html` – layout (χάρτης + μπάρα timeline)
+- `public/styles.css` – στυλ
+- `public/app.js` – χάρτης (d3 + world-atlas), timeline, Play/ταχύτητα, events layer
+- `public/events.js` – τα δεδομένα των events (`window.WORLD_EVENTS`), προς συμπλήρωση
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers, static assets)
 
 ```
 npm run deploy

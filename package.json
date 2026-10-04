@@ -4,7 +4,11 @@
   "private": true,
   "description": "Interactive world map with a playable timeline of world events",
   "scripts": {
-    "start": "npx serve . -l 5173",
-    "deploy": "npx wrangler@4 pages deploy . --project-name world-events --commit-dirty=true"
+    "start": "npx serve public -l 5173",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.147.0"
   }
 }
