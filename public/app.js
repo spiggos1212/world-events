@@ -31,9 +31,15 @@
     exploration: { label: "Εξερεύνηση", icon: "⛵" },
     science: { label: "Επιστήμη", icon: "🔬" },
     culture: { label: "Πολιτισμός", icon: "🎨" },
-    disaster: { label: "Καταστροφή", icon: "🌋" },
     economy: { label: "Οικονομία", icon: "💰" },
+    tragedy: { label: "Ανθρωπογενής καταστροφή", icon: "☢️" },
+    disaster: { label: "Φυσική καταστροφή", icon: "🌋" },
   };
+  // Κατηγορίες φίλτρων (sidebar): κάθε τύπος ανήκει σε μία κατηγορία
+  const CATEGORIES = [
+    { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "tragedy"] },
+    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster"] },
+  ];
 
   // Παλέτα χωρών (ήπια «ζωγραφισμένα» χρώματα πάνω σε σκούρο ωκεανό)
   const LAND_PALETTE = ["#355a86", "#2e7066", "#5e4b8b", "#8c5a3a", "#4f7a3a", "#8a3f5f", "#3c7a8c", "#8a7a35"];
@@ -71,11 +77,17 @@
     labelStart: $("#label-start"),
     labelEnd: $("#label-end"),
     speed: $("#speed"),
+    speedInput: $("#speed-input"),
     loop: $("#loop"),
     zoomIn: $("#zoom-in"),
     zoomOut: $("#zoom-out"),
     zoomReset: $("#zoom-reset"),
-    legend: $("#legend"),
+    filters: $("#filters"),
+    filtersAll: $("#filters-all"),
+    filtersNone: $("#filters-none"),
+    sidebar: $("#sidebar"),
+    sidebarOpen: $("#sidebar-open"),
+    sidebarClose: $("#sidebar-close"),
     panel: $("#panel"),
     panelList: $("#panel-list"),
     panelCount: $("#panel-count"),
@@ -147,12 +159,18 @@
     }
     return 12;
   }
-  // Πόσους μήνες μένει ορατό/με ετικέτα ένα γεγονός: ~3 δευτ. αναπαραγωγής, περισσότερο σε μεγάλες ταχύτητες
-  function visibleMonthsAt(m) {
-    return 3 * rateAt(m) * Math.max(1, state.speed / 2);
+  // Μήνες αναπαραγωγής ανά δευτερόλεπτο: state.speed = έτη/δευτ., σταθερό σε όλες τις εποχές
+  function playRate() {
+    return 12 * state.speed;
   }
+  // Πόσους μήνες μένει ορατό/με ετικέτα ένα γεγονός: ~3 δευτ. αναπαραγωγής (τουλάχιστον 2 έτη),
+  // λίγο περισσότερο σε μεγάλες ταχύτητες ώστε να προλαβαίνει να διαβαστεί
+  function visibleMonthsAt() {
+    return Math.max(24, 3 * playRate() * Math.max(1, Math.sqrt(state.speed / 2)));
+  }
+  // Βήμα με τα βελάκια: 1 έτος, ή μισό δευτερόλεπτο αναπαραγωγής σε μεγάλες ταχύτητες
   function stepMonths() {
-    return Math.max(12, Math.round((rateAt(state.t) * 0.5) / 12) * 12);
+    return Math.max(12, Math.round((playRate() * 0.5) / 12) * 12);
   }
 
   // ---------- Events data ----------
@@ -440,8 +458,7 @@
   function setHistorical(on) {
     state.historical = on;
     try { localStorage.setItem("we-historical-borders", on ? "1" : "0"); } catch (_) { /* ignore */ }
-    els.histToggle.setAttribute("aria-pressed", String(on));
-    els.histToggle.querySelector(".state").textContent = on ? "ON" : "OFF";
+    els.histToggle.checked = on;
     if (on) {
       histCurrentYear = null;
       ensureBasemap(monthsToDate(state.t).year);
@@ -452,9 +469,8 @@
     let on = true;
     try { on = localStorage.getItem("we-historical-borders") !== "0"; } catch (_) { /* ignore */ }
     state.historical = on;
-    els.histToggle.setAttribute("aria-pressed", String(on));
-    els.histToggle.querySelector(".state").textContent = on ? "ON" : "OFF";
-    els.histToggle.addEventListener("click", () => setHistorical(!state.historical));
+    els.histToggle.checked = on;
+    els.histToggle.addEventListener("change", () => setHistorical(els.histToggle.checked));
     applyLayerVisibility();
   }
 
@@ -706,21 +722,95 @@
     if (ev) focusEvent(ev);
   });
 
-  // ---------- Legend ----------
-  function buildLegend() {
-    els.legend.innerHTML = Object.entries(TYPES)
-      .map(([k, v]) => `<button class="t-${k}" data-type="${k}" title="${esc(v.label)}"><span class="dot"></span><span class="txt">${esc(v.icon)} ${esc(v.label)}</span></button>`)
-      .join("");
+  // ---------- Sidebar: φίλτρα ----------
+  const HIDDEN_KEY = "we-hidden-types";
+  function loadHiddenTypes() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]");
+      if (Array.isArray(arr)) arr.filter((t) => TYPES[t]).forEach((t) => state.hiddenTypes.add(t));
+    } catch (_) { /* ignore */ }
   }
-  els.legend.addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-type]");
-    if (!btn) return;
-    const t = btn.dataset.type;
-    if (state.hiddenTypes.has(t)) state.hiddenTypes.delete(t);
-    else state.hiddenTypes.add(t);
-    btn.classList.toggle("off", state.hiddenTypes.has(t));
+  function saveHiddenTypes() {
+    try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...state.hiddenTypes])); } catch (_) { /* ignore */ }
+  }
+  function buildFilters() {
+    const counts = {};
+    EVENTS.forEach((e) => { counts[e.type] = (counts[e.type] || 0) + 1; });
+    els.filters.innerHTML = CATEGORIES.map((cat) => {
+      const total = cat.types.reduce((n, t) => n + (counts[t] || 0), 0);
+      const subs = cat.types.map((t) => `
+        <label class="sb-row sub t-${t}" data-type="${t}">
+          <input type="checkbox" data-type="${t}" />
+          <span class="cb"></span>
+          <span class="dot"></span>
+          <span class="txt">${esc(TYPES[t].icon)} ${esc(TYPES[t].label)}</span>
+          <span class="count">${counts[t] || 0}</span>
+        </label>`).join("");
+      return `
+      <div class="cat" data-cat="${cat.id}">
+        <div class="cat-head">
+          <label class="sb-row">
+            <input type="checkbox" data-cat="${cat.id}" />
+            <span class="cb"></span>
+            <span class="txt">${esc(cat.icon)} ${esc(cat.label)}</span>
+            <span class="count">${total}</span>
+          </label>
+          <button class="cat-fold" type="button" aria-label="Σύμπτυξη/ανάπτυξη" title="Σύμπτυξη/ανάπτυξη">▾</button>
+        </div>
+        <div class="subs">${subs}</div>
+      </div>`;
+    }).join("");
+    syncFilterUI();
+  }
+  function syncFilterUI() {
+    els.filters.querySelectorAll("input[data-type]").forEach((inp) => {
+      const on = !state.hiddenTypes.has(inp.dataset.type);
+      inp.checked = on;
+      inp.closest(".sb-row").classList.toggle("off", !on);
+    });
+    CATEGORIES.forEach((cat) => {
+      const inp = els.filters.querySelector(`input[data-cat="${cat.id}"]`);
+      const onCount = cat.types.filter((t) => !state.hiddenTypes.has(t)).length;
+      inp.checked = onCount === cat.types.length;
+      inp.indeterminate = onCount > 0 && onCount < cat.types.length;
+      inp.closest(".sb-row").classList.toggle("off", onCount === 0);
+    });
+  }
+  function setTypesVisible(types, on) {
+    types.forEach((t) => (on ? state.hiddenTypes.delete(t) : state.hiddenTypes.add(t)));
+    saveHiddenTypes();
+    syncFilterUI();
     renderEvents();
+  }
+  els.filters.addEventListener("change", (e) => {
+    const inp = e.target;
+    if (inp.dataset.type) setTypesVisible([inp.dataset.type], inp.checked);
+    else if (inp.dataset.cat) {
+      const cat = CATEGORIES.find((c) => c.id === inp.dataset.cat);
+      if (cat) setTypesVisible(cat.types, inp.checked);
+    }
   });
+  els.filters.addEventListener("click", (e) => {
+    const fold = e.target.closest(".cat-fold");
+    if (fold) fold.closest(".cat").classList.toggle("folded");
+  });
+  els.filtersAll.addEventListener("click", () => setTypesVisible(Object.keys(TYPES), true));
+  els.filtersNone.addEventListener("click", () => setTypesVisible(Object.keys(TYPES), false));
+
+  // Άνοιγμα/κλείσιμο sidebar (θυμάται την επιλογή)
+  const SIDEBAR_KEY = "we-sidebar";
+  function setSidebarCollapsed(v, persist = true) {
+    els.sidebar.classList.toggle("collapsed", v);
+    els.sidebarOpen.classList.toggle("show", v);
+    if (persist) { try { localStorage.setItem(SIDEBAR_KEY, v ? "0" : "1"); } catch (_) { /* ignore */ } }
+  }
+  function initSidebar() {
+    let open = !window.matchMedia("(max-width: 1100px)").matches;
+    try { const s = localStorage.getItem(SIDEBAR_KEY); if (s != null) open = s === "1"; } catch (_) { /* ignore */ }
+    setSidebarCollapsed(!open, false);
+    els.sidebarOpen.addEventListener("click", () => setSidebarCollapsed(false));
+    els.sidebarClose.addEventListener("click", () => setSidebarCollapsed(true));
+  }
 
   // ---------- Timeline ----------
   function buildTicks() {
@@ -788,7 +878,7 @@
     if (!state.playing) return;
     const dt = Math.min(0.5, (now - state.lastFrame) / 1000);
     state.lastFrame = now;
-    let next = state.t + dt * rateAt(state.t) * state.speed;
+    let next = state.t + dt * playRate();
     if (next >= TOTAL_MONTHS - 1) {
       if (state.loop) next = 0;
       else { setTime(TOTAL_MONTHS - 1); pause(); return; }
@@ -814,10 +904,28 @@
   }
   function toggle() { state.playing ? pause() : play(); }
 
+  const SPEED_KEY = "we-speed";
   function setSpeed(s) {
+    s = Number(s);
+    if (!Number.isFinite(s) || s <= 0) return;
+    s = Math.min(1000, Math.max(0.1, Math.round(s * 10) / 10));
     state.speed = s;
-    els.speed.querySelectorAll("button").forEach((b) => b.classList.toggle("active", Number(b.dataset.speed) === s));
+    let preset = false;
+    els.speed.querySelectorAll("button").forEach((b) => {
+      const on = Number(b.dataset.speed) === s;
+      preset = preset || on;
+      b.classList.toggle("active", on);
+    });
+    if (document.activeElement !== els.speedInput) els.speedInput.value = String(s);
+    els.speedInput.classList.toggle("custom", !preset);
+    try { localStorage.setItem(SPEED_KEY, String(s)); } catch (_) { /* ignore */ }
     renderEvents();
+  }
+  function initSpeed() {
+    let s = 1;
+    try { const v = Number(localStorage.getItem(SPEED_KEY)); if (v > 0) s = v; } catch (_) { /* ignore */ }
+    setSpeed(s);
+    els.speedInput.value = String(state.speed);
   }
 
   els.play.addEventListener("click", toggle);
@@ -831,6 +939,15 @@
   els.speed.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-speed]");
     if (btn) setSpeed(Number(btn.dataset.speed));
+  });
+  els.speedInput.addEventListener("input", () => {
+    const v = Number(els.speedInput.value);
+    if (v > 0) setSpeed(v);
+  });
+  els.speedInput.addEventListener("blur", () => { els.speedInput.value = String(state.speed); });
+  els.speedInput.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") els.speedInput.blur();
+    ev.stopPropagation(); // μην πιάνουν τα πλήκτρα του timeline (Space, βελάκια)
   });
   els.loop.addEventListener("click", () => {
     state.loop = !state.loop;
@@ -858,7 +975,7 @@
   window.WorldEventsApp = {
     get date() { return monthsToDate(state.t); },
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
-    play, pause, setSpeed, focusEvent, setHistorical,
+    play, pause, setSpeed, focusEvent, setHistorical, setTypesVisible,
     refreshEvents: renderEvents,
     projection,
     events: EVENTS,
@@ -866,11 +983,13 @@
   };
 
   // ---------- Init ----------
-  buildLegend();
+  loadHiddenTypes();
+  buildFilters();
+  initSidebar();
   initHistoricalToggle();
   buildTicks();
   fitProjection();
   updateUI();
-  setSpeed(1);
+  initSpeed();
   loadWorld();
 })();

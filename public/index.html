@@ -44,14 +44,33 @@
       <button id="zoom-reset" class="icon-btn" title="Reset view" aria-label="Reset view">⌂</button>
     </div>
 
-    <div class="bottom-left">
-      <button id="hist-toggle" class="toggle hist-toggle" aria-pressed="true"
-              title="Τα σύνορα αλλάζουν ανάλογα με την εποχή. Απενεργοποίησέ το για τα σημερινά σύνορα.">
-        🗺 Ιστορικά σύνορα <span class="state">ON</span>
-      </button>
-      <span id="hist-loading" class="hist-loading">Φόρτωση συνόρων…</span>
-      <div id="legend" class="legend" aria-label="Υπόμνημα"></div>
-    </div>
+    <aside id="sidebar" class="sidebar" aria-label="Φίλτρα">
+      <div class="sb-head">
+        <span class="sb-title">Φίλτρα</span>
+        <button id="sidebar-close" class="panel-toggle" aria-label="Απόκρυψη φίλτρων" title="Απόκρυψη">‹</button>
+      </div>
+      <div class="sb-body">
+        <section class="sb-sec">
+          <h3 class="sb-sec-title">Χάρτης</h3>
+          <label class="sb-row sb-switch" title="Τα σύνορα αλλάζουν ανάλογα με την εποχή. Απενεργοποίησέ το για τα σημερινά σύνορα.">
+            <input id="hist-toggle" type="checkbox" checked />
+            <span class="sw"></span>
+            <span class="txt">🗺 Ιστορικά σύνορα</span>
+          </label>
+          <span id="hist-loading" class="hist-loading">Φόρτωση συνόρων…</span>
+        </section>
+        <section class="sb-sec">
+          <h3 class="sb-sec-title">Γεγονότα
+            <span class="sb-actions">
+              <button id="filters-all" class="sb-link">Όλα</button>
+              <button id="filters-none" class="sb-link">Κανένα</button>
+            </span>
+          </h3>
+          <div id="filters" class="filters" aria-label="Φίλτρα γεγονότων"></div>
+        </section>
+      </div>
+    </aside>
+    <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων">☰ Φίλτρα</button>
 
     <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">
       <div class="panel-head">
@@ -95,13 +114,14 @@
     </div>
 
     <div class="tl-right">
-      <label class="speed-label" for="speed">Ταχύτητα</label>
-      <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής">
-        <button data-speed="0.5">0.5×</button>
-        <button data-speed="1" class="active">1×</button>
-        <button data-speed="2">2×</button>
-        <button data-speed="5">5×</button>
-        <button data-speed="10">10×</button>
+      <label class="speed-label" for="speed-input">Έτη / δευτ.</label>
+      <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής (έτη ανά δευτερόλεπτο)">
+        <button data-speed="0.5" title="0.5 έτη ανά δευτερόλεπτο">0.5</button>
+        <button data-speed="1" class="active" title="1 έτος ανά δευτερόλεπτο">1</button>
+        <button data-speed="5" title="5 έτη ανά δευτερόλεπτο">5</button>
+        <button data-speed="10" title="10 έτη ανά δευτερόλεπτο">10</button>
+        <input id="speed-input" class="speed-input" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1" value="1"
+               aria-label="Έτη ανά δευτερόλεπτο" title="Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις" />
       </div>
       <button id="loop" class="toggle" aria-pressed="false" title="Επανάληψη στο τέλος">Loop</button>
     </div>
