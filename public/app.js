@@ -786,12 +786,15 @@
   });
 
   // ---------- Sidebar: φίλτρα ----------
-  const HIDDEN_KEY = "we-hidden-types";
+  const HIDDEN_KEY = "we-hidden-types-v2"; // νέο κλειδί ώστε όλοι να πάρουν την προεπιλογή
+  // Προεπιλογή: όλα του Ανθρώπου + φυσικές καταστροφές· φυτά, δέντρα, ποτά και ζώα κλειστά
+  const DEFAULT_HIDDEN = ["crop", "tree", "spice", "animal"];
   function loadHiddenTypes() {
     try {
-      const arr = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]");
+      const raw = localStorage.getItem(HIDDEN_KEY);
+      const arr = raw ? JSON.parse(raw) : DEFAULT_HIDDEN;
       if (Array.isArray(arr)) arr.filter((t) => TYPES[t]).forEach((t) => state.hiddenTypes.add(t));
-    } catch (_) { /* ignore */ }
+    } catch (_) { DEFAULT_HIDDEN.forEach((t) => state.hiddenTypes.add(t)); }
   }
   function saveHiddenTypes() {
     try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...state.hiddenTypes])); } catch (_) { /* ignore */ }
