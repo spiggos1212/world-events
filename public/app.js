@@ -32,6 +32,7 @@
     science: { label: "Επιστήμη", icon: "🔬" },
     culture: { label: "Πολιτισμός", icon: "🎨" },
     economy: { label: "Οικονομία", icon: "💰" },
+    religion: { label: "Θρησκεία", icon: "🕊️" },
     tragedy: { label: "Ανθρωπογενής καταστροφή", icon: "☢️" },
     disaster: { label: "Φυσική καταστροφή", icon: "🌋" },
     crop: { label: "Καλλιέργειες & φυτά", icon: "🌾" },
@@ -41,7 +42,7 @@
   };
   // Κατηγορίες φίλτρων (sidebar): κάθε τύπος ανήκει σε μία κατηγορία
   const CATEGORIES = [
-    { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "tragedy"] },
+    { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "religion", "tragedy"] },
     { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice", "animal"] },
   ];
 
