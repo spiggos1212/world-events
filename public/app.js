@@ -11,15 +11,15 @@
   // Μη γραμμική μπάρα: [από έτος, έως έτος, ποσοστό της μπάρας].
   // Η αρχαιότητα έχει λίγα γεγονότα και πολλούς αιώνες, οπότε τρέχει γρηγορότερα.
   const SEGMENTS = [
-    [-2999, -499, 0.14],
+    [-2999, -499, 0.18],
     [-499, 501, 0.16],
     [501, 1500, 0.20],
-    [1500, 1900, 0.24],
-    [1900, END_YEAR + 1, 0.26],
+    [1500, 1900, 0.23],
+    [1900, END_YEAR + 1, 0.23],
   ];
   const TRACK_MAX = 100000;
   // Διάρκεια όλης της μπάρας στο 1×, ρυθμισμένη ώστε μετά το 1900 να περνά 1 έτος ανά δευτερόλεπτο
-  const TRACK_SECONDS = (END_YEAR + 1 - 1900) / 0.26;
+  const TRACK_SECONDS = (END_YEAR + 1 - 1900) / 0.23;
   const WORLD_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
   const MONTHS = {
     el: ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"],
@@ -984,6 +984,21 @@
   }
 
   // ---------- Timeline ----------
+  // Κρύβει ημερομηνίες που θα έπεφταν η μία πάνω στην άλλη (π.χ. 3000 π.Χ. / 2000 π.Χ. σε στενές οθόνες).
+  // Προτεραιότητα έχει η πρώτη ημερομηνία κάθε ζεύγους, ώστε να μένουν πάντα η αρχή και οι μεγάλοι σταθμοί.
+  function layoutTickLabels() {
+    const labels = [...els.ticks.querySelectorAll(".tick-label")];
+    labels.forEach((l) => { l.style.visibility = ""; });
+    if (!labels.length || !labels[0].getClientRects().length) return;
+    labels.sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+    let lastRight = -Infinity;
+    for (const l of labels) {
+      const r = l.getBoundingClientRect();
+      if (r.left < lastRight + 8) { l.style.visibility = "hidden"; continue; }
+      lastRight = r.right;
+    }
+  }
+
   function buildTicks() {
     els.ticks.innerHTML = "";
     const frag = document.createDocumentFragment();
@@ -1012,6 +1027,7 @@
       frag.appendChild(tick);
     }
     els.ticks.appendChild(frag);
+    layoutTickLabels();
     els.labelStart.textContent = "3000 " + t("bc");
     els.labelEnd.textContent = END_YEAR;
 
@@ -1125,7 +1141,7 @@
   let resizeTimer = 0;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitProjection, 80);
+    resizeTimer = setTimeout(() => { fitProjection(); layoutTickLabels(); }, 80);
   });
 
   // ---------- Public API ----------
