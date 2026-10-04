@@ -613,38 +613,11 @@ g.hist-year.out { opacity: 0; }
 .range-labels { display: none; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
 
 .tl-right { display: flex; align-items: center; gap: 10px; }
-.speed-label { font-size: 12px; color: var(--muted); }
-.speed { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-elev); }
-.speed button {
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  padding: 8px 10px;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  border-right: 1px solid var(--border);
+.speed-label {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elev);
+  white-space: nowrap;
 }
-.speed button:last-child { border-right: none; }
-.speed button:hover { color: var(--text); }
-.speed button.active { background: var(--accent); color: var(--accent-ink); }
-.speed-input {
-  width: 64px;
-  border: none;
-  border-left: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  color: var(--text);
-  padding: 8px 8px;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-  outline: none;
-}
-.speed-input:focus { background: rgba(255, 207, 92, 0.12); }
-.speed-input { border-left: none; width: 72px; }
 
 /* κουμπιά προηγούμενο / επόμενο γεγονός */
 .nav-btn {
@@ -749,16 +722,13 @@ g.hist-year.out { opacity: 0; }
   .era { display: none; }
   .tick-label { display: none; }
   .range-labels { display: flex; }
-  .speed-label { display: none; }
-  .speed button { padding: 7px 7px; font-size: 11.5px; }
-  .speed-input { width: 46px; padding: 7px 4px; font-size: 11.5px; }
+  .speed-label { font-size: 11px; padding: 6px 8px; }
   .track::-webkit-slider-thumb { width: 22px; height: 22px; }
   .tooltip { max-width: 220px; }
 }
 @media (max-width: 480px) {
   .nav-btn .txt-long { display: none; }
   .nav-btn .txt-short { display: inline; }
-  .speed-input { width: 48px; }
   .year { font-size: 22px; }
   .sidebar, .panel { max-height: 78%; }
 }

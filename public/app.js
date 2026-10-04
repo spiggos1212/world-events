@@ -36,7 +36,7 @@
       now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε Play για να ξεκινήσει η ιστορία.",
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
-      speedLabel: "Έτη / δευτ.", speedAria: "Έτη ανά δευτερόλεπτο", speedTitle: "Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις",
+      speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
     },
@@ -49,7 +49,7 @@
       now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press Play to start the story.",
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
-      speedLabel: "Years / sec", speedAria: "Years per second", speedTitle: "Type how many years per second you want",
+      speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
     },
@@ -117,8 +117,6 @@
     eventMarks: $("#event-marks"),
     labelStart: $("#label-start"),
     labelEnd: $("#label-end"),
-    speed: $("#speed"),
-    speedInput: $("#speed-input"),
     search: $("#search"),
     searchMeta: $("#search-meta"),
     searchResults: $("#search-results"),
@@ -1092,21 +1090,16 @@
   }
   function toggle() { state.playing ? pause() : play(); }
 
-  const SPEED_KEY = "we-speed";
+  // Σταθερή ταχύτητα: 1 έτος ανά δευτερόλεπτο (δεν αλλάζει από τον χρήστη)
   function setSpeed(s) {
     s = Number(s);
     if (!Number.isFinite(s) || s <= 0) return;
-    s = Math.min(1000, Math.max(0.1, Math.round(s * 10) / 10));
     state.speed = s;
-    if (document.activeElement !== els.speedInput) els.speedInput.value = String(s);
-    try { localStorage.setItem(SPEED_KEY, String(s)); } catch (_) { /* ignore */ }
     renderEvents();
   }
   function initSpeed() {
-    let s = 1;
-    try { const v = Number(localStorage.getItem(SPEED_KEY)); if (v > 0) s = v; } catch (_) { /* ignore */ }
-    setSpeed(s);
-    els.speedInput.value = String(state.speed);
+    state.speed = 1;
+    try { localStorage.removeItem("we-speed"); } catch (_) { /* ignore */ }
   }
 
   els.play.addEventListener("click", toggle);
@@ -1116,16 +1109,6 @@
   els.track.min = 0;
   els.track.max = TRACK_MAX;
   els.track.addEventListener("input", () => setTime(trackToMonths(Number(els.track.value)), { fromUser: true }));
-
-  els.speedInput.addEventListener("input", () => {
-    const v = Number(els.speedInput.value);
-    if (v > 0) setSpeed(v);
-  });
-  els.speedInput.addEventListener("blur", () => { els.speedInput.value = String(state.speed); });
-  els.speedInput.addEventListener("keydown", (ev) => {
-    if (ev.key === "Enter") els.speedInput.blur();
-    ev.stopPropagation(); // μην πιάνουν τα πλήκτρα του timeline (Space, βελάκια)
-  });
 
   document.addEventListener("keydown", (ev) => {
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
