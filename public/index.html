@@ -4,24 +4,56 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>World Events</title>
-  <meta name="description" content="Interactive world map with a playable timeline of world events." />
+  <meta name="description" content="Η ιστορία του κόσμου από το 1500 έως σήμερα, πάνω σε έναν διαδραστικό χάρτη με timeline." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="brand">
     <h1>World Events</h1>
-    <p class="hint">Σύρε για μετακίνηση · Scroll για zoom · <kbd>Space</kbd> Play/Pause</p>
+    <p class="sub">Η ιστορία του κόσμου, 1500 – σήμερα</p>
+    <p class="hint">Σύρε για μετακίνηση · Scroll για zoom · <kbd>Space</kbd> Play/Pause · <kbd>←</kbd><kbd>→</kbd> ±1 έτος</p>
   </header>
 
   <main id="map-wrap" aria-label="World map">
-    <svg id="map" role="img" aria-label="Παγκόσμιος χάρτης"></svg>
+    <svg id="map" role="img" aria-label="Παγκόσμιος χάρτης">
+      <defs>
+        <radialGradient id="ocean-grad" cx="50%" cy="45%" r="70%">
+          <stop offset="0%" stop-color="#17305c" />
+          <stop offset="60%" stop-color="#0d1b3a" />
+          <stop offset="100%" stop-color="#070d1f" />
+        </radialGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2.5" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="label-shadow" x="-10%" y="-30%" width="120%" height="160%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.6" />
+        </filter>
+        <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="context-stroke" />
+        </marker>
+      </defs>
+    </svg>
+
     <div class="map-controls">
       <button id="zoom-in" class="icon-btn" title="Zoom in" aria-label="Zoom in">+</button>
       <button id="zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out">−</button>
       <button id="zoom-reset" class="icon-btn" title="Reset view" aria-label="Reset view">⌂</button>
     </div>
+
+    <div id="legend" class="legend" aria-label="Υπόμνημα"></div>
+
+    <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">
+      <div class="panel-head">
+        <span class="panel-title">Συμβαίνει τώρα</span>
+        <span id="panel-count" class="panel-count">0</span>
+        <button id="panel-toggle" class="panel-toggle" aria-label="Απόκρυψη πάνελ" title="Απόκρυψη/εμφάνιση">›</button>
+      </div>
+      <ul id="panel-list" class="panel-list"></ul>
+    </aside>
+
     <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
     <div id="loading" class="loading">Φόρτωση χάρτη…</div>
   </main>
@@ -38,11 +70,13 @@
 
     <div class="tl-center">
       <div class="year-display">
-        <span id="year" class="year">1900</span>
+        <span id="year" class="year">1500</span>
         <span id="month" class="month"></span>
+        <span id="era" class="era"></span>
       </div>
       <div class="track-wrap">
         <div id="ticks" class="ticks" aria-hidden="true"></div>
+        <div id="event-marks" class="event-marks" aria-hidden="true"></div>
         <input id="track" class="track" type="range" min="0" max="1" step="1" value="0"
                aria-label="Θέση στο timeline" />
         <div class="range-labels" aria-hidden="true">
