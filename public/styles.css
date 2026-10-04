@@ -108,6 +108,7 @@ kbd {
 .ev .icon-bg { stroke: #fff; stroke-width: 1.5; }
 .ev .icon { font-size: 13px; text-anchor: middle; dominant-baseline: central; user-select: none; }
 .ev .label rect { fill: rgba(10, 14, 32, 0.88); stroke: rgba(255,255,255,0.14); }
+.ev .label .leader { stroke: rgba(255,255,255,0.45); stroke-width: 1; }
 .ev .label .lbl-title { font-size: 11.5px; font-weight: 700; fill: #fff; }
 .ev .label .lbl-desc { font-size: 9.5px; fill: #cdd4ea; }
 .ev .label .lbl-year { font-size: 9.5px; font-weight: 700; }

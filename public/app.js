@@ -5,10 +5,21 @@
   "use strict";
 
   // ---------- Config ----------
-  const START_YEAR = 1500;
+  const START_YEAR = -2999; // αστρονομικό έτος (0 = 1 π.Χ.), δηλαδή 3000 π.Χ.
   const END_YEAR = 2026;
   const TOTAL_MONTHS = (END_YEAR - START_YEAR + 1) * 12;
-  const BASE_MONTHS_PER_SECOND = 12; // 1× = 1 έτος ανά δευτερόλεπτο
+  // Μη γραμμική μπάρα: [από έτος, έως έτος, ποσοστό της μπάρας].
+  // Η αρχαιότητα έχει λίγα γεγονότα και πολλούς αιώνες, οπότε τρέχει γρηγορότερα.
+  const SEGMENTS = [
+    [-2999, -499, 0.14],
+    [-499, 501, 0.16],
+    [501, 1500, 0.20],
+    [1500, 1900, 0.24],
+    [1900, END_YEAR + 1, 0.26],
+  ];
+  const TRACK_MAX = 100000;
+  // Διάρκεια όλης της μπάρας στο 1×, ρυθμισμένη ώστε μετά το 1900 να περνά 1 έτος ανά δευτερόλεπτο
+  const TRACK_SECONDS = (END_YEAR + 1 - 1900) / 0.26;
   const WORLD_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
   const MONTHS_EL = ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"];
   const MAX_LABELS = 9; // μέγιστες ετικέτες ταυτόχρονα στον χάρτη
@@ -75,26 +86,70 @@
     const whole = Math.floor(m);
     return { year: START_YEAR + Math.floor(whole / 12), month: whole % 12 };
   }
+  // "YYYY", "YYYY-MM", "YYYY-MM-DD" και αρνητικά έτη για π.Χ. ("-480" = 480 π.Χ.)
+  function parseDate(dateStr) {
+    const m = /^(-?\d+)(?:-(\d{1,2}))?(?:-(\d{1,2}))?$/.exec(String(dateStr).trim());
+    if (!m) return { y: START_YEAR, mo: 0, d: 1 };
+    let y = Number(m[1]);
+    if (y < 0) y += 1; // 1 π.Χ. = έτος 0
+    return { y, mo: (Number(m[2]) || 1) - 1, d: Number(m[3]) || 1 };
+  }
   function dateToMonths(dateStr) {
-    const parts = String(dateStr).split("-").map(Number);
-    const y = parts[0];
-    const mo = (parts[1] || 1) - 1;
-    const d = parts[2] || 1;
+    const { y, mo, d } = parseDate(dateStr);
     return (y - START_YEAR) * 12 + mo + (d - 1) / 31;
   }
   function clampT(t) {
     return Math.max(0, Math.min(TOTAL_MONTHS - 1, t));
   }
+  function yearLabel(astroYear) {
+    return astroYear <= 0 ? 1 - astroYear + " π.Χ." : String(astroYear);
+  }
   function yearOf(dateStr) {
-    return String(dateStr).slice(0, 4);
+    return yearLabel(parseDate(dateStr).y);
   }
   function eraLabel(year) {
+    if (year <= 0) return Math.floor(-year / 100) + 1 + "ος αιώνας π.Χ.";
     const c = Math.floor((year - 1) / 100) + 1;
     return (c === 20 ? "20ός" : c + "ος") + " αιώνας";
   }
-  // Πόσους μήνες μένει ορατό/με ετικέτα ένα γεγονός. Σε μεγάλες ταχύτητες περισσότερο.
-  function visibleMonths() {
-    return 36 * Math.max(1, state.speed / 2);
+
+  // Αντιστοίχιση μηνών <-> θέσης στη μπάρα (μη γραμμική)
+  function segBounds(seg) {
+    return [(seg[0] - START_YEAR) * 12, (seg[1] - START_YEAR) * 12, seg[2]];
+  }
+  function monthsToTrack(m) {
+    let acc = 0;
+    for (let i = 0; i < SEGMENTS.length; i++) {
+      const [a, b, f] = segBounds(SEGMENTS[i]);
+      if (m <= b || i === SEGMENTS.length - 1) return (acc + (f * (m - a)) / (b - a)) * TRACK_MAX;
+      acc += f;
+    }
+    return TRACK_MAX;
+  }
+  function trackToMonths(u) {
+    u /= TRACK_MAX;
+    let acc = 0;
+    for (let i = 0; i < SEGMENTS.length; i++) {
+      const [a, b, f] = segBounds(SEGMENTS[i]);
+      if (u <= acc + f || i === SEGMENTS.length - 1) return a + ((u - acc) / f) * (b - a);
+      acc += f;
+    }
+    return TOTAL_MONTHS - 1;
+  }
+  // Μήνες ανά δευτερόλεπτο στο 1× για τη δεδομένη στιγμή
+  function rateAt(m) {
+    for (let i = 0; i < SEGMENTS.length; i++) {
+      const [a, b, f] = segBounds(SEGMENTS[i]);
+      if (m < b || i === SEGMENTS.length - 1) return (b - a) / (f * TRACK_SECONDS);
+    }
+    return 12;
+  }
+  // Πόσους μήνες μένει ορατό/με ετικέτα ένα γεγονός: ~3 δευτ. αναπαραγωγής, περισσότερο σε μεγάλες ταχύτητες
+  function visibleMonthsAt(m) {
+    return 3 * rateAt(m) * Math.max(1, state.speed / 2);
+  }
+  function stepMonths() {
+    return Math.max(12, Math.round((rateAt(state.t) * 0.5) / 12) * 12);
   }
 
   // ---------- Events data ----------
@@ -104,21 +159,21 @@
     .sort((a, b) => a.s - b.s);
 
   function activeEvents(t) {
-    const vis = visibleMonths();
     const out = [];
     for (const ev of EVENTS) {
       if (ev.s > t) break; // ταξινομημένα κατά έναρξη
       if (state.hiddenTypes.has(ev.type)) continue;
-      const end = ev.e != null ? Math.max(ev.e, ev.s + 12) : ev.s + vis;
-      const fadeEnd = end + 6; // 6 μήνες fade-out
-      if (t > fadeEnd) continue;
+      const vis = visibleMonthsAt(ev.s);
+      const end = ev.e != null ? Math.max(ev.e, ev.s + vis / 3) : ev.s + vis;
+      const fade = vis / 6;
+      if (t > end + fade) continue;
       const age = t - ev.s;
       out.push({
         ev,
         age,
         labeled: age <= vis,
-        opacity: t > end ? 1 - (t - end) / 6 : 1,
-        fresh: age < 10,
+        opacity: t > end ? 1 - (t - end) / fade : 1,
+        fresh: age < vis / 4,
       });
     }
     // Ετικέτες μόνο για τα πιο πρόσφατα
@@ -281,6 +336,7 @@
     body.append("text").attr("class", "icon").text(TYPES[ev.type].icon);
 
     const label = body.append("g").attr("class", "label");
+    label.append("line").attr("class", "leader");
     const rect = label.append("rect").attr("rx", 7).attr("ry", 7);
     const meta = TYPES[ev.type].label + " · " + yearOf(ev.start) + (ev.end ? "–" + yearOf(ev.end) : "");
     const tYear = label.append("text").attr("class", "lbl-year").attr("text-anchor", "middle").text(meta);
@@ -362,15 +418,21 @@
     for (const { node, a } of nodes) {
       const { w, h } = a.ev._lbl;
       const p = a.ev._pos;
-      const cands = [[0, -(h + 16)], [0, 16], [w / 2 + 16, -h / 2], [-(w / 2 + 16), -h / 2]];
+      const cands = [
+        [0, -(h + 16)], [0, 16], [w / 2 + 16, -h / 2], [-(w / 2 + 16), -h / 2],
+        [w / 2 + 24, -(h + 28)], [-(w / 2 + 24), -(h + 28)], [w / 2 + 24, 28], [-(w / 2 + 24), 28],
+        [0, -(2 * h + 40)], [0, h + 40], [w + 30, -h / 2], [-(w + 30), -h / 2],
+      ];
       let chosen = null;
       for (const [tx, ty] of cands) {
         const box = { x0: p.x + s * (tx - w / 2) - 3, y0: p.y + s * ty - 3, x1: p.x + s * (tx + w / 2) + 3, y1: p.y + s * (ty + h) + 3 };
         if (!obstacles.some((o) => o.owner !== a.ev && overlaps(o, box))) { chosen = [tx, ty]; obstacles.push(box); break; }
       }
-      d3.select(node).select(".label")
+      const label = d3.select(node).select(".label")
         .style("display", chosen ? null : "none")
         .attr("transform", chosen ? `translate(${chosen[0]}, ${chosen[1]})` : null);
+      // Γραμμή-οδηγός από το κουτί προς το εικονίδιο (σε τοπικές συντεταγμένες της ετικέτας)
+      if (chosen) label.select(".leader").attr("x1", 0).attr("y1", h / 2).attr("x2", -chosen[0]).attr("y2", -chosen[1]);
     }
   }
 
@@ -467,23 +529,32 @@
   function buildTicks() {
     els.ticks.innerHTML = "";
     const frag = document.createDocumentFragment();
-    const majorEvery = 50, minorEvery = 10;
-    for (let y = START_YEAR; y <= END_YEAR; y += minorEvery) {
-      const pct = (((y - START_YEAR) * 12) / (TOTAL_MONTHS - 1)) * 100;
-      const isMajor = (y - START_YEAR) % majorEvery === 0;
+    // Ιστορικά έτη (αρνητικά = π.Χ.). Τα major έχουν ετικέτα.
+    const majors = [-3000, -2000, -1000, 1, 500, 1000, 1500, 1600, 1700, 1800, 1900, 2000];
+    const minors = [];
+    for (let y = -3000; y < -500; y += 250) minors.push(y);
+    for (let y = -500; y < 1500; y += 100) minors.push(y);
+    for (let y = 1500; y <= 2025; y += 25) minors.push(y);
+    const toAstro = (y) => (y < 0 ? y + 1 : y);
+    const seen = new Set();
+    for (const y of [...majors, ...minors]) {
+      if (seen.has(y)) continue;
+      seen.add(y);
+      const isMajor = majors.includes(y);
+      const pct = (monthsToTrack((toAstro(y) - START_YEAR) * 12) / TRACK_MAX) * 100;
       const tick = document.createElement("div");
       tick.className = "tick" + (isMajor ? " major" : "");
       tick.style.left = pct + "%";
       if (isMajor) {
         const lbl = document.createElement("span");
         lbl.className = "tick-label";
-        lbl.textContent = y;
+        lbl.textContent = y < 0 ? -y + " π.Χ." : y === 1 ? "0" : y;
         tick.appendChild(lbl);
       }
       frag.appendChild(tick);
     }
     els.ticks.appendChild(frag);
-    els.labelStart.textContent = START_YEAR;
+    els.labelStart.textContent = "3000 π.Χ.";
     els.labelEnd.textContent = END_YEAR;
 
     // Μικρά σημάδια γεγονότων πάνω στη μπάρα
@@ -491,7 +562,7 @@
     for (const ev of EVENTS) {
       const m = document.createElement("span");
       m.className = "event-mark t-" + ev.type;
-      m.style.left = (ev.s / (TOTAL_MONTHS - 1)) * 100 + "%";
+      m.style.left = (monthsToTrack(ev.s) / TRACK_MAX) * 100 + "%";
       marks.appendChild(m);
     }
     els.eventMarks.innerHTML = "";
@@ -500,12 +571,12 @@
 
   function updateUI() {
     const { year, month } = monthsToDate(state.t);
-    els.year.textContent = year;
+    els.year.textContent = yearLabel(year);
     els.month.textContent = MONTHS_EL[month];
     els.era.textContent = eraLabel(year);
-    const pct = (state.t / (TOTAL_MONTHS - 1)) * 100;
-    els.track.value = Math.round(state.t);
-    els.track.style.setProperty("--pct", pct + "%");
+    const u = monthsToTrack(state.t);
+    els.track.value = Math.round(u);
+    els.track.style.setProperty("--pct", (u / TRACK_MAX) * 100 + "%");
     renderEvents();
   }
 
@@ -519,7 +590,7 @@
     if (!state.playing) return;
     const dt = Math.min(0.5, (now - state.lastFrame) / 1000);
     state.lastFrame = now;
-    let next = state.t + dt * BASE_MONTHS_PER_SECOND * state.speed;
+    let next = state.t + dt * rateAt(state.t) * state.speed;
     if (next >= TOTAL_MONTHS - 1) {
       if (state.loop) next = 0;
       else { setTime(TOTAL_MONTHS - 1); pause(); return; }
@@ -552,12 +623,12 @@
   }
 
   els.play.addEventListener("click", toggle);
-  els.stepBack.addEventListener("click", () => setTime(Math.floor(state.t / 12) * 12 - 12, { fromUser: true }));
-  els.stepFwd.addEventListener("click", () => setTime(Math.floor(state.t / 12) * 12 + 12, { fromUser: true }));
+  els.stepBack.addEventListener("click", () => setTime(state.t - stepMonths(), { fromUser: true }));
+  els.stepFwd.addEventListener("click", () => setTime(state.t + stepMonths(), { fromUser: true }));
 
   els.track.min = 0;
-  els.track.max = TOTAL_MONTHS - 1;
-  els.track.addEventListener("input", () => setTime(Number(els.track.value), { fromUser: true }));
+  els.track.max = TRACK_MAX;
+  els.track.addEventListener("input", () => setTime(trackToMonths(Number(els.track.value)), { fromUser: true }));
 
   els.speed.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-speed]");
@@ -572,8 +643,8 @@
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     switch (ev.code) {
       case "Space": ev.preventDefault(); toggle(); break;
-      case "ArrowRight": setTime(state.t + (ev.shiftKey ? 120 : 12), { fromUser: true }); break;
-      case "ArrowLeft": setTime(state.t - (ev.shiftKey ? 120 : 12), { fromUser: true }); break;
+      case "ArrowRight": setTime(state.t + stepMonths() * (ev.shiftKey ? 10 : 1), { fromUser: true }); break;
+      case "ArrowLeft": setTime(state.t - stepMonths() * (ev.shiftKey ? 10 : 1), { fromUser: true }); break;
       case "Home": setTime(0, { fromUser: true }); break;
       case "End": setTime(TOTAL_MONTHS - 1, { fromUser: true }); break;
     }
@@ -593,7 +664,7 @@
     refreshEvents: renderEvents,
     projection,
     events: EVENTS,
-    config: { START_YEAR, END_YEAR },
+    config: { START_YEAR, END_YEAR, SEGMENTS },
   };
 
   // ---------- Init ----------
