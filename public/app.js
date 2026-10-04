@@ -1005,7 +1005,7 @@
       tick.style.left = pct + "%";
       if (isMajor) {
         const lbl = document.createElement("span");
-        lbl.className = "tick-label";
+        lbl.className = "tick-label" + (pct < 2 ? " first" : pct > 98 ? " last" : "");
         lbl.textContent = y < 0 ? -y + " " + t("bc") : y === 1 ? "0" : y;
         tick.appendChild(lbl);
       }

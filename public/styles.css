@@ -559,7 +559,7 @@ g.hist-year.out { opacity: 0; }
 
 /* συμπαγής μπάρα: έτος και track στην ίδια σειρά */
 .tl-center { min-width: 0; display: flex; flex-direction: row; align-items: center; gap: 12px; }
-.year-display { display: flex; align-items: baseline; gap: 6px; flex: none; }
+.year-display { display: flex; align-items: baseline; gap: 6px; flex: none; margin-right: 8px; }
 .year { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
 .month { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 26px; }
 .era { font-size: 11px; color: var(--accent); font-weight: 600; margin-left: 2px; }
@@ -570,7 +570,7 @@ g.hist-year.out { opacity: 0; }
 .tick.major { height: 10px; background: rgba(255,255,255,0.55); }
 .tick-label {
   position: absolute;
-  top: 0;
+  bottom: calc(100% + 3px);
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 600;
@@ -578,6 +578,8 @@ g.hist-year.out { opacity: 0; }
   color: rgba(255,255,255,0.82);
   white-space: nowrap;
 }
+.tick-label.first { transform: none; }
+.tick-label.last { transform: translateX(-100%); }
 .event-marks { position: absolute; left: 0; right: 0; top: 24px; height: 4px; pointer-events: none; }
 .event-mark { position: absolute; top: 0; width: 2px; height: 4px; border-radius: 1px; background: var(--c); opacity: 0.55; transform: translateX(-1px); }
 
