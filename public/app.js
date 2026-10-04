@@ -21,29 +21,64 @@
   // Διάρκεια όλης της μπάρας στο 1×, ρυθμισμένη ώστε μετά το 1900 να περνά 1 έτος ανά δευτερόλεπτο
   const TRACK_SECONDS = (END_YEAR + 1 - 1900) / 0.26;
   const WORLD_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json";
-  const MONTHS_EL = ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"];
+  const MONTHS = {
+    el: ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιουν", "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"],
+    en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  };
+  // Κείμενα διεπαφής ανά γλώσσα
+  const UI = {
+    el: {
+      subtitle: "Η ιστορία του κόσμου, 3000 π.Χ. – σήμερα", filters: "Φίλτρα", filtersBtn: "☰ Φίλτρα",
+      hide: "Απόκρυψη", hideFilters: "Απόκρυψη φίλτρων", showFilters: "Εμφάνιση φίλτρων",
+      search: "Αναζήτηση", searchPh: "Αναζήτηση: γεγονός, φυτό, ζώο, θρησκεία…",
+      events: "Γεγονότα", all: "Όλα", none: "Κανένα", fold: "Σύμπτυξη/ανάπτυξη",
+      borders: "Σύνορα:", creditNote: "(GPL-3.0, κατά προσέγγιση)", loadingBorders: "Φόρτωση συνόρων…",
+      now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε Play για να ξεκινήσει η ιστορία.",
+      loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
+      prevYear: "−1 έτος", nextYear: "+1 έτος", trackAria: "Θέση στο timeline",
+      speedLabel: "Έτη / δευτ.", speedAria: "Έτη ανά δευτερόλεπτο", speedTitle: "Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις",
+      bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
+      first: "πρώτα", clickToGo: "κλικ για μετάβαση",
+    },
+    en: {
+      subtitle: "The history of the world, 3000 BC – today", filters: "Filters", filtersBtn: "☰ Filters",
+      hide: "Hide", hideFilters: "Hide filters", showFilters: "Show filters",
+      search: "Search", searchPh: "Search: event, plant, animal, religion…",
+      events: "Events", all: "All", none: "None", fold: "Collapse/expand",
+      borders: "Borders:", creditNote: "(GPL-3.0, approximate)", loadingBorders: "Loading borders…",
+      now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press Play to start the story.",
+      loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
+      prevYear: "−1 year", nextYear: "+1 year", trackAria: "Timeline position",
+      speedLabel: "Years / sec", speedAria: "Years per second", speedTitle: "Type how many years per second you want",
+      bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
+      first: "first", clickToGo: "click to jump",
+    },
+  };
+  const t = (k) => (UI[state.lang] && UI[state.lang][k]) || UI.el[k] || k;
   const MAX_LABELS = 9; // μέγιστες ετικέτες ταυτόχρονα στον χάρτη
 
+  // label = τρέχουσα γλώσσα (ορίζεται από το setLang)
   const TYPES = {
-    war: { label: "Πόλεμος", icon: "💂" },
-    revolution: { label: "Επανάσταση", icon: "✊" },
-    politics: { label: "Πολιτική", icon: "🏛️" },
-    exploration: { label: "Εξερεύνηση", icon: "⛵" },
-    science: { label: "Επιστήμη", icon: "🔬" },
-    culture: { label: "Πολιτισμός", icon: "🎨" },
-    economy: { label: "Οικονομία", icon: "💰" },
-    religion: { label: "Θρησκεία", icon: "🕊️" },
-    tragedy: { label: "Ανθρωπογενής καταστροφή", icon: "☢️" },
-    disaster: { label: "Φυσική καταστροφή", icon: "🌋" },
-    crop: { label: "Καλλιέργειες & φυτά", icon: "🌾" },
-    tree: { label: "Δέντρα", icon: "🌳" },
-    spice: { label: "Ποτά & μπαχαρικά", icon: "☕" },
-    animal: { label: "Ζώα", icon: "🐾" },
+    war: { el: "Πόλεμος", en: "War", icon: "💂" },
+    revolution: { el: "Επανάσταση", en: "Revolution", icon: "✊" },
+    politics: { el: "Πολιτική", en: "Politics", icon: "🏛️" },
+    exploration: { el: "Εξερεύνηση", en: "Exploration", icon: "⛵" },
+    science: { el: "Επιστήμη", en: "Science", icon: "🔬" },
+    culture: { el: "Πολιτισμός", en: "Culture", icon: "🎨" },
+    economy: { el: "Οικονομία", en: "Economy", icon: "💰" },
+    religion: { el: "Θρησκεία", en: "Religion", icon: "🕊️" },
+    tragedy: { el: "Ανθρωπογενής καταστροφή", en: "Man-made disaster", icon: "☢️" },
+    disaster: { el: "Φυσική καταστροφή", en: "Natural disaster", icon: "🌋" },
+    crop: { el: "Καλλιέργειες & φυτά", en: "Crops & plants", icon: "🌾" },
+    tree: { el: "Δέντρα", en: "Trees", icon: "🌳" },
+    spice: { el: "Ποτά & μπαχαρικά", en: "Drinks & spices", icon: "☕" },
+    animal: { el: "Ζώα", en: "Animals", icon: "🐾" },
   };
+  Object.values(TYPES).forEach((v) => { v.label = v.el; });
   // Κατηγορίες φίλτρων (sidebar): κάθε τύπος ανήκει σε μία κατηγορία
   const CATEGORIES = [
-    { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "religion", "tragedy"] },
-    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice", "animal"] },
+    { id: "human", el: "Άνθρωπος", en: "Humans", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "religion", "tragedy"] },
+    { id: "nature", el: "Φύση", en: "Nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice", "animal"] },
   ];
 
   // Παλέτα χωρών (ήπια «ζωγραφισμένα» χρώματα πάνω σε σκούρο ωκεανό)
@@ -60,6 +95,7 @@
     hiddenTypes: new Set(),
     panelKey: "",
     historical: true,
+    lang: "el",
   };
 
   // ---------- DOM ----------
@@ -95,7 +131,7 @@
     panelList: $("#panel-list"),
     panelCount: $("#panel-count"),
     panelToggle: $("#panel-toggle"),
-    histToggle: $("#hist-toggle"),
+    lang: $("#lang"),
     histLoading: $("#hist-loading"),
   };
 
@@ -120,15 +156,21 @@
     return Math.max(0, Math.min(TOTAL_MONTHS - 1, t));
   }
   function yearLabel(astroYear) {
-    return astroYear <= 0 ? 1 - astroYear + " π.Χ." : String(astroYear);
+    return astroYear <= 0 ? 1 - astroYear + " " + t("bc") : String(astroYear);
   }
   function yearOf(dateStr) {
     return yearLabel(parseDate(dateStr).y);
   }
+  function ordinalEn(n) {
+    const m10 = n % 10, m100 = n % 100;
+    const sfx = m10 === 1 && m100 !== 11 ? "st" : m10 === 2 && m100 !== 12 ? "nd" : m10 === 3 && m100 !== 13 ? "rd" : "th";
+    return n + sfx;
+  }
   function eraLabel(year) {
-    if (year <= 0) return Math.floor(-year / 100) + 1 + "ος αιώνας π.Χ.";
-    const c = Math.floor((year - 1) / 100) + 1;
-    return (c === 20 ? "20ός" : c + "ος") + " αιώνας";
+    const bc = year <= 0;
+    const c = bc ? Math.floor(-year / 100) + 1 : Math.floor((year - 1) / 100) + 1;
+    if (state.lang === "en") return ordinalEn(c) + " century" + (bc ? " BC" : "");
+    return (c === 20 ? "20ός" : c + "ος") + " αιώνας" + (bc ? " π.Χ." : "");
   }
 
   // Αντιστοίχιση μηνών <-> θέσης στη μπάρα (μη γραμμική)
@@ -181,6 +223,14 @@
     .filter((e) => e.lat != null && e.lng != null && e.start && TYPES[e.type])
     .map((e) => ({ ...e, s: dateToMonths(e.start), e: e.end ? dateToMonths(e.end) : null }))
     .sort((a, b) => a.s - b.s);
+  // Κείμενα ανά γλώσσα: τα ελληνικά είναι στα αρχεία δεδομένων, τα αγγλικά στο window.WORLD_EVENTS_EN
+  {
+    const EN = window.WORLD_EVENTS_EN || {};
+    EVENTS.forEach((ev) => {
+      ev.el = { title: ev.title, description: ev.description };
+      ev.en = EN[ev.id] ? { title: EN[ev.id][0], description: EN[ev.id][1] } : null;
+    });
+  }
 
   function activeEvents(t) {
     const out = [];
@@ -462,24 +512,6 @@
     gCountries.style("display", showHist ? "none" : null);
     gHist.style("display", state.historical ? null : "none");
   }
-  function setHistorical(on) {
-    state.historical = on;
-    try { localStorage.setItem("we-historical-borders", on ? "1" : "0"); } catch (_) { /* ignore */ }
-    els.histToggle.checked = on;
-    if (on) {
-      histCurrentYear = null;
-      ensureBasemap(monthsToDate(state.t).year);
-    }
-    applyLayerVisibility();
-  }
-  function initHistoricalToggle() {
-    let on = true;
-    try { on = localStorage.getItem("we-historical-borders") !== "0"; } catch (_) { /* ignore */ }
-    state.historical = on;
-    els.histToggle.checked = on;
-    els.histToggle.addEventListener("change", () => setHistorical(els.histToggle.checked));
-    applyLayerVisibility();
-  }
 
   gHist
     .on("mousemove", (ev) => {
@@ -488,7 +520,7 @@
       const p = d3.select(target).datum().properties || {};
       const name = p.NAME || "";
       if (!name) return hideTooltip();
-      const sub = p.SUBJECTO && p.SUBJECTO !== name ? `<div class="tt-desc">υπό: ${esc(p.SUBJECTO)}</div>` : "";
+      const sub = p.SUBJECTO && p.SUBJECTO !== name ? `<div class="tt-desc">${esc(t("under"))} ${esc(p.SUBJECTO)}</div>` : "";
       const [x, y] = d3.pointer(ev, els.mapWrap);
       showTooltipHTML(`<div class="tt-title">${esc(name)}</div>${sub}`, x, y, "");
     })
@@ -505,7 +537,7 @@
       fitProjection();
     } catch (err) {
       console.error("Map load failed", err);
-      els.loading.textContent = "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.";
+      els.loading.textContent = t("loadError");
     }
   }
 
@@ -683,7 +715,7 @@
   // ---------- Panel ----------
   const openBtn = document.createElement("button");
   openBtn.className = "panel-open-btn";
-  openBtn.textContent = "Συμβαίνει τώρα";
+  openBtn.textContent = t("now");
   openBtn.addEventListener("click", () => setPanelCollapsed(false));
   els.mapWrap.appendChild(openBtn);
 
@@ -701,7 +733,7 @@
     els.panelCount.textContent = data.length;
     const sorted = data.slice().sort((a, b) => b.ev.s - a.ev.s);
     if (!sorted.length) {
-      els.panelList.innerHTML = `<li class="panel-empty">Πάτησε Play για να ξεκινήσει η ιστορία.</li>`;
+      els.panelList.innerHTML = `<li class="panel-empty">${esc(t("pressPlay"))}</li>`;
       return;
     }
     els.panelList.innerHTML = sorted
@@ -759,7 +791,7 @@
             <span class="txt">${esc(cat.icon)} ${esc(cat.label)}</span>
             <span class="count">${total}</span>
           </label>
-          <button class="cat-fold" type="button" aria-label="Σύμπτυξη/ανάπτυξη" title="Σύμπτυξη/ανάπτυξη">▾</button>
+          <button class="cat-fold" type="button" aria-label="${esc(t("fold"))}" title="${esc(t("fold"))}">▾</button>
         </div>
         <div class="subs">${subs}</div>
       </div>`;
@@ -804,9 +836,6 @@
   // ---------- Αναζήτηση ----------
   const norm = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const SEARCH_MAX = 80;
-  EVENTS.forEach((ev) => {
-    ev._hay = norm([ev.title, ev.description, TYPES[ev.type] && TYPES[ev.type].label, yearOf(ev.start), ev.end ? yearOf(ev.end) : ""].join(" "));
-  });
   function searchEvents(q) {
     const terms = norm(q).split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
@@ -816,8 +845,8 @@
     const q = els.search.value.trim();
     const hits = searchEvents(q);
     if (!q) { els.searchMeta.textContent = ""; els.searchResults.innerHTML = ""; return; }
-    els.searchMeta.textContent = hits.length === 0 ? "Κανένα αποτέλεσμα"
-      : hits.length + (hits.length === 1 ? " αποτέλεσμα" : " αποτελέσματα") + (hits.length > SEARCH_MAX ? " (πρώτα " + SEARCH_MAX + ")" : "") + " · κλικ για μετάβαση";
+    els.searchMeta.textContent = hits.length === 0 ? t("noResults")
+      : hits.length + " " + (hits.length === 1 ? t("result") : t("results")) + (hits.length > SEARCH_MAX ? " (" + t("first") + " " + SEARCH_MAX + ")" : "") + " · " + t("clickToGo");
     els.searchResults.innerHTML = hits.slice(0, SEARCH_MAX).map((ev) => {
       const yrs = yearOf(ev.start) + (ev.end ? "–" + yearOf(ev.end) : "");
       return `<li class="t-${ev.type}" data-id="${esc(ev.id)}" role="option">
@@ -847,6 +876,49 @@
     li.classList.add("active");
     jumpToEvent(ev);
   });
+
+  // ---------- Γλώσσα ----------
+  const LANG_KEY = "we-lang";
+  function applyStaticTexts() {
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+  }
+  function setLang(lang, { init = false } = {}) {
+    if (!UI[lang]) lang = "el";
+    state.lang = lang;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (_) { /* ignore */ }
+    document.documentElement.lang = lang;
+    Object.values(TYPES).forEach((v) => { v.label = v[lang] || v.el; });
+    CATEGORIES.forEach((c) => { c.label = c[lang] || c.el; });
+    EVENTS.forEach((ev) => {
+      const tx = ev[lang] || ev.el;
+      ev.title = tx.title;
+      ev.description = tx.description;
+      ev._hay = norm([ev.title, ev.description, TYPES[ev.type].label, yearOf(ev.start), ev.end ? yearOf(ev.end) : ""].join(" "));
+    });
+    els.lang.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
+    applyStaticTexts();
+    openBtn.textContent = t("now");
+    if (init) return;
+    // ξαναχτίζουμε ό,τι έχει κείμενο
+    gEvents.selectAll("g.ev").remove();
+    state.panelKey = "";
+    buildFilters();
+    buildTicks();
+    updateUI();
+    renderSearch();
+  }
+  function initLang() {
+    let lang = "el";
+    try { lang = localStorage.getItem(LANG_KEY) || ((navigator.language || "").toLowerCase().startsWith("en") ? "en" : "el"); } catch (_) { /* ignore */ }
+    setLang(lang, { init: true });
+    els.lang.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-lang]");
+      if (b && b.dataset.lang !== state.lang) setLang(b.dataset.lang);
+    });
+  }
 
   // Άνοιγμα/κλείσιμο sidebar (θυμάται την επιλογή)
   const SIDEBAR_KEY = "we-sidebar";
@@ -886,13 +958,13 @@
       if (isMajor) {
         const lbl = document.createElement("span");
         lbl.className = "tick-label";
-        lbl.textContent = y < 0 ? -y + " π.Χ." : y === 1 ? "0" : y;
+        lbl.textContent = y < 0 ? -y + " " + t("bc") : y === 1 ? "0" : y;
         tick.appendChild(lbl);
       }
       frag.appendChild(tick);
     }
     els.ticks.appendChild(frag);
-    els.labelStart.textContent = "3000 π.Χ.";
+    els.labelStart.textContent = "3000 " + t("bc");
     els.labelEnd.textContent = END_YEAR;
 
     // Μικρά σημάδια γεγονότων πάνω στη μπάρα
@@ -910,7 +982,7 @@
   function updateUI() {
     const { year, month } = monthsToDate(state.t);
     els.year.textContent = yearLabel(year);
-    els.month.textContent = MONTHS_EL[month];
+    els.month.textContent = MONTHS[state.lang][month];
     els.era.textContent = eraLabel(year);
     ensureBasemap(year);
     const u = monthsToTrack(state.t);
@@ -1019,7 +1091,7 @@
   window.WorldEventsApp = {
     get date() { return monthsToDate(state.t); },
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
-    play, pause, setSpeed, focusEvent, setHistorical, setTypesVisible, jumpToEvent, search: searchEvents,
+    play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
     projection,
     events: EVENTS,
@@ -1027,10 +1099,11 @@
   };
 
   // ---------- Init ----------
+  initLang();
   loadHiddenTypes();
   buildFilters();
   initSidebar();
-  initHistoricalToggle();
+  applyLayerVisibility();
   buildTicks();
   fitProjection();
   updateUI();

@@ -12,7 +12,7 @@
 <body>
   <header class="brand">
     <h1>World Events</h1>
-    <p class="sub">Η ιστορία του κόσμου, 3000 π.Χ. – σήμερα</p>
+    <p class="sub" data-i18n="subtitle">Η ιστορία του κόσμου, 3000 π.Χ. – σήμερα</p>
   </header>
 
   <main id="map-wrap" aria-label="World map">
@@ -38,50 +38,46 @@
 
     <aside id="sidebar" class="sidebar" aria-label="Φίλτρα">
       <div class="sb-head">
-        <span class="sb-title">Φίλτρα</span>
-        <button id="sidebar-close" class="panel-toggle" aria-label="Απόκρυψη φίλτρων" title="Απόκρυψη">‹</button>
+        <span class="sb-title" data-i18n="filters">Φίλτρα</span>
+        <div id="lang" class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="el" title="Ελληνικά">EL</button>
+          <button type="button" data-lang="en" title="English">EN</button>
+        </div>
+        <button id="sidebar-close" class="panel-toggle" aria-label="Απόκρυψη φίλτρων" data-i18n-aria="hideFilters" title="Απόκρυψη" data-i18n-title="hide">‹</button>
       </div>
       <div class="sb-body">
         <section class="sb-sec sb-search">
-          <input id="search" class="search" type="search" placeholder="Αναζήτηση: γεγονός, φυτό, ζώο, θρησκεία…"
-                 autocomplete="off" spellcheck="false" aria-label="Αναζήτηση" />
+          <input id="search" class="search" type="search" placeholder="Αναζήτηση: γεγονός, φυτό, ζώο, θρησκεία…" data-i18n-ph="searchPh"
+                 autocomplete="off" spellcheck="false" aria-label="Αναζήτηση" data-i18n-aria="search" />
           <div id="search-meta" class="search-meta"></div>
           <ul id="search-results" class="search-results" role="listbox"></ul>
         </section>
         <section class="sb-sec">
-          <h3 class="sb-sec-title">Χάρτης</h3>
-          <label class="sb-row sb-switch" title="Τα σύνορα αλλάζουν ανάλογα με την εποχή. Απενεργοποίησέ το για τα σημερινά σύνορα.">
-            <input id="hist-toggle" type="checkbox" checked />
-            <span class="sw"></span>
-            <span class="txt">🗺 Ιστορικά σύνορα</span>
-          </label>
-          <span id="hist-loading" class="hist-loading">Φόρτωση συνόρων…</span>
-        </section>
-        <section class="sb-sec">
-          <h3 class="sb-sec-title">Γεγονότα
+          <h3 class="sb-sec-title"><span data-i18n="events">Γεγονότα</span>
             <span class="sb-actions">
-              <button id="filters-all" class="sb-link">Όλα</button>
-              <button id="filters-none" class="sb-link">Κανένα</button>
+              <button id="filters-all" class="sb-link" data-i18n="all">Όλα</button>
+              <button id="filters-none" class="sb-link" data-i18n="none">Κανένα</button>
             </span>
           </h3>
           <div id="filters" class="filters" aria-label="Φίλτρα γεγονότων"></div>
         </section>
-        <p class="sb-credit">Σύνορα: <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> (GPL-3.0, κατά προσέγγιση)</p>
+        <p class="sb-credit"><span data-i18n="borders">Σύνορα:</span> <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> <span data-i18n="creditNote">(GPL-3.0, κατά προσέγγιση)</span></p>
       </div>
     </aside>
-    <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων">☰ Φίλτρα</button>
+    <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων" data-i18n-aria="showFilters" data-i18n="filtersBtn">☰ Φίλτρα</button>
+    <span id="hist-loading" class="hist-loading" data-i18n="loadingBorders">Φόρτωση συνόρων…</span>
 
     <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">
       <div class="panel-head">
-        <span class="panel-title">Συμβαίνει τώρα</span>
+        <span class="panel-title" data-i18n="now">Συμβαίνει τώρα</span>
         <span id="panel-count" class="panel-count">0</span>
-        <button id="panel-toggle" class="panel-toggle" aria-label="Απόκρυψη πάνελ" title="Απόκρυψη/εμφάνιση">›</button>
+        <button id="panel-toggle" class="panel-toggle" aria-label="Απόκρυψη πάνελ" data-i18n-aria="hidePanel" title="Απόκρυψη" data-i18n-title="hide">›</button>
       </div>
       <ul id="panel-list" class="panel-list"></ul>
     </aside>
 
     <div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
-    <div id="loading" class="loading">Φόρτωση χάρτη…</div>
+    <div id="loading" class="loading" data-i18n="loadingMap">Φόρτωση χάρτη…</div>
   </main>
 
   <footer class="timeline" aria-label="Timeline">
@@ -90,8 +86,8 @@
         <svg class="ico-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
         <svg class="ico-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" fill="currentColor"/></svg>
       </button>
-      <button id="step-back" class="icon-btn small" title="−1 έτος" aria-label="Previous year">‹</button>
-      <button id="step-fwd" class="icon-btn small" title="+1 έτος" aria-label="Next year">›</button>
+      <button id="step-back" class="icon-btn small" title="−1 έτος" data-i18n-title="prevYear" aria-label="Previous year">‹</button>
+      <button id="step-fwd" class="icon-btn small" title="+1 έτος" data-i18n-title="nextYear" aria-label="Next year">›</button>
     </div>
 
     <div class="tl-center">
@@ -104,7 +100,7 @@
         <div id="ticks" class="ticks" aria-hidden="true"></div>
         <div id="event-marks" class="event-marks" aria-hidden="true"></div>
         <input id="track" class="track" type="range" min="0" max="1" step="1" value="0"
-               aria-label="Θέση στο timeline" />
+               aria-label="Θέση στο timeline" data-i18n-aria="trackAria" />
         <div class="range-labels" aria-hidden="true">
           <span id="label-start"></span>
           <span id="label-end"></span>
@@ -113,14 +109,14 @@
     </div>
 
     <div class="tl-right">
-      <label class="speed-label" for="speed-input">Έτη / δευτ.</label>
+      <label class="speed-label" for="speed-input" data-i18n="speedLabel">Έτη / δευτ.</label>
       <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής (έτη ανά δευτερόλεπτο)">
-        <button data-speed="0.5" title="0.5 έτη ανά δευτερόλεπτο">0.5</button>
-        <button data-speed="1" class="active" title="1 έτος ανά δευτερόλεπτο">1</button>
-        <button data-speed="5" title="5 έτη ανά δευτερόλεπτο">5</button>
-        <button data-speed="10" title="10 έτη ανά δευτερόλεπτο">10</button>
+        <button data-speed="0.5">0.5</button>
+        <button data-speed="1" class="active">1</button>
+        <button data-speed="5">5</button>
+        <button data-speed="10">10</button>
         <input id="speed-input" class="speed-input" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1" value="1"
-               aria-label="Έτη ανά δευτερόλεπτο" title="Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις" />
+               aria-label="Έτη ανά δευτερόλεπτο" data-i18n-aria="speedAria" title="Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις" data-i18n-title="speedTitle" />
       </div>
     </div>
   </footer>
@@ -131,6 +127,10 @@
   <script src="plants.js"></script>
   <script src="animals.js"></script>
   <script src="religions.js"></script>
+  <script src="en/events.js"></script>
+  <script src="en/plants.js"></script>
+  <script src="en/animals.js"></script>
+  <script src="en/religions.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
