@@ -294,8 +294,8 @@
       state.zoomK = ev.transform.k;
       gEvents.selectAll("g.ev .body").attr("transform", bodyTransform);
       // κουκκίδα και παλμός κρατούν σταθερό μέγεθος στην οθόνη
-      gEvents.selectAll("g.ev .anchor").attr("r", 3.2 / state.zoomK);
-      gEvents.selectAll("g.ev .pulse").attr("r", 6 / state.zoomK);
+      gEvents.selectAll("g.ev .anchor").attr("r", 3.2 * bodyScale());
+      gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
     });
   els.svg.call(zoom).on("dblclick.zoom", null);
@@ -569,8 +569,11 @@
   }
 
   // ---------- Event markers ----------
+  // Όσο κάνουμε zoom in, εικονίδια και ταμπελάκια μικραίνουν στην οθόνη (έως 55% του αρχικού)
+  const screenScale = () => Math.max(0.55, Math.pow(state.zoomK, -0.3));
+  const bodyScale = () => screenScale() / state.zoomK;
   function bodyTransform(a) {
-    const s = 1 / state.zoomK; // σταθερό μέγεθος στην οθόνη, ανεξάρτητα από το zoom
+    const s = bodyScale();
     if (a.ev.from) return `scale(${s})`;
     const [x, y] = projection([a.ev.lng, a.ev.lat]);
     return `translate(${x},${y}) scale(${s})`;
@@ -591,8 +594,8 @@
       g.append("path").attr("class", "arrow-glow");
       g.append("path").attr("class", "arrow");
     }
-    g.append("circle").attr("class", "pulse").attr("r", 6 / state.zoomK);
-    g.append("circle").attr("class", "anchor").attr("r", 3.2 / state.zoomK);
+    g.append("circle").attr("class", "pulse").attr("r", 6 * bodyScale());
+    g.append("circle").attr("class", "anchor").attr("r", 3.2 * bodyScale());
 
     const body = g.append("g").attr("class", "body");
     if (ev.from) {
@@ -671,7 +674,7 @@
 
   // Τοποθέτηση ετικετών ώστε να μην καλύπτουν η μία την άλλη (πάνω / κάτω / δεξιά / αριστερά)
   function placeLabels() {
-    const s = 1 / state.zoomK;
+    const s = bodyScale();
     const nodes = [];
     const obstacles = [];
     gEvents.selectAll("g.ev").each(function (a) {
