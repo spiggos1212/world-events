@@ -82,6 +82,9 @@
     labelEnd: $("#label-end"),
     speed: $("#speed"),
     speedInput: $("#speed-input"),
+    search: $("#search"),
+    searchMeta: $("#search-meta"),
+    searchResults: $("#search-results"),
     filters: $("#filters"),
     filtersAll: $("#filters-all"),
     filtersNone: $("#filters-none"),
@@ -230,7 +233,11 @@
       gEvents.selectAll("g.ev .body").attr("transform", bodyTransform);
       placeLabels();
     });
-  els.svg.call(zoom);
+  els.svg.call(zoom).on("dblclick.zoom", null);
+  els.svg.on("dblclick", (e) => {
+    e.preventDefault();
+    toggle();
+  });
 
   function fitProjection() {
     const w = width();
@@ -794,6 +801,53 @@
   els.filtersAll.addEventListener("click", () => setTypesVisible(Object.keys(TYPES), true));
   els.filtersNone.addEventListener("click", () => setTypesVisible(Object.keys(TYPES), false));
 
+  // ---------- Αναζήτηση ----------
+  const norm = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const SEARCH_MAX = 80;
+  EVENTS.forEach((ev) => {
+    ev._hay = norm([ev.title, ev.description, TYPES[ev.type] && TYPES[ev.type].label, yearOf(ev.start), ev.end ? yearOf(ev.end) : ""].join(" "));
+  });
+  function searchEvents(q) {
+    const terms = norm(q).split(/\s+/).filter(Boolean);
+    if (!terms.length) return [];
+    return EVENTS.filter((ev) => terms.every((t) => ev._hay.includes(t)));
+  }
+  function renderSearch() {
+    const q = els.search.value.trim();
+    const hits = searchEvents(q);
+    if (!q) { els.searchMeta.textContent = ""; els.searchResults.innerHTML = ""; return; }
+    els.searchMeta.textContent = hits.length === 0 ? "Κανένα αποτέλεσμα"
+      : hits.length + (hits.length === 1 ? " αποτέλεσμα" : " αποτελέσματα") + (hits.length > SEARCH_MAX ? " (πρώτα " + SEARCH_MAX + ")" : "") + " · κλικ για μετάβαση";
+    els.searchResults.innerHTML = hits.slice(0, SEARCH_MAX).map((ev) => {
+      const yrs = yearOf(ev.start) + (ev.end ? "–" + yearOf(ev.end) : "");
+      return `<li class="t-${ev.type}" data-id="${esc(ev.id)}" role="option">
+        <span class="bar"></span>
+        <span><div class="meta">${esc(yrs)} · ${esc(TYPES[ev.type].label)}</div><div class="ttl">${esc(TYPES[ev.type].icon)} ${esc(ev.title)}</div></span>
+      </li>`;
+    }).join("");
+  }
+  function jumpToEvent(ev) {
+    pause();
+    if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
+    setTime(ev.s, { fromUser: true });
+    focusEvent(ev);
+  }
+  els.search.addEventListener("input", renderSearch);
+  els.search.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { els.search.value = ""; renderSearch(); els.search.blur(); }
+    if (e.key === "Enter") { const first = els.searchResults.querySelector("li[data-id]"); if (first) first.click(); }
+    e.stopPropagation();
+  });
+  els.searchResults.addEventListener("click", (e) => {
+    const li = e.target.closest("li[data-id]");
+    if (!li) return;
+    const ev = EVENTS.find((x) => x.id === li.dataset.id);
+    if (!ev) return;
+    els.searchResults.querySelectorAll("li.active").forEach((n) => n.classList.remove("active"));
+    li.classList.add("active");
+    jumpToEvent(ev);
+  });
+
   // Άνοιγμα/κλείσιμο sidebar (θυμάται την επιλογή)
   const SIDEBAR_KEY = "we-sidebar";
   function setSidebarCollapsed(v, persist = true) {
@@ -965,7 +1019,7 @@
   window.WorldEventsApp = {
     get date() { return monthsToDate(state.t); },
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
-    play, pause, setSpeed, focusEvent, setHistorical, setTypesVisible,
+    play, pause, setSpeed, focusEvent, setHistorical, setTypesVisible, jumpToEvent, search: searchEvents,
     refreshEvents: renderEvents,
     projection,
     events: EVENTS,

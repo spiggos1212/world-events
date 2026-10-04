@@ -42,6 +42,12 @@
         <button id="sidebar-close" class="panel-toggle" aria-label="Απόκρυψη φίλτρων" title="Απόκρυψη">‹</button>
       </div>
       <div class="sb-body">
+        <section class="sb-sec sb-search">
+          <input id="search" class="search" type="search" placeholder="Αναζήτηση: γεγονός, φυτό, ζώο, θρησκεία…"
+                 autocomplete="off" spellcheck="false" aria-label="Αναζήτηση" />
+          <div id="search-meta" class="search-meta"></div>
+          <ul id="search-results" class="search-results" role="listbox"></ul>
+        </section>
         <section class="sb-sec">
           <h3 class="sb-sec-title">Χάρτης</h3>
           <label class="sb-row sb-switch" title="Τα σύνορα αλλάζουν ανάλογα με την εποχή. Απενεργοποίησέ το για τα σημερινά σύνορα.">

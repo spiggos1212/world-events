@@ -263,6 +263,44 @@ g.hist-year.out { opacity: 0; }
 .sb-switch input:checked + .sw::after { transform: translateX(14px); background: var(--accent-ink); }
 .sb-switch input:focus-visible + .sw { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* αναζήτηση */
+.search {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+.search:focus { border-color: var(--accent); background: rgba(255, 207, 92, 0.08); }
+.search::placeholder { color: var(--muted); }
+.search-meta { margin: 6px 2px 0; font-size: 10.5px; color: var(--muted); }
+.search-meta:empty { display: none; }
+.search-results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+.search-results:empty { display: none; }
+.search-results li {
+  display: grid;
+  grid-template-columns: 4px 1fr;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.search-results li:hover, .search-results li.active { background: rgba(255,255,255,0.07); }
+.search-results li .bar { border-radius: 2px; background: var(--c); box-shadow: 0 0 6px var(--c); }
+.search-results li .meta { font-size: 10px; font-weight: 700; color: var(--c); letter-spacing: 0.03em; }
+.search-results li .ttl { font-size: 12px; font-weight: 600; margin-top: 1px; line-height: 1.3; }
+
 /* κατηγορίες & υπο-φίλτρα */
 .filters .cat { margin: 2px 0 6px; }
 .cat-head { display: flex; align-items: center; gap: 6px; }
