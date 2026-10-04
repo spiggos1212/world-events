@@ -558,9 +558,9 @@
   }
 
 
-  function focusEvent(ev) {
+  function focusEvent(ev, minK = 3) {
     const [x, y] = projection([ev.lng, ev.lat]);
-    const k = Math.max(state.zoomK, 3);
+    const k = Math.max(state.zoomK, minK);
     const tr = d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k);
     els.svg.transition().duration(600).call(zoom.transform, tr);
   }
@@ -865,6 +865,7 @@
   function renderSearch() {
     const q = els.search.value.trim();
     const hits = searchEvents(q);
+    els.sidebar.classList.toggle("searching", !!q); // τα αποτελέσματα καλύπτουν τα φίλτρα
     if (!q) { els.searchMeta.textContent = ""; els.searchResults.innerHTML = ""; return; }
     els.searchMeta.textContent = hits.length === 0 ? t("noResults")
       : hits.length + " " + (hits.length === 1 ? t("result") : t("results")) + (hits.length > SEARCH_MAX ? " (" + t("first") + " " + SEARCH_MAX + ")" : "") + " · " + t("clickToGo");
@@ -880,7 +881,9 @@
     pause();
     if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
     setTime(ev.s, { fromUser: true });
-    focusEvent(ev);
+    focusEvent(ev, 2.5);
+    // Σε κινητό το φύλλο των φίλτρων κλείνει για να φανεί ο χάρτης
+    if (window.matchMedia("(max-width: 820px)").matches) { els.search.blur(); setSidebarCollapsed(true); }
   }
   els.search.addEventListener("input", renderSearch);
   els.search.addEventListener("keydown", (e) => {
