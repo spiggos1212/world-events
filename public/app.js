@@ -108,7 +108,7 @@
     historical: true,
     lang: "el",
     proj: "natural",
-    style: "real",
+    style: "simple",
   };
 
   // ---------- DOM ----------
@@ -727,12 +727,11 @@
     state.style = style === "simple" ? "simple" : "real";
     els.mapWrap.classList.toggle("realistic", state.style === "real");
     els.styleSel.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.style === state.style));
-    if (persist) { try { localStorage.setItem(STYLE_KEY, state.style); } catch (_) { /* ignore */ } }
     if (state.style === "real") renderRaster();
   }
   function initMapOptions() {
-    let p = "natural", s = "real";
-    try { p = localStorage.getItem(PROJ_KEY) || p; s = localStorage.getItem(STYLE_KEY) || s; } catch (_) { /* ignore */ }
+    let p = "natural", s = "simple"; // πάντα απλός χάρτης στο άνοιγμα· η επιλογή στυλ δεν αποθηκεύεται
+    try { p = localStorage.getItem(PROJ_KEY) || p; localStorage.removeItem(STYLE_KEY); } catch (_) { /* ignore */ }
     els.proj.addEventListener("click", (e) => { const b = e.target.closest("button[data-proj]"); if (b) setProjection(b.dataset.proj); });
     els.styleSel.addEventListener("click", (e) => { const b = e.target.closest("button[data-style]"); if (b) setMapStyle(b.dataset.style); });
     setMapStyle(s, { persist: false });
