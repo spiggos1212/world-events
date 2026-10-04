@@ -393,6 +393,7 @@ g.hist-year.out { opacity: 0; }
   backdrop-filter: blur(8px);
 }
 .sidebar-open-btn.show { display: inline-flex; align-items: center; gap: 6px; }
+.search-open-btn { display: none; } /* μόνο σε κινητό */
 
 /* ---------- Panel ---------- */
 .panel {
@@ -677,7 +678,15 @@ g.hist-year.out { opacity: 0; }
   .panel-open-btn { right: 12px; padding: 0 8px; }
   /* κουμπί φίλτρων κάτω αριστερά, με κείμενο */
   .sidebar-open-btn { top: auto; bottom: 12px; left: 12px; right: auto; padding: 0 14px 0 12px; }
-  .hist-loading { left: auto; right: 12px; transform: none; }
+  .search-open-btn {
+    position: absolute; right: 12px; bottom: 12px; z-index: 4;
+    height: 36px; padding: 0 14px 0 12px; gap: 6px; align-items: center;
+    border-radius: 999px; border: 1px solid var(--border);
+    background: var(--panel); color: var(--text); font: inherit; font-size: 12px; font-weight: 600;
+    cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(8px);
+  }
+  .search-open-btn.show { display: inline-flex; }
+  .hist-loading { bottom: 56px; }
 
   /* sidebar και πάνελ ως φύλλα από κάτω */
   .sidebar, .panel {

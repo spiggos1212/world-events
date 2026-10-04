@@ -128,6 +128,7 @@
     filtersNone: $("#filters-none"),
     sidebar: $("#sidebar"),
     sidebarOpen: $("#sidebar-open"),
+    searchOpen: $("#search-open"),
     sidebarClose: $("#sidebar-close"),
     panel: $("#panel"),
     panelList: $("#panel-list"),
@@ -945,6 +946,7 @@
   function setSidebarCollapsed(v, persist = true) {
     els.sidebar.classList.toggle("collapsed", v);
     els.sidebarOpen.classList.toggle("show", v);
+    els.searchOpen.classList.toggle("show", v);
     if (persist) { try { localStorage.setItem(SIDEBAR_KEY, v ? "0" : "1"); } catch (_) { /* ignore */ } }
   }
   function initSidebar() {
@@ -952,6 +954,12 @@
     try { const s = localStorage.getItem(SIDEBAR_KEY); if (s != null) open = s === "1"; } catch (_) { /* ignore */ }
     setSidebarCollapsed(!open, false);
     els.sidebarOpen.addEventListener("click", () => setSidebarCollapsed(false));
+    // Κινητό: άμεση πρόσβαση στην αναζήτηση (ανοίγει τα φίλτρα και εστιάζει στο πεδίο)
+    els.searchOpen.addEventListener("click", () => {
+      setSidebarCollapsed(false);
+      els.sidebar.querySelector(".sb-body").scrollTop = 0;
+      setTimeout(() => els.search.focus(), 280);
+    });
     els.sidebarClose.addEventListener("click", () => setSidebarCollapsed(true));
   }
 
