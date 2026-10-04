@@ -442,8 +442,9 @@
   function pickImage(sum) {
     if (!sum || !sum.thumbnail || !sum.thumbnail.source) return null;
     const ow = sum.originalimage ? sum.originalimage.width : 0;
-    const target = Math.min(900, ow || 320);
-    return sum.thumbnail.source.replace(/\/(\d+)px-/, "/" + target + "px-");
+    const orig = sum.originalimage && sum.originalimage.source;
+    if (orig && ow && ow <= 1280) return orig; // μικρό πρωτότυπο: το δείχνουμε όπως είναι
+    return sum.thumbnail.source.replace(/\/(\d+)px-/, "/960px-");
   }
   function setStoryCollapsed(v) {
     els.story.classList.toggle("collapsed", v);
@@ -480,6 +481,7 @@
       const im = new Image();
       im.alt = got.title || ev.title;
       im.onload = () => { if (seq === storySeq) { els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
+      im.onerror = () => { const small = (got.thumbnail && got.thumbnail.source) || (sEn && sEn.thumbnail && sEn.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
       im.src = img;
     }
     const paras = got.extract.split(/\n+/).filter(Boolean).slice(0, 3);
@@ -1523,7 +1525,11 @@
       }
     }
     if (!target) return;
-    showEvent(target, { zoom: Math.max(1.6, state.zoomK) });
+    pause();
+    setStoryCollapsed(true);
+    setTime(target.s, { fromUser: true });
+    if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+    playScene(target);
   }
 
   function tick(now) {
