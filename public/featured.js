@@ -37,22 +37,22 @@
       caption: { el: "Μέσα στην αίθουσα ελέγχου του Αντιδραστήρα 4, εκεί όπου ξεκίνησε η καταστροφή. Ο μετρητής ακτινοβολίας δείχνει το «θερμότερο» σημείο.", en: "Inside the control room of Reactor 4, where the disaster began. The dosimeter finds the 'hottest' spot." },
     },
 
-    // ---------------- 3D ΜΟΝΤΕΛΑ (Sketchfab) ----------------
+    // ---------------- ΖΩΓΡΑΦΙΣΜΕΝΕΣ ΣΚΗΝΕΣ ΠΑΝΩ ΣΤΟΝ ΧΑΡΤΗ (scenes.js) ----------------
     giza: {
-      kind: "model", uid: "4a251113722f4d969b6cf2ca5f35c502", name: "The Great Pyramid of Giza", author: "ianicolo", license: "CC BY 4.0",
-      caption: { el: "146 μέτρα ύψος, 2,3 εκατ. ογκόλιθοι.", en: "146 metres tall, 2.3 million blocks." },
+      kind: "scene", scene: "pyramid",
+      caption: { el: "146 μέτρα ύψος και 2,3 εκατ. ογκόλιθοι. Ο άνθρωπος δίπλα της είναι σε πραγματική κλίμακα: μια κουκκίδα.", en: "146 metres tall, 2.3 million blocks. The person beside it is at true scale: a dot." },
     },
     parthenon: {
-      kind: "model", uid: "d5cc54ccd57a4bdeb3c164a96c677b59", name: "Parthenon - Acropolis, Athens Greece", author: "Nick G. Gizelis", license: "CC BY 4.0",
-      caption: { el: "Ικτίνος, Καλλικράτης, Φειδίας. 447–432 π.Χ.", en: "Ictinus, Callicrates, Phidias. 447–432 BC." },
+      kind: "scene", scene: "parthenon",
+      caption: { el: "Ικτίνος, Καλλικράτης, Φειδίας, 447–432 π.Χ. Ύψος 13,7 μέτρα· ο άνθρωπος δίπλα σε κλίμακα.", en: "Ictinus, Callicrates, Phidias, 447–432 BC. 13.7 metres tall; the person beside it is to scale." },
     },
     einstein: {
-      kind: "model", uid: "33ba1b5ba92744ec90b032b82d47befb", name: "Albert Einstein", author: "pattarrian", license: "CC BY 4.0",
-      caption: { el: "E = mc²", en: "E = mc²" }, bubble: true,
+      kind: "scene", scene: "einstein",
+      caption: { el: "Το 1905, ένας 26χρονος υπάλληλος γραφείου ευρεσιτεχνιών στη Βέρνη αλλάζει τη φυσική: χρόνος, χώρος, μάζα και ενέργεια δεν θα είναι ποτέ ξανά τα ίδια.", en: "In 1905 a 26-year-old patent clerk in Bern changes physics: time, space, mass and energy will never be the same." },
     },
     titanic: {
-      kind: "model", uid: "f0a6aa63294f45a2bf330c28502b2b67", name: "RMS Titanic", author: "Union", license: "CC BY 4.0",
-      caption: { el: "269 μέτρα, 2.224 επιβαίνοντες, 1.500 νεκροί.", en: "269 metres, 2,224 aboard, 1,500 dead." },
+      kind: "scene", scene: "titanic",
+      caption: { el: "269 μέτρα, το μεγαλύτερο πλοίο του κόσμου, «αβύθιστο». Χτύπησε το παγόβουνο στις 23:40 και βυθίστηκε σε 2 ώρες και 40 λεπτά.", en: "269 metres, the largest ship in the world, 'unsinkable'. It struck the iceberg at 23:40 and sank in 2 hours 40 minutes." },
     },
 
     // ---------------- ΜΙΝΙ ΙΣΤΟΡΙΕΣ (tours) ----------------
@@ -72,9 +72,9 @@
       kind: "tour", color: "#b36bff",
       stops: [
         { lat: 45.03, lng: 35.38, k: 4, date: "1346", el: ["Κάφα, Κριμαία, 1346", "Οι Μογγόλοι πολιορκούν τη γενουατική Κάφα. Η πανώλη, που έρχεται από την Ασία μέσω του Δρόμου του Μεταξιού, ξεσπά στο στρατόπεδό τους· κατά τον θρύλο εκσφενδονίζουν τα πτώματα μέσα στην πόλη."], en: ["Caffa, Crimea, 1346", "The Mongols besiege Genoese Caffa. The plague, arriving from Asia along the Silk Road, breaks out in their camp; legend says they catapult corpses into the city."] },
-        { lat: 38.19, lng: 15.55, k: 4, date: "1347-10", el: ["Μεσσήνη, Οκτώβριος 1347", "Δώδεκα γενουατικές γαλέρες φτάνουν στη Σικελία με ετοιμοθάνατα πληρώματα. Η πόλη τις διώχνει, αλλά είναι αργά: η πανώλη έχει πατήσει στην Ευρώπη."], en: ["Messina, October 1347", "Twelve Genoese galleys reach Sicily with dying crews. The city expels them, but too late: the plague has landed in Europe."] },
+        { lat: 38.19, lng: 15.55, k: 4, date: "1347-10", scene: "plaguedoctor", el: ["Μεσσήνη, Οκτώβριος 1347", "Δώδεκα γενουατικές γαλέρες φτάνουν στη Σικελία με ετοιμοθάνατα πληρώματα. Η πόλη τις διώχνει, αλλά είναι αργά: η πανώλη έχει πατήσει στην Ευρώπη."], en: ["Messina, October 1347", "Twelve Genoese galleys reach Sicily with dying crews. The city expels them, but too late: the plague has landed in Europe."] },
         { lat: 43.3, lng: 5.37, k: 3.5, date: "1348-01", el: ["Μασσαλία, Γένοβα, Βενετία, χειμώνας 1348", "Τα λιμάνια της Μεσογείου πέφτουν το ένα μετά το άλλο. Η Βενετία επινοεί την «καραντίνα»: σαράντα ημέρες απομόνωσης για τα πλοία."], en: ["Marseille, Genoa, Venice, winter 1348", "The Mediterranean ports fall one after another. Venice invents 'quarantine': forty days of isolation for ships."] },
-        { lat: 48.86, lng: 2.35, k: 3.5, date: "1348-08", el: ["Παρίσι και Λονδίνο, 1348", "Το καλοκαίρι φτάνει στο Παρίσι, όπου πεθαίνουν 800 την ημέρα, και τον Νοέμβριο στο Λονδίνο. Οι γιατροί συνιστούν αρώματα και αφαιμάξεις· τίποτα δεν βοηθά."], en: ["Paris and London, 1348", "In summer it reaches Paris, where 800 die a day, and in November London. Doctors prescribe perfumes and bloodletting; nothing helps."] },
+        { lat: 48.86, lng: 2.35, k: 3.5, date: "1348-08", scene: "plaguedoctor", el: ["Παρίσι και Λονδίνο, 1348", "Το καλοκαίρι φτάνει στο Παρίσι, όπου πεθαίνουν 800 την ημέρα, και τον Νοέμβριο στο Λονδίνο. Οι γιατροί συνιστούν αρώματα και αφαιμάξεις· τίποτα δεν βοηθά."], en: ["Paris and London, 1348", "In summer it reaches Paris, where 800 die a day, and in November London. Doctors prescribe perfumes and bloodletting; nothing helps."] },
         { lat: 52.5, lng: 13.4, k: 3, date: "1349-06", el: ["Γερμανία και Σκανδιναβία, 1349–1350", "Οι Φλαγγελάντες περιοδεύουν αυτομαστιγούμενοι. Εκατοντάδες εβραϊκές κοινότητες σφαγιάζονται ως «ένοχες». Ένα πλοίο-φάντασμα φέρνει την αρρώστια στο Μπέργκεν της Νορβηγίας."], en: ["Germany and Scandinavia, 1349–1350", "Flagellants roam the land whipping themselves. Hundreds of Jewish communities are massacred as 'guilty'. A ghost ship brings the disease to Bergen, Norway."] },
         { lat: 55.75, lng: 37.6, k: 3, date: "1351", el: ["Μόσχα, 1351–1353", "Η πανώλη κλείνει τον κύκλο της στη Ρωσία. Σε πέντε χρόνια έχει πεθάνει το ένα τρίτο της Ευρώπης, ίσως 25 εκατ. άνθρωποι. Οι μισθοί ανεβαίνουν, η δουλοπαροικία κλονίζεται, ο κόσμος αλλάζει."], en: ["Moscow, 1351–1353", "The plague closes its circle in Russia. In five years a third of Europe has died, perhaps 25 million people. Wages rise, serfdom is shaken, the world changes."] },
       ],

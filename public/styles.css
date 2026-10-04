@@ -137,7 +137,6 @@ g.hist-year.out { opacity: 0; }
 .featured-row.on .txt { color: #ffd36b; }
 .story-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
 .story-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.story-media.model { aspect-ratio: 4 / 3; }
 .story-feature:empty { display: none; }
 .story-caption { font-size: 12.5px; color: #d7ddf0; margin: 0 0 6px; line-height: 1.45; }
 .story-credit { font-size: 10.5px; color: var(--muted); margin: 0 0 10px; }
@@ -156,23 +155,12 @@ g.hist-year.out { opacity: 0; }
 .tour-route { fill: none; stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; filter: url(#glow); }
 .tour-stop circle { stroke: #fff; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .tour-stop text { font-size: 10px; font-weight: 800; fill: #111; text-anchor: middle; dominant-baseline: central; }
-.stage { position: absolute; z-index: 5; width: 340px; pointer-events: none; }
-.stage.collapsed { display: none; }
-.stage-box { pointer-events: auto; position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
-.stage-box .panel-toggle { position: absolute; top: 6px; right: 6px; z-index: 2; background: rgba(10, 14, 32, 0.75); }
-.stage-frame { aspect-ratio: 4 / 3; background: #000; }
-.stage-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
-.stage-credit { font-size: 10px; color: var(--muted); padding: 4px 8px; }
-.stage-credit a { color: var(--muted); }
-.stage-bubble {
-  display: inline-block; margin: 0 0 10px 26px; position: relative;
-  background: #fff; color: #111; font-weight: 800; font-size: 22px; padding: 8px 16px; border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-  animation: bubble-in 700ms cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.stage-bubble::after { content: ""; position: absolute; left: 20px; bottom: -10px; border: 10px solid transparent; border-top-color: #fff; border-bottom: 0; }
-.stage-bubble:empty { display: none; }
-@keyframes bubble-in { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* Ζωγραφισμένες σκηνές πάνω στον χάρτη (scenes.js) */
+.scene { pointer-events: none; }
+.scene text { font-weight: 700; fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,0.65); stroke-width: 3px; text-anchor: middle; dominant-baseline: central; }
+.scene text.ink { fill: #111; stroke: none; }
+.scene .sway { animation: sway 4s ease-in-out infinite; transform-origin: 0 0; }
+@keyframes sway { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
 
 /* Ζωντανές αναπαραστάσεις πάνω στον χάρτη */
 .fx { pointer-events: none; }
@@ -800,8 +788,7 @@ g.hist-year.out { opacity: 0; }
   }
   .sidebar.collapsed, .panel.collapsed, .story.collapsed { transform: translateY(110%); opacity: 0; }
   .story-media { aspect-ratio: 2 / 1; }
-  .story-media.model { aspect-ratio: 4 / 3; }
-  .stage { display: none !important; }
+
   /* λαβή συρσίματος στην κορυφή του φύλλου */
   .sidebar::before, .panel::before, .story::before {
     content: ""; position: absolute; top: 6px; left: 50%; width: 38px; height: 4px; margin-left: -19px;
