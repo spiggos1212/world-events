@@ -515,7 +515,7 @@
       if (kw(ev, /πυρκαγ|fire|καίγ|burn|φωτιά|καίει/)) { fire(pt, 2800); done(3000); return; }
       rings(pt, color, 3, 1800); done(2000); return;
     }
-    if (T === "war") { clash(pt, color, 2600); setTimeout(() => fire(pt, 2600), 1100); done(3800); return; }
+    if (T === "war") { clash(pt, color, 2600); setTimeout(() => fire(pt, 2600), 300); done(3200); return; }
     if (T === "revolution") { fist(pt, 2800); fire(pt, 2600); sparks(pt, color); done(3000); return; }
     if (T === "exploration") { if (ev.from) voyage(g, ev, 3200); else radar(pt, color, 2400); done(3400); return; }
     if (T === "science") { formula(pt, scienceText(ev), 3000); rays(pt, "#fff", 1600); done(3200); return; }
@@ -603,22 +603,13 @@
     }
   }
   function clash(g, color, dur) {
-    const mk = (side) => {
-      for (let i = -1; i <= 1; i++) {
-        g.append("line").attr("x1", side * 70).attr("y1", i * 14).attr("x2", side * 70).attr("y2", i * 14)
-          .attr("stroke", side < 0 ? "#ff5c5c" : "#5c9dff").attr("stroke-width", 2.5).attr("stroke-linecap", "round").attr("marker-end", "url(#arrowhead)")
-          .transition().duration(dur * 0.45).ease(d3.easeCubicIn).attr("x2", side * 10).attr("y2", i * 4)
-          .transition().duration(400).attr("opacity", 0);
-      }
-    };
-    mk(-1); mk(1);
     g.append("circle").attr("r", 0).attr("fill", "#fff").attr("opacity", 0)
-      .transition().delay(dur * 0.45).duration(600).ease(d3.easeExpOut).attr("r", 34).attr("opacity", 0.9)
+      .transition().delay(0).duration(600).ease(d3.easeExpOut).attr("r", 34).attr("opacity", 0.9)
       .transition().duration(600).attr("opacity", 0);
     for (let i = 0; i < 14; i++) {
       const a = Math.random() * Math.PI * 2, d = 20 + Math.random() * 40;
       g.append("circle").attr("r", 2).attr("fill", color).attr("opacity", 0)
-        .transition().delay(dur * 0.45).attr("opacity", 1)
+        .transition().delay(0).attr("opacity", 1)
         .transition().duration(800).ease(d3.easeCubicOut).attr("cx", Math.cos(a) * d).attr("cy", Math.sin(a) * d).attr("opacity", 0);
     }
   }
