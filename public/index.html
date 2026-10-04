@@ -82,6 +82,12 @@
               <button id="filters-none" class="sb-link" data-i18n="none">Κανένα</button>
             </span>
           </h3>
+          <label class="sb-row featured-row">
+            <input type="checkbox" id="featured-only" />
+            <span class="cb"></span>
+            <span class="txt"><span class="star">★</span> <span data-i18n="featuredOnly">Μόνο κορυφαία</span></span>
+            <span id="featured-count" class="count"></span>
+          </label>
           <div id="filters" class="filters" aria-label="Φίλτρα γεγονότων"></div>
         </section>
         <p class="sb-credit"><span data-i18n="borders">Σύνορα:</span> <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noopener">historical-basemaps</a> <span data-i18n="creditNote">(GPL-3.0, κατά προσέγγιση)</span></p>
@@ -100,6 +106,15 @@
       <ul id="panel-list" class="panel-list"></ul>
     </aside>
 
+    <div id="stage" class="stage collapsed">
+      <div id="stage-bubble" class="stage-bubble"></div>
+      <div class="stage-box">
+        <button id="stage-close" class="panel-toggle" aria-label="Κλείσιμο" data-i18n-aria="close" title="Κλείσιμο" data-i18n-title="close">×</button>
+        <div id="stage-frame" class="stage-frame"></div>
+        <div id="stage-credit" class="stage-credit"></div>
+      </div>
+    </div>
+
     <aside id="story" class="story collapsed" aria-label="Ιστορία γεγονότος" data-i18n-aria="storyAria">
       <div class="story-head">
         <span id="story-type" class="story-type"></span>
@@ -111,6 +126,7 @@
           <h2 id="story-title" class="story-title"></h2>
           <div id="story-meta" class="story-meta"></div>
           <p id="story-desc" class="story-desc"></p>
+          <div id="story-feature" class="story-feature"></div>
           <div id="story-wiki" class="story-wiki"></div>
           <div id="story-links" class="story-links"></div>
         </div>
@@ -169,6 +185,7 @@
   <script src="en/americas.js"></script>
   <script src="en/regions.js"></script>
   <script src="wiki.js"></script>
+  <script src="featured.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

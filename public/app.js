@@ -37,6 +37,8 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
+      featuredOnly: "Μόνο κορυφαία", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
+      videoCredit: "Βίντεο:", modelCredit: "3D μοντέλο:",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -55,6 +57,8 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
+      featuredOnly: "Featured only", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
+      videoCredit: "Video:", modelCredit: "3D model:",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -109,6 +113,7 @@
     lang: "el",
     proj: "natural",
     style: "simple",
+    featuredOnly: false,
   };
 
   // ---------- DOM ----------
@@ -157,6 +162,14 @@
     storyDesc: $("#story-desc"),
     storyWiki: $("#story-wiki"),
     storyLinks: $("#story-links"),
+    storyFeature: $("#story-feature"),
+    featuredOnly: $("#featured-only"),
+    featuredCount: $("#featured-count"),
+    stage: $("#stage"),
+    stageBubble: $("#stage-bubble"),
+    stageFrame: $("#stage-frame"),
+    stageCredit: $("#stage-credit"),
+    stageClose: $("#stage-close"),
     histLoading: $("#hist-loading"),
   };
 
@@ -243,6 +256,8 @@
     .filter((e) => e.lat != null && e.lng != null && e.start && TYPES[e.type])
     .map((e) => ({ ...e, s: dateToMonths(e.start), e: e.end ? dateToMonths(e.end) : null }))
     .sort((a, b) => a.s - b.s);
+  // Κορυφαία γεγονότα με βίντεο / 3D / μίνι ιστορία (featured.js)
+  const FEATURED = window.WORLD_FEATURED || {};
   // Κείμενα ανά γλώσσα: τα ελληνικά είναι στα αρχεία δεδομένων, τα αγγλικά στο window.WORLD_EVENTS_EN
   {
     const EN = window.WORLD_EVENTS_EN || {};
@@ -257,6 +272,7 @@
     for (const ev of EVENTS) {
       if (ev.s > t) break; // ταξινομημένα κατά έναρξη
       if (state.hiddenTypes.has(ev.type)) continue;
+      if (state.featuredOnly && !FEATURED[ev.id]) continue;
       // ορατό μόνο μέσα στο ημερολογιακό έτος που ξεκίνησε (ή ως το τέλος του, αν διαρκεί περισσότερο)
       const yearEnd = (Math.floor(ev.s / 12) + 1) * 12;
       const end = ev.e != null ? Math.max(ev.e, yearEnd) : yearEnd;
@@ -286,6 +302,7 @@
   const gHist = gRoot.append("g").attr("class", "hist-layer");
   const gEvents = gRoot.append("g").attr("class", "events-layer");
   const gFx = gRoot.append("g").attr("class", "fx");
+  const gTour = gRoot.append("g").attr("class", "tour-layer");
 
   let countriesFeatures = [];
   let countryColors = new Map();
@@ -303,6 +320,8 @@
       gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
       rasterFollow(ev.transform);
+      positionStage();
+      gTour.selectAll("g.tour-stop").attr("transform", (d) => "translate(" + d[0] + "," + d[1] + ") scale(" + bodyScale() + ")");
     })
     .on("end", () => { if (state.style === "real") scheduleRaster(); });
   els.svg.call(zoom).on("dblclick.zoom", null);
@@ -322,6 +341,8 @@
     els.svg.call(zoom.transform, d3.zoomTransform(els.svg.node()));
     redrawMap();
     if (state.style === "real") scheduleRaster(0);
+    positionStage();
+    if (tour) drawTour(tour.f.stops.slice(0, tour.i + 1), tour.f.color);
   }
 
   // ---------- Ρεαλιστικός χάρτης: raster υφή της Γης, επαναπροβολή σε canvas ----------
@@ -430,6 +451,9 @@
   const wikiCache = new Map();
   let storyEv = null;
   let storySeq = 0;
+  let tour = null;     // { ev, f, i } ενεργή μίνι ιστορία
+  let stageEv = null;  // γεγονός με 3D σκηνή πάνω στον χάρτη
+  const isMobile = () => window.matchMedia("(max-width: 820px)").matches;
   function fetchSummary(lang, title) {
     const key = lang + ":" + title;
     if (!wikiCache.has(key)) {
@@ -448,9 +472,10 @@
   }
   function setStoryCollapsed(v) {
     els.story.classList.toggle("collapsed", v);
-    if (v) storyEv = null;
+    if (v) { storyEv = null; endTour(); closeStage(); }
   }
   els.storyClose.addEventListener("click", () => setStoryCollapsed(true));
+  els.stageClose.addEventListener("click", closeStage);
   async function openStory(ev) {
     storyEv = ev;
     const seq = ++storySeq;
@@ -462,11 +487,21 @@
     els.storyDesc.textContent = ev.description || "";
     els.storyMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
     els.storyWiki.innerHTML = '<span class="loading">' + esc(t("wikiLoading")) + "</span>";
+    els.storyWiki.style.display = "";
     els.storyLinks.innerHTML = "";
+    els.storyFeature.innerHTML = "";
+    els.storyMedia.classList.remove("model");
     els.storyBody.scrollTop = 0;
+    endTour(); closeStage();
     setStoryCollapsed(false);
     setPanelCollapsed(true);
-    if (window.matchMedia("(max-width: 820px)").matches) setSidebarCollapsed(true);
+    if (isMobile()) setSidebarCollapsed(true);
+    // Κορυφαίο γεγονός: βίντεο, 3D ή μίνι ιστορία
+    const f = FEATURED[ev.id];
+    if (f && f.kind === "video") renderVideo(f);
+    else if (f && f.kind === "model") renderModel(ev, f);
+    else if (f && f.kind === "tour") startTour(ev, f);
+    const skipImage = !!(f && (f.kind === "video" || (f.kind === "model" && isMobile())));
 
     const w = WIKI[ev.id] || [null, null];
     if (!w[0] && !w[1]) { els.storyWiki.innerHTML = ""; return; }
@@ -477,7 +512,7 @@
     if (!got) { els.storyWiki.innerHTML = '<span class="note">' + esc(t("wikiFail")) + "</span>"; return; }
     const gotLang = got === sEl ? "el" : "en";
     const img = pickImage(got) || pickImage(sEn) || pickImage(sEl);
-    if (img) {
+    if (img && !skipImage) {
       const im = new Image();
       im.alt = got.title || ev.title;
       im.onload = () => { if (seq === storySeq) { els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
@@ -489,6 +524,112 @@
       (gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "");
     const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
     els.storyLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
+  }
+
+  // ---------- Κορυφαία γεγονότα: βίντεο / 3D μοντέλο / μίνι ιστορία ----------
+  const sketchfabEmbed = (uid) => "https://sketchfab.com/models/" + uid + "/embed?autostart=1&autospin=0.3&ui_theme=dark&ui_infos=0&ui_watermark=0&ui_watermark_link=0&ui_hint=0&dnt=1";
+  const sketchfabPage = (uid) => "https://sketchfab.com/3d-models/" + uid;
+  const capOf = (f) => (f.caption && (f.caption[state.lang] || f.caption.el)) || "";
+  function renderVideo(f) {
+    const v = document.createElement("video");
+    v.controls = true; v.preload = "metadata"; v.playsInline = true;
+    f.sources.forEach((s) => { const so = document.createElement("source"); so.src = s.src; so.type = s.type; v.appendChild(so); });
+    els.storyMedia.innerHTML = "";
+    els.storyMedia.appendChild(v);
+    els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>" +
+      '<div class="story-credit">' + esc(t("videoCredit")) + " " + esc(f.credit) + ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a></div>';
+  }
+  function renderModel(ev, f) {
+    const credit = '<div class="story-credit">' + esc(t("modelCredit")) + ' <a href="' + esc(sketchfabPage(f.uid)) + '" target="_blank" rel="noopener">' + esc(f.name) + "</a> · " + esc(f.author) + " · " + esc(f.license) + " · Sketchfab</div>";
+    els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>" + credit;
+    if (isMobile()) {
+      els.storyMedia.classList.add("model");
+      els.storyMedia.innerHTML = '<iframe title="' + esc(f.name) + '" src="' + sketchfabEmbed(f.uid) + '" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy"></iframe>';
+    } else {
+      openStage(ev, f);
+    }
+  }
+  // 3D σκηνή πάνω στον χάρτη, δίπλα στο σημείο του γεγονότος
+  function openStage(ev, f) {
+    stageEv = ev;
+    els.stageFrame.innerHTML = '<iframe title="' + esc(f.name) + '" src="' + sketchfabEmbed(f.uid) + '" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>';
+    els.stageBubble.textContent = f.bubble ? capOf(f) : "";
+    els.stageCredit.innerHTML = esc(f.name) + " · " + esc(f.author) + " · " + esc(f.license) + ' · <a href="' + esc(sketchfabPage(f.uid)) + '" target="_blank" rel="noopener">Sketchfab</a>';
+    els.stage.classList.remove("collapsed");
+    positionStage();
+  }
+  function closeStage() {
+    stageEv = null;
+    els.stage.classList.add("collapsed");
+    els.stageFrame.innerHTML = "";
+  }
+  function positionStage() {
+    if (!stageEv || els.stage.classList.contains("collapsed")) return;
+    const tr = d3.zoomTransform(els.svg.node());
+    const [mx, my] = projection([stageEv.lng, stageEv.lat]);
+    const x = tr.applyX(mx), y = tr.applyY(my);
+    const w = els.stage.offsetWidth || 340, h = els.stage.offsetHeight || 300;
+    const W = width(), H = height();
+    let left = x - w - 18, top = y - h + 24;
+    if (left < 8) left = Math.min(W - w - 8, x + 18);
+    top = Math.max(8, Math.min(H - h - 8, top));
+    els.stage.style.left = left + "px";
+    els.stage.style.top = top + "px";
+  }
+  // Μίνι ιστορία: στάσεις με κάμερα, χρόνο, κείμενο και διαδρομή στον χάρτη
+  function startTour(ev, f) {
+    tour = { ev, f, i: 0 };
+    els.storyWiki.style.display = "none";
+    gotoStop(0);
+  }
+  function endTour() {
+    if (!tour) return;
+    tour = null;
+    gTour.selectAll("*").remove();
+    els.storyWiki.style.display = "";
+  }
+  function gotoStop(i) {
+    if (!tour) return;
+    const { f, ev } = tour;
+    const stops = f.stops;
+    i = Math.max(0, Math.min(stops.length - 1, i));
+    tour.i = i;
+    const st = stops[i];
+    const txt = st[state.lang] || st.el;
+    pause();
+    setTime(dateToMonths(st.date), { fromUser: true });
+    const [x, y] = projection([st.lng, st.lat]);
+    const k = st.k || 3;
+    els.svg.transition().duration(900).call(zoom.transform, d3.zoomIdentity.translate(width() / 2 - x * k, height() / 2 - y * k).scale(k));
+    drawTour(stops.slice(0, i + 1), f.color);
+    els.storyTitle.textContent = ev.title;
+    els.storyMeta.innerHTML = '<span class="tour-step">' + esc(t("tourStop")) + " " + (i + 1) + " / " + stops.length + "</span>";
+    els.storyDesc.innerHTML = "<strong>" + esc(txt[0]) + "</strong><br>" + esc(txt[1]);
+    const last = i === stops.length - 1;
+    els.storyFeature.innerHTML = '<div class="tour-bar" style="--tour:' + esc(f.color) + '">' + stops.map((_, j) => '<span class="' + (j <= i ? "done" : "") + '"></span>').join("") + "</div>" +
+      '<div class="tour-nav"><button type="button" id="tour-prev"' + (i === 0 ? " disabled" : "") + ">" + esc(t("tourPrev")) + '</button><button type="button" id="tour-next" class="primary">' + esc(last ? t("tourRestart") : t("tourNext")) + "</button></div>";
+    els.storyFeature.querySelector("#tour-prev").onclick = () => gotoStop(tour.i - 1);
+    els.storyFeature.querySelector("#tour-next").onclick = () => gotoStop(tour.i === stops.length - 1 ? 0 : tour.i + 1);
+    els.storyBody.scrollTop = 0;
+  }
+  function drawTour(stops, color) {
+    gTour.selectAll("*").remove();
+    if (stops.length > 1) {
+      const d = path({ type: "LineString", coordinates: stops.map((s) => [s.lng, s.lat]) });
+      if (d) {
+        const p = gTour.append("path").attr("class", "tour-route").attr("d", d).attr("stroke", color);
+        const len = p.node().getTotalLength();
+        p.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len)
+          .transition().duration(900).ease(d3.easeCubicInOut).attr("stroke-dashoffset", 0)
+          .on("end", () => p.attr("stroke-dasharray", "6 6"));
+      }
+    }
+    stops.forEach((st, j) => {
+      const [x, y] = projection([st.lng, st.lat]);
+      const g = gTour.append("g").attr("class", "tour-stop").datum([x, y]).attr("transform", "translate(" + x + "," + y + ") scale(" + bodyScale() + ")");
+      g.append("circle").attr("r", 9).attr("fill", j === stops.length - 1 ? "#fff" : color);
+      g.append("text").text(j + 1);
+    });
   }
 
   // ---------- Ζωντανές αναπαραστάσεις πάνω στον χάρτη (ανά τύπο γεγονότος) ----------
@@ -1027,6 +1168,7 @@
     }
     body.append("circle").attr("class", "icon-bg").attr("r", 10);
     body.append("text").attr("class", "icon").text(TYPES[ev.type].icon);
+    if (FEATURED[ev.id]) body.append("text").attr("class", "star").attr("x", 9).attr("y", -8).text("★");
 
     const label = body.append("g").attr("class", "label");
     label.append("line").attr("class", "leader");
@@ -1138,7 +1280,7 @@
         (enter) =>
           enter
             .append("g")
-            .attr("class", (a) => "ev t-" + a.ev.type)
+            .attr("class", (a) => "ev t-" + a.ev.type + (FEATURED[a.ev.id] ? " featured" : ""))
             .each(function (a) {
               const g = d3.select(this);
               buildEvent(g, a.ev);
@@ -1194,7 +1336,7 @@
           <span class="bar"></span>
           <span>
             <div class="meta">${esc(yrs)} · ${esc(TYPES[ev.type].label)}</div>
-            <div class="ttl">${esc(TYPES[ev.type].icon)} ${esc(ev.title)}</div>
+            <div class="ttl">${FEATURED[ev.id] ? '<span class="star">★</span> ' : ""}${esc(TYPES[ev.type].icon)} ${esc(ev.title)}</div>
             ${ev.description ? `<div class="dsc">${esc(ev.description)}</div>` : ""}
           </span>
         </li>`;
@@ -1292,7 +1434,7 @@
   function searchEvents(q) {
     const terms = norm(q).split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
-    return EVENTS.filter((ev) => terms.every((t) => ev._hay.includes(t)));
+    return EVENTS.filter((ev) => (!state.featuredOnly || FEATURED[ev.id]) && terms.every((t) => ev._hay.includes(t)));
   }
   function renderSearch() {
     const q = els.search.value.trim();
@@ -1305,7 +1447,7 @@
       const yrs = yearOf(ev.start) + (ev.end ? "–" + yearOf(ev.end) : "");
       return `<li class="t-${ev.type}" data-id="${esc(ev.id)}" role="option">
         <span class="bar"></span>
-        <span><div class="meta">${esc(yrs)} · ${esc(TYPES[ev.type].label)}</div><div class="ttl">${esc(TYPES[ev.type].icon)} ${esc(ev.title)}</div></span>
+        <span><div class="meta">${esc(yrs)} · ${esc(TYPES[ev.type].label)}</div><div class="ttl">${FEATURED[ev.id] ? '<span class="star">★</span> ' : ""}${esc(TYPES[ev.type].icon)} ${esc(ev.title)}</div></span>
       </li>`;
     }).join("");
   }
@@ -1519,7 +1661,7 @@
 
   // Βελάκια: μετάβαση στο επόμενο / προηγούμενο ορατό γεγονός (όχι κρυμμένου τύπου)
   function stepEvent(dir) {
-    const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type));
+    const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type) && (!state.featuredOnly || FEATURED[ev.id]));
     if (!visible.length) return;
     const cur = state.t;
     let target = null;
@@ -1563,7 +1705,7 @@
     els.play.classList.remove("playing");
     els.play.setAttribute("aria-label", "Play");
   }
-  function toggle() { state.playing ? pause() : play(); }
+  function toggle() { if (state.playing) pause(); else { if (tour) setStoryCollapsed(true); play(); } }
 
   // Σταθερή ταχύτητα: 1 έτος ανά δευτερόλεπτο (δεν αλλάζει από τον χρήστη)
   function setSpeed(s) {
@@ -1587,6 +1729,7 @@
 
   document.addEventListener("keydown", (ev) => {
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
+    if (tour && (ev.code === "ArrowRight" || ev.code === "ArrowLeft")) { gotoStop(tour.i + (ev.code === "ArrowRight" ? 1 : -1)); return; }
     switch (ev.code) {
       case "Space": ev.preventDefault(); toggle(); break;
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
@@ -1611,7 +1754,7 @@
     play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
     get projection() { return projection; },
-    setProjection, setMapStyle, showEvent, openStory, playScene,
+    setProjection, setMapStyle, showEvent, openStory, playScene, featured: FEATURED,
     events: EVENTS,
     config: { START_YEAR, END_YEAR, SEGMENTS },
   };
@@ -1625,6 +1768,15 @@
   enableSwipeToClose(els.panel, els.panelList, () => setPanelCollapsed(true));
   enableSwipeToClose(els.story, els.storyBody, () => setStoryCollapsed(true));
   initMapOptions();
+  els.featuredCount.textContent = Object.keys(FEATURED).length;
+  els.featuredOnly.addEventListener("change", () => {
+    state.featuredOnly = els.featuredOnly.checked;
+    els.featuredOnly.closest(".sb-row").classList.toggle("on", state.featuredOnly);
+    gEvents.selectAll("g.ev").remove();
+    state.panelKey = "";
+    updateUI();
+    renderSearch();
+  });
   applyLayerVisibility();
   buildTicks();
   fitProjection();
