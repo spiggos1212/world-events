@@ -293,6 +293,9 @@
       gRoot.attr("transform", ev.transform);
       state.zoomK = ev.transform.k;
       gEvents.selectAll("g.ev .body").attr("transform", bodyTransform);
+      // κουκκίδα και παλμός κρατούν σταθερό μέγεθος στην οθόνη
+      gEvents.selectAll("g.ev .anchor").attr("r", 3.2 / state.zoomK);
+      gEvents.selectAll("g.ev .pulse").attr("r", 6 / state.zoomK);
       placeLabels();
     });
   els.svg.call(zoom).on("dblclick.zoom", null);
@@ -567,7 +570,7 @@
 
   // ---------- Event markers ----------
   function bodyTransform(a) {
-    const s = 1 / Math.sqrt(state.zoomK); // μικραίνουν ήπια όσο κάνουμε zoom
+    const s = 1 / state.zoomK; // σταθερό μέγεθος στην οθόνη, ανεξάρτητα από το zoom
     if (a.ev.from) return `scale(${s})`;
     const [x, y] = projection([a.ev.lng, a.ev.lat]);
     return `translate(${x},${y}) scale(${s})`;
@@ -588,8 +591,8 @@
       g.append("path").attr("class", "arrow-glow");
       g.append("path").attr("class", "arrow");
     }
-    g.append("circle").attr("class", "pulse").attr("r", 6);
-    g.append("circle").attr("class", "anchor").attr("r", 3.2);
+    g.append("circle").attr("class", "pulse").attr("r", 6 / state.zoomK);
+    g.append("circle").attr("class", "anchor").attr("r", 3.2 / state.zoomK);
 
     const body = g.append("g").attr("class", "body");
     if (ev.from) {
@@ -668,7 +671,7 @@
 
   // Τοποθέτηση ετικετών ώστε να μην καλύπτουν η μία την άλλη (πάνω / κάτω / δεξιά / αριστερά)
   function placeLabels() {
-    const s = 1 / Math.sqrt(state.zoomK);
+    const s = 1 / state.zoomK;
     const nodes = [];
     const obstacles = [];
     gEvents.selectAll("g.ev").each(function (a) {
