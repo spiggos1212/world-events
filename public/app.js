@@ -569,8 +569,8 @@
   }
 
   // ---------- Event markers ----------
-  // Όσο κάνουμε zoom in, εικονίδια και ταμπελάκια μικραίνουν ήπια στην οθόνη (έως 80% του αρχικού)
-  const screenScale = () => Math.max(0.8, Math.pow(state.zoomK, -0.15));
+  // Εικονίδια και ταμπελάκια μεγαλώνουν ήπια με το zoom (√k), αλλά όχι πάνω από 1.5× το αρχικό
+  const screenScale = () => Math.min(1.5, Math.sqrt(state.zoomK));
   const bodyScale = () => screenScale() / state.zoomK;
   function bodyTransform(a) {
     const s = bodyScale();
