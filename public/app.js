@@ -49,7 +49,6 @@
     t: 0,
     playing: false,
     speed: 1,
-    loop: false,
     lastFrame: 0,
     rafId: 0,
     zoomK: 1,
@@ -78,7 +77,6 @@
     labelEnd: $("#label-end"),
     speed: $("#speed"),
     speedInput: $("#speed-input"),
-    loop: $("#loop"),
     zoomIn: $("#zoom-in"),
     zoomOut: $("#zoom-out"),
     zoomReset: $("#zoom-reset"),
@@ -871,7 +869,7 @@
   function setTime(t, { fromUser = false } = {}) {
     state.t = clampT(t);
     updateUI();
-    if (fromUser && state.t >= TOTAL_MONTHS - 1 && state.playing && !state.loop) pause();
+    if (fromUser && state.t >= TOTAL_MONTHS - 1 && state.playing) pause();
   }
 
   function tick(now) {
@@ -879,10 +877,7 @@
     const dt = Math.min(0.5, (now - state.lastFrame) / 1000);
     state.lastFrame = now;
     let next = state.t + dt * playRate();
-    if (next >= TOTAL_MONTHS - 1) {
-      if (state.loop) next = 0;
-      else { setTime(TOTAL_MONTHS - 1); pause(); return; }
-    }
+    if (next >= TOTAL_MONTHS - 1) { setTime(TOTAL_MONTHS - 1); pause(); return; }
     setTime(next);
     state.rafId = requestAnimationFrame(tick);
   }
@@ -948,10 +943,6 @@
   els.speedInput.addEventListener("keydown", (ev) => {
     if (ev.key === "Enter") els.speedInput.blur();
     ev.stopPropagation(); // μην πιάνουν τα πλήκτρα του timeline (Space, βελάκια)
-  });
-  els.loop.addEventListener("click", () => {
-    state.loop = !state.loop;
-    els.loop.setAttribute("aria-pressed", String(state.loop));
   });
 
   document.addEventListener("keydown", (ev) => {
