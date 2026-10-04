@@ -564,20 +564,21 @@ g.hist-year.out { opacity: 0; }
 .month { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 26px; }
 .era { font-size: 11px; color: var(--accent); font-weight: 600; margin-left: 2px; }
 
-.track-wrap { position: relative; flex: 1; min-width: 0; padding: 8px 0 13px; }
-.ticks { position: absolute; left: 0; right: 0; top: 0; height: 8px; }
-.tick { position: absolute; top: 0; width: 1px; height: 4px; background: rgba(255,255,255,0.16); transform: translateX(-0.5px); }
-.tick.major { height: 8px; background: rgba(255,255,255,0.4); }
+.track-wrap { position: relative; flex: 1; min-width: 0; padding: 23px 0 6px; }
+.ticks { position: absolute; left: 0; right: 0; top: 13px; height: 10px; }
+.tick { position: absolute; bottom: 0; width: 1px; height: 5px; background: rgba(255,255,255,0.22); transform: translateX(-0.5px); }
+.tick.major { height: 10px; background: rgba(255,255,255,0.55); }
 .tick-label {
   position: absolute;
-  bottom: 0;
+  top: 0;
   transform: translateX(-50%);
-  font-size: 9px;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
-  color: var(--muted);
+  color: rgba(255,255,255,0.82);
   white-space: nowrap;
 }
-.event-marks { position: absolute; left: 0; right: 0; top: 9px; height: 4px; pointer-events: none; }
+.event-marks { position: absolute; left: 0; right: 0; top: 24px; height: 4px; pointer-events: none; }
 .event-mark { position: absolute; top: 0; width: 2px; height: 4px; border-radius: 1px; background: var(--c); opacity: 0.55; transform: translateX(-1px); }
 
 .track {
@@ -714,7 +715,9 @@ g.hist-year.out { opacity: 0; }
   .tl-left { grid-area: left; gap: 6px; }
   .tl-center { display: contents; }
   .year-display { grid-area: year; min-width: 0; }
-  .track-wrap { grid-area: track; padding: 4px 0 2px; }
+  .track-wrap { grid-area: track; padding: 10px 0 2px; }
+  .ticks { top: 0; }
+  .event-marks { top: 11px; }
   .tl-right { grid-area: speed; gap: 4px; }
   .play-btn { width: 34px; height: 34px; }
   .play-btn svg { width: 16px; height: 16px; }
