@@ -92,8 +92,15 @@
         <svg class="ico-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
         <svg class="ico-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z" fill="currentColor"/></svg>
       </button>
-      <button id="step-back" class="icon-btn small" title="−1 έτος" data-i18n-title="prevYear" aria-label="Previous year">‹</button>
-      <button id="step-fwd" class="icon-btn small" title="+1 έτος" data-i18n-title="nextYear" aria-label="Next year">›</button>
+      <label class="speed-label" for="speed-input" data-i18n="speedLabel">Έτη / δευτ.</label>
+      <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής (έτη ανά δευτερόλεπτο)">
+        <button data-speed="0.5">0.5</button>
+        <button data-speed="1" class="active">1</button>
+        <button data-speed="5">5</button>
+        <button data-speed="10">10</button>
+        <input id="speed-input" class="speed-input" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1" value="1"
+               aria-label="Έτη ανά δευτερόλεπτο" data-i18n-aria="speedAria" title="Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις" data-i18n-title="speedTitle" />
+      </div>
     </div>
 
     <div class="tl-center">
@@ -115,15 +122,8 @@
     </div>
 
     <div class="tl-right">
-      <label class="speed-label" for="speed-input" data-i18n="speedLabel">Έτη / δευτ.</label>
-      <div id="speed" class="speed" role="group" aria-label="Ταχύτητα αναπαραγωγής (έτη ανά δευτερόλεπτο)">
-        <button data-speed="0.5">0.5</button>
-        <button data-speed="1" class="active">1</button>
-        <button data-speed="5">5</button>
-        <button data-speed="10">10</button>
-        <input id="speed-input" class="speed-input" type="number" inputmode="decimal" min="0.1" max="1000" step="0.1" value="1"
-               aria-label="Έτη ανά δευτερόλεπτο" data-i18n-aria="speedAria" title="Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις" data-i18n-title="speedTitle" />
-      </div>
+      <button id="step-back" class="icon-btn small" title="Προηγούμενο γεγονός" data-i18n-title="prevYear" aria-label="Previous event">‹</button>
+      <button id="step-fwd" class="icon-btn small" title="Επόμενο γεγονός" data-i18n-title="nextYear" aria-label="Next event">›</button>
     </div>
   </footer>
 

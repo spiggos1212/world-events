@@ -35,7 +35,7 @@
       borders: "Σύνορα:", creditNote: "(GPL-3.0, κατά προσέγγιση)", loadingBorders: "Φόρτωση συνόρων…",
       now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε Play για να ξεκινήσει η ιστορία.",
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
-      prevYear: "−1 έτος", nextYear: "+1 έτος", trackAria: "Θέση στο timeline",
+      prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", trackAria: "Θέση στο timeline",
       speedLabel: "Έτη / δευτ.", speedAria: "Έτη ανά δευτερόλεπτο", speedTitle: "Γράψε πόσα έτη ανά δευτερόλεπτο θέλεις",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
@@ -48,7 +48,7 @@
       borders: "Borders:", creditNote: "(GPL-3.0, approximate)", loadingBorders: "Loading borders…",
       now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press Play to start the story.",
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
-      prevYear: "−1 year", nextYear: "+1 year", trackAria: "Timeline position",
+      prevYear: "Previous event", nextYear: "Next event", trackAria: "Timeline position",
       speedLabel: "Years / sec", speedAria: "Years per second", speedTitle: "Type how many years per second you want",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
@@ -1068,6 +1068,24 @@
     if (fromUser && state.t >= TOTAL_MONTHS - 1 && state.playing) pause();
   }
 
+  // Βελάκια: μετάβαση στο επόμενο / προηγούμενο ορατό γεγονός (όχι κρυμμένου τύπου)
+  function stepEvent(dir) {
+    const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type));
+    if (!visible.length) return;
+    const cur = state.t;
+    let target = null;
+    if (dir > 0) {
+      target = visible.find((ev) => ev.s > cur + 0.5) || null;
+    } else {
+      for (let i = visible.length - 1; i >= 0; i--) {
+        if (visible[i].s < cur - 0.5) { target = visible[i]; break; }
+      }
+    }
+    if (!target) return;
+    pause();
+    setTime(target.s, { fromUser: true });
+  }
+
   function tick(now) {
     if (!state.playing) return;
     const dt = Math.min(0.5, (now - state.lastFrame) / 1000);
@@ -1120,8 +1138,8 @@
   }
 
   els.play.addEventListener("click", toggle);
-  els.stepBack.addEventListener("click", () => setTime(state.t - stepMonths(), { fromUser: true }));
-  els.stepFwd.addEventListener("click", () => setTime(state.t + stepMonths(), { fromUser: true }));
+  els.stepBack.addEventListener("click", () => stepEvent(-1));
+  els.stepFwd.addEventListener("click", () => stepEvent(1));
 
   els.track.min = 0;
   els.track.max = TRACK_MAX;
@@ -1145,8 +1163,9 @@
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     switch (ev.code) {
       case "Space": ev.preventDefault(); toggle(); break;
-      case "ArrowRight": setTime(state.t + stepMonths() * (ev.shiftKey ? 10 : 1), { fromUser: true }); break;
-      case "ArrowLeft": setTime(state.t - stepMonths() * (ev.shiftKey ? 10 : 1), { fromUser: true }); break;
+      // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
+      case "ArrowRight": if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
+      case "ArrowLeft": if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
       case "Home": setTime(0, { fromUser: true }); break;
       case "End": setTime(TOTAL_MONTHS - 1, { fromUser: true }); break;
     }

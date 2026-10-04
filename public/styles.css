@@ -718,11 +718,11 @@ g.hist-year.out { opacity: 0; }
     gap: 6px 10px;
     padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
   }
-  .tl-left { grid-area: left; gap: 4px; }
+  .tl-left { grid-area: left; gap: 6px; }
   .tl-center { display: contents; }
   .year-display { grid-area: year; min-width: 0; }
   .track-wrap { grid-area: track; padding: 8px 0 4px; }
-  .tl-right { grid-area: speed; gap: 6px; }
+  .tl-right { grid-area: speed; gap: 4px; }
   .play-btn { width: 44px; height: 44px; }
   .play-btn svg { width: 20px; height: 20px; }
   .icon-btn.small { width: 30px; height: 30px; font-size: 18px; }
