@@ -24,6 +24,7 @@
   --c-crop: #b7e061;
   --c-tree: #41b06e;
   --c-spice: #d4a373;
+  --c-animal: #f0e0c0;
 
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -147,6 +148,7 @@ g.hist-year.out { opacity: 0; }
 .t-crop { --c: var(--c-crop); }
 .t-tree { --c: var(--c-tree); }
 .t-spice { --c: var(--c-spice); }
+.t-animal { --c: var(--c-animal); }
 .ev .arrow, .ev .arrow-glow, .ev .pulse { stroke: var(--c); }
 .ev .anchor, .ev .icon-bg { fill: var(--c); }
 .ev .label .lbl-year { fill: var(--c); }

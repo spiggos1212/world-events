@@ -37,11 +37,12 @@
     crop: { label: "Καλλιέργειες & φυτά", icon: "🌾" },
     tree: { label: "Δέντρα", icon: "🌳" },
     spice: { label: "Ποτά & μπαχαρικά", icon: "☕" },
+    animal: { label: "Ζώα", icon: "🐾" },
   };
   // Κατηγορίες φίλτρων (sidebar): κάθε τύπος ανήκει σε μία κατηγορία
   const CATEGORIES = [
     { id: "human", label: "Άνθρωπος", icon: "🧑", types: ["war", "revolution", "politics", "exploration", "science", "culture", "economy", "tragedy"] },
-    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice"] },
+    { id: "nature", label: "Φύση", icon: "🌍", types: ["disaster", "crop", "tree", "spice", "animal"] },
   ];
 
   // Παλέτα χωρών (ήπια «ζωγραφισμένα» χρώματα πάνω σε σκούρο ωκεανό)
