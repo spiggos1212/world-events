@@ -515,7 +515,7 @@
       if (kw(ev, /πυρκαγ|fire|καίγ|burn|φωτιά|καίει/)) { fire(pt, 2800); done(3000); return; }
       rings(pt, color, 3, 1800); done(2000); return;
     }
-    if (T === "war") { clash(pt, color, 2600); fires(pt, 3000); done(3200); return; }
+    if (T === "war") { clash(pt, color, 2600); setTimeout(() => fire(pt, 2600), 1100); done(3800); return; }
     if (T === "revolution") { fist(pt, 2800); fire(pt, 2600); sparks(pt, color); done(3000); return; }
     if (T === "exploration") { if (ev.from) voyage(g, ev, 3200); else radar(pt, color, 2400); done(3400); return; }
     if (T === "science") { formula(pt, scienceText(ev), 3000); rays(pt, "#fff", 1600); done(3200); return; }
