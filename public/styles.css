@@ -127,13 +127,34 @@ g.hist-year.out { opacity: 0; }
 .ev.featured .icon-bg { stroke: #ffd36b; stroke-width: 2.5; }
 .ev .star { font-size: 10px; fill: #ffd36b; paint-order: stroke; stroke: rgba(0,0,0,0.7); stroke-width: 2px; }
 .star { color: #ffd36b; }
-/* Διακόπτης «Μόνο τα μεγαλύτερα γεγονότα» πάνω στον χάρτη */
-.big-toggle {
+/* Επιλογές πάνω στον χάρτη: «Μόνο τα μεγαλύτερα γεγονότα» + ήπειρος */
+.map-opts {
   position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
+  display: flex; align-items: center; gap: 8px;
+  max-width: calc(100% - 24px);
+}
+.big-toggle .txt-short { display: none; }
+.big-select {
+  height: 32px; padding: 0 28px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.5'/></svg>") no-repeat right 11px center;
+  color: var(--text);
+  font: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+  -webkit-appearance: none; appearance: none;
+  max-width: 46vw; text-overflow: ellipsis;
+}
+.big-select:hover { border-color: rgba(255, 211, 107, 0.6); }
+.big-select.on { border-color: #ffd36b; color: #ffd36b; }
+.big-select option { background: #0d1b3a; color: #fff; }
+.big-toggle {
   display: inline-flex; align-items: center; gap: 6px;
   height: 32px; padding: 0 14px 0 12px;
   border-radius: 999px;
@@ -781,7 +802,12 @@ g.hist-year.out { opacity: 0; }
   .brand h1 { font-size: 17px; }
   .brand .sub { display: none; }
   .hist-loading { top: auto; bottom: 8px; font-size: 10px; }
-  .big-toggle { top: 10px; height: 30px; font-size: 11px; padding: 0 12px 0 10px; }
+  .map-opts { top: 10px; gap: 6px; }
+  .big-toggle, .big-select { height: 30px; font-size: 11px; }
+  .big-toggle { padding: 0 12px 0 10px; }
+  .big-select { padding: 0 24px 0 10px; background-position: right 9px center; }
+  .big-toggle .txt-long { display: none; }
+  .big-toggle .txt-short { display: inline; }
 
   /* κουμπιά πάνω δεξιά: φίλτρα + «συμβαίνει τώρα» */
   .sidebar-open-btn, .panel-open-btn {

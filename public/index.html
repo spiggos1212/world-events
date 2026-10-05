@@ -81,7 +81,10 @@
     </aside>
     <button id="sidebar-open" class="sidebar-open-btn" aria-label="Εμφάνιση φίλτρων" data-i18n-aria="showFilters"><span class="ico">☰</span><span class="full" data-i18n="filters">Φίλτρα</span></button>
     <button id="search-open" class="search-open-btn" aria-label="Αναζήτηση" data-i18n-aria="search"><span class="ico">🔍</span><span class="full" data-i18n="search">Αναζήτηση</span></button>
-    <button id="featured-only" class="big-toggle" type="button" aria-pressed="false"><span class="star">★</span> <span data-i18n="featuredOnly">Μόνο τα μεγαλύτερα γεγονότα</span></button>
+    <div class="map-opts">
+      <button id="featured-only" class="big-toggle" type="button" aria-pressed="false"><span class="star">★</span> <span class="txt-long" data-i18n="featuredOnly">Μόνο τα μεγαλύτερα γεγονότα</span><span class="txt-short" data-i18n="featuredOnlyShort">Μεγαλύτερα</span></button>
+      <select id="region" class="big-select" aria-label="Ήπειρος" data-i18n-aria="region"></select>
+    </div>
     <span id="hist-loading" class="hist-loading" data-i18n="loadingBorders">Φόρτωση συνόρων…</span>
 
     <aside id="panel" class="panel" aria-label="Γεγονότα σε εξέλιξη">
@@ -155,18 +158,21 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="continents.js"></script>
   <script src="events.js"></script>
   <script src="plants.js"></script>
   <script src="animals.js"></script>
   <script src="religions.js"></script>
   <script src="americas.js"></script>
   <script src="regions.js"></script>
+  <script src="regional.js"></script>
   <script src="en/events.js"></script>
   <script src="en/plants.js"></script>
   <script src="en/animals.js"></script>
   <script src="en/religions.js"></script>
   <script src="en/americas.js"></script>
   <script src="en/regions.js"></script>
+  <script src="en/regional.js"></script>
   <script src="wiki.js"></script>
   <script src="featured.js"></script>
   <script src="app.js"></script>

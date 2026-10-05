@@ -37,7 +37,7 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
-      featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
+      featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
       videoCredit: "Βίντεο:",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
@@ -56,7 +56,7 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
-      featuredOnly: "Biggest events only", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
+      featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
       videoCredit: "Video:",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
@@ -111,6 +111,7 @@
     lang: "el",
     proj: "flat",
     featuredOnly: false,
+    region: null, // επιλεγμένη ήπειρος (key από continents.js) ή null = όλες
   };
 
   // ---------- DOM ----------
@@ -162,6 +163,7 @@
     postcardImg: $("#postcard-img"),
     postcardCap: $("#postcard-cap"),
     featuredOnly: $("#featured-only"),
+    region: $("#region"),
 
     histLoading: $("#hist-loading"),
   };
@@ -245,10 +247,15 @@
   }
 
   // ---------- Events data ----------
+  // Ήπειροι (continents.js): κάθε γεγονός κατατάσσεται σε μία, για το φίλτρο «Ήπειρος»
+  const CONTINENTS = window.WORLD_CONTINENTS || { list: [], classify: () => null };
   const EVENTS = (Array.isArray(window.WORLD_EVENTS) ? window.WORLD_EVENTS : [])
     .filter((e) => e.lat != null && e.lng != null && e.start && TYPES[e.type])
-    .map((e) => ({ ...e, s: dateToMonths(e.start), e: e.end ? dateToMonths(e.end) : null }))
+    .map((e) => ({ ...e, s: dateToMonths(e.start), e: e.end ? dateToMonths(e.end) : null, _cont: CONTINENTS.classify(e.lng, e.lat) }))
     .sort((a, b) => a.s - b.s);
+  // Φίλτρο ηπείρου: με επιλεγμένη ήπειρο φαίνονται μόνο τα γεγονότα της· χωρίς επιλογή κρύβονται
+  // τα «τοπικά» γεγονότα (regional.js), που έχουν νόημα μόνο μέσα στην ήπειρό τους.
+  const regionOk = (ev) => (state.region ? ev._cont === state.region : !ev.regional);
   // Κορυφαία γεγονότα με βίντεο / 3D / μίνι ιστορία (featured.js)
   const FEATURED = window.WORLD_FEATURED || {};
   const isMajor = (ev) => !!FEATURED[ev.id] || ev.type === "disaster"; // αναπαράσταση: κορυφαία + όλες οι φυσικές καταστροφές
@@ -267,6 +274,7 @@
       if (ev.s > t) break; // ταξινομημένα κατά έναρξη
       if (state.hiddenTypes.has(ev.type)) continue;
       if (state.featuredOnly && !FEATURED[ev.id]) continue;
+      if (!regionOk(ev)) continue;
       // ορατό μόνο μέσα στο ημερολογιακό έτος που ξεκίνησε (ή ως το τέλος του, αν διαρκεί περισσότερο)
       const yearEnd = (Math.floor(ev.s / 12) + 1) * 12;
       const end = ev.e != null ? Math.max(ev.e, yearEnd) : yearEnd;
@@ -1430,7 +1438,7 @@
   function searchEvents(q) {
     const terms = norm(q).split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
-    return EVENTS.filter((ev) => (!state.featuredOnly || FEATURED[ev.id]) && terms.every((t) => ev._hay.includes(t)));
+    return EVENTS.filter((ev) => (!state.featuredOnly || FEATURED[ev.id]) && regionOk(ev) && terms.every((t) => ev._hay.includes(t)));
   }
   function renderSearch() {
     const q = els.search.value.trim();
@@ -1495,6 +1503,7 @@
     document.documentElement.lang = lang;
     Object.values(TYPES).forEach((v) => { v.label = v[lang] || v.el; });
     CATEGORIES.forEach((c) => { c.label = c[lang] || c.el; });
+    fillRegionOptions();
     EVENTS.forEach((ev) => {
       const tx = ev[lang] || ev.el;
       ev.title = tx.title;
@@ -1628,6 +1637,7 @@
     // Μικρά σημάδια γεγονότων πάνω στη μπάρα
     const marks = document.createDocumentFragment();
     for (const ev of EVENTS) {
+      if (!regionOk(ev)) continue;
       const m = document.createElement("span");
       m.className = "event-mark t-" + ev.type;
       m.style.left = (monthsToTrack(ev.s) / TRACK_MAX) * 100 + "%";
@@ -1657,7 +1667,7 @@
 
   // Βελάκια: μετάβαση στο επόμενο / προηγούμενο ορατό γεγονός (όχι κρυμμένου τύπου)
   function stepEvent(dir) {
-    const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type) && (!state.featuredOnly || FEATURED[ev.id]));
+    const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type) && (!state.featuredOnly || FEATURED[ev.id]) && regionOk(ev));
     if (!visible.length) return;
     const cur = state.t;
     let target = null;
@@ -1773,6 +1783,49 @@
     state.panelKey = "";
     updateUI();
     renderSearch();
+  });
+  // ---------- Ήπειρος: φίλτρο + zoom στην περιοχή ----------
+  function fillRegionOptions() {
+    const sel = els.region;
+    const cur = state.region || "";
+    sel.innerHTML = "";
+    const add = (v, label) => { const o = document.createElement("option"); o.value = v; o.textContent = label; sel.appendChild(o); };
+    add("", t("regionAll"));
+    CONTINENTS.list.forEach((c) => add(c.key, c[state.lang] || c.el));
+    sel.value = cur;
+  }
+  function zoomToRegion(c) {
+    const dur = 800;
+    if (!c) {
+      els.svg.transition().duration(dur).call(zoom.transform, isGlobe() ? centeredTransform(1) : d3.zoomIdentity);
+      return;
+    }
+    const [[lng0, lat0], [lng1, lat1]] = c.bbox;
+    const cLng = (lng0 + lng1) / 2, cLat = (lat0 + lat1) / 2;
+    if (isGlobe()) {
+      const span = Math.max(lng1 - lng0, (lat1 - lat0) * 1.3);
+      const k = Math.max(1, Math.min(6, 110 / span));
+      rotateTo(cLng, cLat, dur);
+      els.svg.transition().duration(dur).call(zoom.transform, centeredTransform(k));
+      return;
+    }
+    const pts = [[lng0, lat0], [lng1, lat0], [lng0, lat1], [lng1, lat1]].map((p) => projection(p));
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const w = width(), h = height();
+    const k = Math.max(1, Math.min(14, 0.9 * Math.min(w / (x1 - x0), h / (y1 - y0))));
+    const tr = d3.zoomIdentity.translate(w / 2 - (k * (x0 + x1)) / 2, h / 2 - (k * (y0 + y1)) / 2).scale(k);
+    els.svg.transition().duration(dur).call(zoom.transform, zoom.constrain()(tr, [[0, 0], [w, h]], zoom.translateExtent()));
+  }
+  els.region.addEventListener("change", () => {
+    state.region = els.region.value || null;
+    els.region.classList.toggle("on", !!state.region);
+    gEvents.selectAll("g.ev").remove();
+    state.panelKey = "";
+    buildTicks();
+    updateUI();
+    renderSearch();
+    zoomToRegion(CONTINENTS.list.find((c) => c.key === state.region));
   });
   applyLayerVisibility();
   buildTicks();
