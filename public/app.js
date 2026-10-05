@@ -37,7 +37,7 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
-      featuredOnly: "Μόνο κορυφαία", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
+      featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
       videoCredit: "Βίντεο:",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
@@ -56,7 +56,7 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
-      featuredOnly: "Featured only", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
+      featuredOnly: "Biggest events only", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
       videoCredit: "Video:",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
@@ -162,7 +162,6 @@
     postcardImg: $("#postcard-img"),
     postcardCap: $("#postcard-cap"),
     featuredOnly: $("#featured-only"),
-    featuredCount: $("#featured-count"),
 
     histLoading: $("#hist-loading"),
   };
@@ -1766,10 +1765,10 @@
   enableSwipeToClose(els.panel, els.panelList, () => setPanelCollapsed(true));
   enableSwipeToClose(els.story, els.storyBody, () => setStoryCollapsed(true));
   initMapOptions();
-  els.featuredCount.textContent = Object.keys(FEATURED).length;
-  els.featuredOnly.addEventListener("change", () => {
-    state.featuredOnly = els.featuredOnly.checked;
-    els.featuredOnly.closest(".sb-row").classList.toggle("on", state.featuredOnly);
+  els.featuredOnly.addEventListener("click", () => {
+    state.featuredOnly = !state.featuredOnly;
+    els.featuredOnly.classList.toggle("on", state.featuredOnly);
+    els.featuredOnly.setAttribute("aria-pressed", String(state.featuredOnly));
     gEvents.selectAll("g.ev").remove();
     state.panelKey = "";
     updateUI();

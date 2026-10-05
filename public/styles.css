@@ -127,8 +127,29 @@ g.hist-year.out { opacity: 0; }
 .ev.featured .icon-bg { stroke: #ffd36b; stroke-width: 2.5; }
 .ev .star { font-size: 10px; fill: #ffd36b; paint-order: stroke; stroke: rgba(0,0,0,0.7); stroke-width: 2px; }
 .star { color: #ffd36b; }
-.featured-row { margin-bottom: 4px; }
-.featured-row.on .txt { color: #ffd36b; }
+/* Διακόπτης «Μόνο τα μεγαλύτερα γεγονότα» πάνω στον χάρτη */
+.big-toggle {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 14px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit; font-size: 12px; font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+.big-toggle:hover { border-color: rgba(255, 211, 107, 0.6); }
+.big-toggle .star { opacity: 0.55; }
+.big-toggle.on { background: #ffd36b; border-color: #ffd36b; color: #1a1400; }
+.big-toggle.on .star { opacity: 1; color: #1a1400; }
 .story-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
 .story-media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .story-feature:empty { display: none; }
@@ -268,7 +289,7 @@ g.hist-year.out { opacity: 0; }
 .icon-btn.small { width: 34px; height: 34px; font-size: 22px; box-shadow: none; }
 .hist-loading {
   position: absolute;
-  top: 16px;
+  top: 54px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -760,6 +781,7 @@ g.hist-year.out { opacity: 0; }
   .brand h1 { font-size: 17px; }
   .brand .sub { display: none; }
   .hist-loading { top: auto; bottom: 8px; font-size: 10px; }
+  .big-toggle { top: 10px; height: 30px; font-size: 11px; padding: 0 12px 0 10px; }
 
   /* κουμπιά πάνω δεξιά: φίλτρα + «συμβαίνει τώρα» */
   .sidebar-open-btn, .panel-open-btn {
