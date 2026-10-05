@@ -67,17 +67,8 @@ kbd {
 /* ---------- Map ---------- */
 #map-wrap { position: relative; flex: 1; min-height: 0; background: var(--bg); }
 #map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; position: relative; z-index: 1; }
-/* ρεαλιστικός χάρτης: raster υφή της Γης κάτω από το SVG */
-.raster { position: absolute; left: 0; top: 0; pointer-events: none; transform-origin: 0 0; display: none; z-index: 0; transition: opacity 200ms ease; }
-.raster.stale { opacity: 0; }
 /* Υδρόγειος: σκιά/ατμόσφαιρα γύρω από τη σφαίρα */
 .globe .sphere { filter: drop-shadow(0 0 28px rgba(120, 170, 255, 0.35)); }
-.realistic.raster-ready .raster { display: block; }
-.realistic.raster-ready .sphere { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 1; }
-.realistic.raster-ready .graticule { stroke: rgba(255,255,255,0.09); }
-.realistic.raster-ready .country, .realistic.raster-ready .hcountry { fill-opacity: 0.26; stroke: rgba(255,255,255,0.65); stroke-width: 0.7; }
-.realistic.raster-ready .hcountry.wild { fill: rgba(30,40,70,0.3); stroke: rgba(255,255,255,0.3); }
-.realistic.raster-ready .country:hover, .realistic.raster-ready .hcountry:hover { fill-opacity: 0.5; filter: none; }
 button, input, label { touch-action: manipulation; }
 #map:active { cursor: grabbing; }
 

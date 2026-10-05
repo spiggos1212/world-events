@@ -42,8 +42,7 @@
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
-      map: "Χάρτης", projection: "Προβολή", projNatural: "Φυσικός", projFlat: "Επίπεδος", projGlobe: "Υδρόγειος",
-      style: "Στυλ", styleSimple: "Απλός", styleReal: "Ρεαλιστικός",
+      map: "Χάρτης", projection: "Προβολή", projFlat: "Επίπεδος", projGlobe: "Υδρόγειος",
       bc: "π.Χ.", under: "υπό:", noResults: "Κανένα αποτέλεσμα", result: "αποτέλεσμα", results: "αποτελέσματα",
       first: "πρώτα", clickToGo: "κλικ για μετάβαση",
     },
@@ -62,8 +61,7 @@
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
-      map: "Map", projection: "Projection", projNatural: "Natural", projFlat: "Flat", projGlobe: "Globe",
-      style: "Style", styleSimple: "Simple", styleReal: "Realistic",
+      map: "Map", projection: "Projection", projFlat: "Flat", projGlobe: "Globe",
       bc: "BC", under: "under:", noResults: "No results", result: "result", results: "results",
       first: "first", clickToGo: "click to jump",
     },
@@ -111,8 +109,7 @@
     panelKey: "",
     historical: true,
     lang: "el",
-    proj: "natural",
-    style: "simple",
+    proj: "flat",
     featuredOnly: false,
   };
 
@@ -150,8 +147,6 @@
     panelToggle: $("#panel-toggle"),
     lang: $("#lang"),
     proj: $("#proj"),
-    styleSel: $("#style"),
-    raster: $("#raster"),
     story: $("#story"),
     storyType: $("#story-type"),
     storyClose: $("#story-close"),
@@ -290,9 +285,8 @@
   const width = () => els.mapWrap.clientWidth;
   const height = () => els.mapWrap.clientHeight;
 
-  // Προβολές: «φυσικός» (Natural Earth) ή «επίπεδος» (ισαπέχουσα ορθογώνια)
+  // Προβολές: «επίπεδος» (ισαπέχουσα ορθογώνια) ή «υδρόγειος» (ορθογραφική σφαίρα)
   const PROJECTIONS = {
-    natural: () => d3.geoNaturalEarth1(),
     flat: () => d3.geoEquirectangular(),
     globe: () => d3.geoOrthographic().clipAngle(90).rotate([-20, -28, 0]).precision(0.3),
   };
@@ -303,8 +297,39 @@
   const onFront = (lng, lat) => !isGlobe() || d3.geoDistance([lng, lat], globeCenter()) < Math.PI / 2 - 0.03;
   // Κεντραρισμένη κλιμάκωση (η υδρόγειος μένει πάντα στο κέντρο· η μετακίνηση γίνεται περιστροφή)
   const centeredTransform = (k) => d3.zoomIdentity.translate(((1 - k) * width()) / 2, ((1 - k) * height()) / 2).scale(k);
-  let projection = PROJECTIONS.natural();
+  let projection = PROJECTIONS.flat();
   let path = d3.geoPath(projection);
+  // Δίχτυ ασφαλείας για την υδρόγειο: το d3 μερικές φορές «γεμίζει» ολόκληρο τον δίσκο με ένα πολύγωνο που
+  // βρίσκεται στην πίσω πλευρά (εκφυλισμένα δεδομένα, σημεία στον πόλο κ.λπ.) και κρύβει όλη την ήπειρο.
+  // Σχεδιάζουμε με δικό μας context που μετράει και το bounding box· αν ένα πολύγωνο μικρότερο από μισή
+  // σφαίρα καλύπτει ολόκληρο τον δίσκο, είναι σφάλμα αποκοπής και δεν σχεδιάζεται.
+  const track = {
+    s: "", x0: 0, y0: 0, x1: 0, y1: 0,
+    reset() { this.s = ""; this.x0 = this.y0 = Infinity; this.x1 = this.y1 = -Infinity; },
+    p(x, y) {
+      if (x < this.x0) this.x0 = x; if (x > this.x1) this.x1 = x;
+      if (y < this.y0) this.y0 = y; if (y > this.y1) this.y1 = y;
+      return Math.round(x * 1000) / 1000 + "," + Math.round(y * 1000) / 1000;
+    },
+    moveTo(x, y) { this.s += "M" + this.p(x, y); },
+    lineTo(x, y) { this.s += "L" + this.p(x, y); },
+    closePath() { this.s += "Z"; },
+    arc(x, y, r) { this.s += "M" + this.p(x + r, y) + "A" + r + "," + r + " 0 1,1 " + this.p(x - r, y) + "A" + r + "," + r + " 0 1,1 " + this.p(x + r, y); },
+  };
+  let pathTrack = d3.geoPath(projection, track);
+  let discBox = null; // bounding box της σφαίρας στην τρέχουσα προβολή (μόνο στην υδρόγειο)
+  function safePath(f) {
+    if (!discBox) return path(f);
+    track.reset();
+    pathTrack(f);
+    if (!track.s) return null;
+    const full = track.x0 <= discBox[0][0] + 1 && track.y0 <= discBox[0][1] + 1 && track.x1 >= discBox[1][0] - 1 && track.y1 >= discBox[1][1] - 1;
+    if (full) {
+      if (f._sr == null) f._sr = d3.geoArea(f);
+      if (f._sr < 2 * Math.PI) return null;
+    }
+    return track.s;
+  }
 
   const gRoot = els.svg.append("g").attr("class", "root");
   const gSphere = gRoot.append("path").attr("class", "sphere");
@@ -331,7 +356,7 @@
         if (ev.sourceEvent && rotStart && (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01)) {
           const s = 75 / (projection.scale() * tr.k);
           projection.rotate([rotStart[0] + dx * s, Math.max(-90, Math.min(90, rotStart[1] - dy * s)), 0]);
-          redrawGlobe();
+          scheduleGlobeRedraw();
         }
         els.svg.node().__zoom = c; // η υδρόγειος παραμένει κεντραρισμένη
         tr = c;
@@ -343,18 +368,22 @@
       gEvents.selectAll("g.ev .anchor").attr("r", 3.2 * bodyScale());
       gEvents.selectAll("g.ev .pulse").attr("r", 6 * bodyScale());
       placeLabels();
-      rasterFollow(tr);
       positionPostcard();
       gTour.selectAll("g.tour-stop").attr("transform", (d) => "translate(" + d[0] + "," + d[1] + ") scale(" + bodyScale() + ")");
-    })
-    .on("end", () => { if (state.style === "real") scheduleRaster(); });
+    });
   let rotStart = null;
-  // Επανασχεδίαση μετά από περιστροφή της υδρογείου (σύνορα, γεγονότα, διαδρομή tour, raster)
+  // Το σύρσιμο στέλνει πολλά zoom events ανά καρέ· η επανασχεδίαση γίνεται μία φορά ανά καρέ
+  let globeRedrawPending = false;
+  function scheduleGlobeRedraw() {
+    if (globeRedrawPending) return;
+    globeRedrawPending = true;
+    requestAnimationFrame(() => { globeRedrawPending = false; redrawGlobe(); });
+  }
+  // Επανασχεδίαση μετά από περιστροφή της υδρογείου (σύνορα, γεγονότα, διαδρομή tour)
   function redrawGlobe() {
     redrawMap();
     positionPostcard();
     if (tour) drawTour(tour.f.stops.slice(0, tour.i + 1), tour.f.color);
-    if (state.style === "real") { els.raster.classList.add("stale"); scheduleRaster(250); }
   }
   // Ομαλή περιστροφή της υδρογείου ώστε το σημείο να έρθει στο κέντρο
   function rotateTo(lng, lat, dur = 900) {
@@ -388,116 +417,15 @@
     const h = height();
     els.svg.attr("viewBox", `0 0 ${w} ${h}`).attr("width", w).attr("height", h);
     projection.fitExtent([[12, 12], [w - 12, h - 12]], { type: "Sphere" });
-    // Στο πλήρες zoom out ο χάρτης μένει κεντραρισμένος· μετακίνηση μόνο όταν έχει γίνει zoom in,
-    // και ποτέ πέρα από τα όρια του χάρτη.
-    zoom.extent([[0, 0], [w, h]]).translateExtent([[0, 0], [w, h]]);
+    // Επίπεδος: στο πλήρες zoom out ο χάρτης μένει κεντραρισμένος· μετακίνηση μόνο όταν έχει γίνει zoom in,
+    // και ποτέ πέρα από τα όρια του χάρτη. Υδρόγειος: η μετακίνηση γίνεται περιστροφή (και στο πλήρες zoom out),
+    // οπότε δεν περιορίζεται· η σφαίρα κεντράρεται ξανά σε κάθε zoom event.
+    const inf = Infinity;
+    zoom.extent([[0, 0], [w, h]]).translateExtent(isGlobe() ? [[-inf, -inf], [inf, inf]] : [[0, 0], [w, h]]);
     els.svg.call(zoom.transform, d3.zoomTransform(els.svg.node()));
     redrawMap();
-    if (state.style === "real") scheduleRaster(0);
     positionPostcard();
     if (tour) drawTour(tour.f.stops.slice(0, tour.i + 1), tour.f.color);
-  }
-
-  // ---------- Ρεαλιστικός χάρτης: raster υφή της Γης, επαναπροβολή σε canvas ----------
-  const RASTER_URL = "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
-  let rasterSrc = null;          // { data, w, h } pixels της ισαπέχουσας εικόνας
-  let rasterLoading = false;
-  let rasterTransform = d3.zoomIdentity; // ο zoom μετασχηματισμός με τον οποίο σχεδιάστηκε το canvas
-  let rasterTimer = 0;
-  function loadRaster() {
-    if (rasterSrc || rasterLoading) return;
-    rasterLoading = true;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const c = document.createElement("canvas");
-        c.width = img.naturalWidth; c.height = img.naturalHeight;
-        const cx = c.getContext("2d", { willReadFrequently: true });
-        cx.drawImage(img, 0, 0);
-        rasterSrc = { data: cx.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height };
-      } catch (e) { console.warn("Raster texture unavailable", e); }
-      rasterLoading = false;
-      renderRaster();
-    };
-    img.onerror = () => { rasterLoading = false; console.warn("Raster texture failed to load"); };
-    img.src = RASTER_URL;
-  }
-  // Κατά το zoom/pan το canvas ακολουθεί με CSS transform (σχετικά με τον μετασχηματισμό σχεδίασής του)
-  function rasterFollow(tr) {
-    if (state.style !== "real") return;
-    const r = rasterTransform, s = tr.k / r.k;
-    els.raster.style.transform = "translate(" + (tr.x - s * r.x) + "px, " + (tr.y - s * r.y) + "px) scale(" + s + ")";
-  }
-  function scheduleRaster(delay = 120) {
-    clearTimeout(rasterTimer);
-    rasterTimer = setTimeout(renderRaster, delay);
-  }
-  function renderRaster() {
-    if (state.style !== "real") return;
-    if (!rasterSrc) { loadRaster(); return; }
-    const tr = d3.zoomTransform(els.svg.node());
-    const w = width(), h = height();
-    if (!w || !h) return;
-    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
-    const W = Math.max(1, Math.round(w * dpr)), H = Math.max(1, Math.round(h * dpr));
-    const cv = els.raster;
-    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
-    cv.style.width = w + "px"; cv.style.height = h + "px";
-    const ctx = cv.getContext("2d");
-    const out = ctx.createImageData(W, H), od = out.data;
-    const sd = rasterSrc.data, sw = rasterSrc.w, sh = rasterSrc.h;
-    // Αντιστροφή της προβολής: οθόνη → χάρτης → (lng, lat). null έξω από τη σφαίρα.
-    const inv = (px, py) => {
-      const mx = (px - tr.x) / tr.k, my = (py - tr.y) / tr.k;
-      const p = projection.invert([mx, my]);
-      if (!p || !isFinite(p[0]) || !isFinite(p[1])) return null;
-      if (p[0] < -180 || p[0] > 180 || p[1] < -90 || p[1] > 90) return null;
-      const q = projection(p);
-      if (!q || Math.abs(q[0] - mx) > 0.5 || Math.abs(q[1] - my) > 0.5) return null;
-      return p;
-    };
-    // Αραιό πλέγμα (κάθε G pixels) και διγραμμική παρεμβολή ανάμεσα: 16× λιγότερες αντιστροφές
-    const G = 4;
-    const gw = Math.ceil(W / G) + 1, gh = Math.ceil(H / G) + 1;
-    const glng = new Float64Array(gw * gh), glat = new Float64Array(gw * gh), gok = new Uint8Array(gw * gh);
-    for (let gy = 0; gy < gh; gy++) {
-      for (let gx = 0; gx < gw; gx++) {
-        const p = inv((gx * G) / dpr, (gy * G) / dpr);
-        if (p) { const i = gy * gw + gx; glng[i] = p[0]; glat[i] = p[1]; gok[i] = 1; }
-      }
-    }
-    const sample = (lng, lat, o) => {
-      let sx = Math.floor(((lng + 180) / 360) * sw), sy = Math.floor(((90 - lat) / 180) * sh);
-      if (sx < 0) sx = 0; else if (sx >= sw) sx = sw - 1;
-      if (sy < 0) sy = 0; else if (sy >= sh) sy = sh - 1;
-      const si = (sy * sw + sx) * 4;
-      od[o] = sd[si]; od[o + 1] = sd[si + 1]; od[o + 2] = sd[si + 2]; od[o + 3] = 255;
-    };
-    for (let y = 0; y < H; y++) {
-      const gy = Math.floor(y / G), fy = (y - gy * G) / G;
-      for (let x = 0; x < W; x++) {
-        const gx = Math.floor(x / G), fx = (x - gx * G) / G;
-        const i00 = gy * gw + gx, i10 = i00 + 1, i01 = i00 + gw, i11 = i01 + 1;
-        const o = (y * W + x) * 4;
-        if (gok[i00] && gok[i10] && gok[i01] && gok[i11]) {
-          const l0 = glng[i00], l1 = glng[i10], l2 = glng[i01], l3 = glng[i11];
-          if (Math.max(l0, l1, l2, l3) - Math.min(l0, l1, l2, l3) < 90) { // όχι πάνω στον αντιμεσημβρινό
-            const lng = (l0 * (1 - fx) + l1 * fx) * (1 - fy) + (l2 * (1 - fx) + l3 * fx) * fy;
-            const lat = (glat[i00] * (1 - fx) + glat[i10] * fx) * (1 - fy) + (glat[i01] * (1 - fx) + glat[i11] * fx) * fy;
-            sample(lng, lat, o);
-            continue;
-          }
-        }
-        const p = inv((x + 0.5) / dpr, (y + 0.5) / dpr); // άκρα της σφαίρας: ακριβής υπολογισμός
-        if (p) sample(p[0], p[1], o);
-      }
-    }
-    ctx.putImageData(out, 0, 0);
-    els.raster.classList.remove("stale");
-    rasterTransform = tr;
-    els.raster.style.transform = "";
-    els.mapWrap.classList.add("raster-ready");
   }
 
   // ---------- Ιστορία γεγονότος: popup με κείμενο και εικόνα από τη Wikipedia ----------
@@ -907,36 +835,30 @@
     return "✦ " + yearOf(ev.start);
   }
 
-  // ---------- Επιλογές χάρτη (προβολή / στυλ) ----------
-  const PROJ_KEY = "we-proj", STYLE_KEY = "we-style";
+  // ---------- Επιλογές χάρτη (προβολή) ----------
+  const PROJ_KEY = "we-proj";
   function setProjection(kind, { persist = true } = {}) {
-    if (!PROJECTIONS[kind]) kind = "natural";
+    if (!PROJECTIONS[kind]) kind = "flat";
     state.proj = kind;
     projection = PROJECTIONS[kind]();
     path = d3.geoPath(projection);
+    pathTrack = d3.geoPath(projection, track);
     els.proj.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.proj === kind));
     els.mapWrap.classList.toggle("globe", kind === "globe");
     if (persist) { try { localStorage.setItem(PROJ_KEY, kind); } catch (_) { /* ignore */ } }
     els.svg.call(zoom.transform, d3.zoomIdentity);
     fitProjection();
   }
-  function setMapStyle(style, { persist = true } = {}) {
-    state.style = style === "simple" ? "simple" : "real";
-    els.mapWrap.classList.toggle("realistic", state.style === "real");
-    els.styleSel.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b.dataset.style === state.style));
-    if (state.style === "real") renderRaster();
-  }
   function initMapOptions() {
-    let p = "natural", s = "simple"; // πάντα απλός χάρτης στο άνοιγμα· η επιλογή στυλ δεν αποθηκεύεται
-    try { p = localStorage.getItem(PROJ_KEY) || p; localStorage.removeItem(STYLE_KEY); } catch (_) { /* ignore */ }
+    let p = "flat";
+    try { p = localStorage.getItem(PROJ_KEY) || p; } catch (_) { /* ignore */ }
     els.proj.addEventListener("click", (e) => { const b = e.target.closest("button[data-proj]"); if (b) setProjection(b.dataset.proj); });
-    els.styleSel.addEventListener("click", (e) => { const b = e.target.closest("button[data-style]"); if (b) setMapStyle(b.dataset.style); });
-    setMapStyle(s, { persist: false });
     setProjection(p, { persist: false });
   }
 
   function redrawMap() {
     gSphere.attr("d", path({ type: "Sphere" }));
+    discBox = isGlobe() ? path.bounds({ type: "Sphere" }) : null;
     gGrat.attr("d", path(d3.geoGraticule10()));
     gCountries
       .selectAll("path.country")
@@ -944,7 +866,7 @@
       .join("path")
       .attr("class", "country")
       .attr("fill", (d) => countryColors.get(d.id) || LAND_PALETTE[0])
-      .attr("d", path);
+      .attr("d", safePath);
     redrawHist();
     gEvents.selectAll("g.ev").each(function (a) { layoutEvent(d3.select(this), a.ev, false); });
     placeLabels();
@@ -1028,19 +950,36 @@
     if (!n.trim() || /^\s*\d+\s*$/.test(n)) return true; // ανώνυμες περιοχές
     return WILD_RE.test(n) && !STATE_RE.test(n);
   }
-  // Το d3 θέλει τα εξωτερικά δακτυλίδια «μικρά» (< μισή σφαίρα), αλλιώς γεμίζει όλη τη σφαίρα.
+  // Καθαρισμός γεωμετρίας για το d3:
+  // - τα εξωτερικά δακτυλίδια πρέπει να είναι «μικρά» (< μισή σφαίρα), αλλιώς γεμίζει όλη η σφαίρα·
+  // - σειρές σημείων πάνω στον πόλο (π.χ. Ανταρκτική με 300 σημεία σε lat -90) μπερδεύουν την αποκοπή
+  //   της υδρογείου όταν ο πόλος πέφτει στην άκρη του δίσκου → μένουν μόνο το πρώτο και το τελευταίο·
+  // - δακτυλίδια μηδενικού εμβαδού (γραμμή που πάει και γυρίζει) είναι αόρατα αλλά στην υδρόγειο
+  //   σχεδιάζονται καμιά φορά ως ολόκληρος ο δίσκος → αφαιρούνται.
+  const isPolePt = (p) => Math.abs(p[1]) >= 89.999;
   function rewind(feature) {
     const g = feature.geometry;
     if (!g) return;
     const fixPoly = (rings) => {
-      rings.forEach((ring, i) => {
-        const a = d3.geoArea({ type: "Polygon", coordinates: [ring] });
-        const big = a > 2 * Math.PI;
-        if ((i === 0 && big) || (i > 0 && !big)) ring.reverse();
-      });
+      const out = [];
+      for (let i = 0; i < rings.length; i++) {
+        const ring = rings[i].filter((p, j, r) => !(j > 0 && j < r.length - 1 && isPolePt(p) && isPolePt(r[j - 1]) && isPolePt(r[j + 1])));
+        if (ring.length < 4) { if (i === 0) return null; continue; }
+        let a = d3.geoArea({ type: "Polygon", coordinates: [ring] });
+        if (a > 2 * Math.PI) { ring.reverse(); a = 4 * Math.PI - a; }
+        if (a < 1e-9) { if (i === 0) return null; continue; }
+        if (i > 0) ring.reverse(); // οι τρύπες με αντίθετη φορά
+        out.push(ring);
+      }
+      return out;
     };
-    if (g.type === "Polygon") fixPoly(g.coordinates);
-    else if (g.type === "MultiPolygon") g.coordinates.forEach(fixPoly);
+    if (g.type === "Polygon") {
+      const r = fixPoly(g.coordinates);
+      if (r) g.coordinates = r; else feature.geometry = null;
+    } else if (g.type === "MultiPolygon") {
+      g.coordinates = g.coordinates.map(fixPoly).filter(Boolean);
+      if (!g.coordinates.length) feature.geometry = null;
+    }
   }
   function hashStr(s) {
     let h = 2166136261;
@@ -1132,7 +1071,7 @@
       .join("path")
       .attr("class", (f) => "hcountry" + (f._color ? "" : " wild") + " p" + (f.properties.BORDERPRECISION || 2))
       .attr("fill", (f) => f._color || null)
-      .attr("d", path);
+      .attr("d", safePath);
     if (animate) {
       // CSS crossfade (δουλεύει και σε background tab, αντίθετα με τα d3 transitions)
       requestAnimationFrame(() => layer.classed("in", true));
@@ -1813,7 +1752,7 @@
     play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
     get projection() { return projection; },
-    setProjection, setMapStyle, showEvent, openStory, playScene, featured: FEATURED,
+    setProjection, showEvent, openStory, playScene, featured: FEATURED,
     events: EVENTS,
     config: { START_YEAR, END_YEAR, SEGMENTS },
   };

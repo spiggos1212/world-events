@@ -21,7 +21,6 @@
   </header>
 
   <main id="map-wrap" aria-label="World map">
-    <canvas id="raster" class="raster" aria-hidden="true"></canvas>
     <svg id="map" role="img" aria-label="Παγκόσμιος χάρτης">
       <defs>
         <radialGradient id="ocean-grad" cx="50%" cy="45%" r="70%">
@@ -63,16 +62,8 @@
           <div class="seg-row">
             <span class="seg-label" data-i18n="projection">Προβολή</span>
             <div id="proj" class="seg" role="group" aria-label="Προβολή χάρτη">
-              <button data-proj="natural" data-i18n="projNatural">Φυσικός</button>
               <button data-proj="flat" data-i18n="projFlat">Επίπεδος</button>
               <button data-proj="globe" data-i18n="projGlobe">Υδρόγειος</button>
-            </div>
-          </div>
-          <div class="seg-row">
-            <span class="seg-label" data-i18n="style">Στυλ</span>
-            <div id="style" class="seg" role="group" aria-label="Στυλ χάρτη">
-              <button data-style="simple" data-i18n="styleSimple">Απλός</button>
-              <button data-style="real" data-i18n="styleReal">Ρεαλιστικός</button>
             </div>
           </div>
         </section>
