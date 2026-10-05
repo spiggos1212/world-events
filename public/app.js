@@ -1830,7 +1830,7 @@
   applyLayerVisibility();
   buildTicks();
   fitProjection();
-  state.t = dateToMonths("1500"); // η σελίδα ανοίγει στο 1500 μ.Χ.
+  state.t = 0; // η σελίδα ανοίγει στην αρχή, 3000 π.Χ.
   updateUI();
   initSpeed();
   loadWorld();
