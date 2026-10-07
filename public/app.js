@@ -917,7 +917,16 @@
   }
   // Οι πρώτες n παράγραφοι κειμένου (χωρίς επικεφαλίδες "== ... ==")
   function firstParas(text, n) {
-    return String(text).split(/\n+/).map((s) => s.trim()).filter((s) => s && !/^=+.*=+$/.test(s) && s.length > 40).slice(0, n);
+    return String(text).split(/\n+/).map((s) => cleanWiki(s)).filter((s) => s && !/^=+.*=+$/.test(s) && s.length > 40).slice(0, n);
+  }
+  // Αφαιρεί ό,τι δεν διαβάζεται καλά: αγκύλες με IPA/σημειώσεις [ ... ] και παρενθέσεις με
+  // προφορές ή μεταγραφές, π.χ. (Ancient Greek: Παρθενών, romanised: Parthenōn [par.tʰe.nɔ̌ːn]; ...)
+  function cleanWiki(s) {
+    let out = String(s);
+    for (let i = 0; i < 3; i++) out = out.replace(/\s*\[[^\[\]]*\]/g, ""); // [ ... ], και φωλιασμένα
+    const noisy = /romani[sz]|pronounc|pronunciation|listen|ipa|transliterat|\b(ancient greek|greek|latin|arabic|hebrew|russian|chinese|japanese|german|french|italian|spanish|portuguese|dutch|turkish|persian|hindi|egyptian|norse|old english|sanskrit|lit\.|literally|abbreviated|abbr\.|also known as|aka)\b\s*:|ελληνικά:|αρχαία ελληνικά:|λατινικά:|προφ(ορά|έρεται)|μεταγραφ|[ˈˌːʰʷʲθðŋɔɛəɪʊæɑɒɜɐʁχ]|^\/.*\/$/i;
+    for (let i = 0; i < 3; i++) out = out.replace(/\s*\(([^()]*)\)/g, (m, inner) => (noisy.test(inner.trim()) ? "" : m));
+    return out.replace(/\s+([,.;:!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
   }
   // ---- Αφηγητής ----
   let cinemaNarration = null;
