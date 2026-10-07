@@ -37,7 +37,7 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
-      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
+      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -55,7 +55,7 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
-      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", soundOff: "Sound: muted (click to unmute)",
+      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -2040,7 +2040,7 @@
   };
 
   // ---------- Init ----------
-  if (window.WorldSound) WorldSound.init(document.getElementById("sound-toggle"));
+  if (window.WorldSound) WorldSound.init(document.getElementById("sound-toggle"), null, document.getElementById("sound-volume"));
   initLang();
   loadHiddenTypes();
   buildFilters();
