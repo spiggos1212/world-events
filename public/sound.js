@@ -254,5 +254,31 @@
       env(g, t, 0.02, 0.55, 0.3); chain(o, lp, g, S.fxGain); o.start(t); o.stop(t + 0.7);
     }
   }
-  window.WorldSound = { init, event: playEvent, setMuted, setVolume, ding, say, stopSpeech, get speaking() { return SP.active; }, get canSpeak() { return !!synth; }, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
+  // Παιχνιδιάρικο jingle στην έναρξη του παιχνιδιού: γρήγορο ανοδικό αρπέζ με «μπόινγκ» και λαμπερό τέλος
+  function jingle() {
+    const c = ctx();
+    if (!c || S.muted) return;
+    if (c.state === "suspended") c.resume().catch(() => {});
+    const t = c.currentTime + 0.03;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98, 2093];
+    notes.forEach((f, i) => {
+      const a = t + i * 0.085;
+      const o = osc("square", f), lp = filter("lowpass", 2600), g = gain(0);
+      env(g, a, 0.005, 0.28, 0.16); chain(o, lp, g, S.fxGain); o.start(a); o.stop(a + 0.35);
+      const o2 = osc("triangle", f / 2), g2 = gain(0); env(g2, a, 0.005, 0.22, 0.1); chain(o2, g2, S.fxGain); o2.start(a); o2.stop(a + 0.3);
+    });
+    // «μπόινγκ»: γλίστρημα προς τα πάνω
+    const b0 = t + notes.length * 0.085 + 0.05;
+    const bo = osc("sine", 300), bg = gain(0);
+    bo.frequency.setValueAtTime(300, b0); bo.frequency.exponentialRampToValueAtTime(1200, b0 + 0.25);
+    env(bg, b0, 0.01, 0.4, 0.25); chain(bo, bg, S.fxGain); bo.start(b0); bo.stop(b0 + 0.5);
+    // λαμπερή συγχορδία κλεισίματος (C major)
+    const e0 = b0 + 0.28;
+    [1046.5, 1318.5, 1567.98, 2093].forEach((f, i) => { const o = osc("sine", f), g = gain(0); env(g, e0, 0.01, 1.2, [0.18, 0.14, 0.12, 0.08][i]); chain(o, g, S.fxGain); o.start(e0); o.stop(e0 + 1.4); });
+    const dur = e0 - t + 1.3;
+    S.ambGain.gain.cancelScheduledValues(t);
+    S.ambGain.gain.setTargetAtTime(AMB_LEVEL * 0.3, t, 0.2);
+    S.ambGain.gain.setTargetAtTime(AMB_LEVEL, t + dur, 1.0);
+  }
+  window.WorldSound = { init, event: playEvent, setMuted, setVolume, ding, jingle, say, stopSpeech, get speaking() { return SP.active; }, get canSpeak() { return !!synth; }, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
 })();

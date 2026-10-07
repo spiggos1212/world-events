@@ -2083,6 +2083,7 @@
   }
   function startGame(mode) {
     G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0]; G.total = 10;
+    if (window.WorldSound) WorldSound.jingle(); // παιχνιδιάρικος ήχος έναρξης
     nextQuestion();
   }
   async function makeQuestion(depth = 0) {
