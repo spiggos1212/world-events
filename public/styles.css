@@ -256,6 +256,8 @@ body.game-map #map-wrap svg { cursor: crosshair; }
 /* Κατά το παιχνίδι τα γεγονότα κρύβονται (για να μη δίνουν την απάντηση), μέχρι την αποκάλυψη */
 body.game-on:not(.game-reveal) .ev, body.game-on:not(.game-reveal) .fx { display: none !important; }
 body.game-on .event-marks, body.game-on .panel, body.game-on .panel-open-btn, body.game-on .postcard { display: none !important; }
+body.game-on .brand { display: none !important; } /* ο τίτλος φεύγει όσο παίζει το παιχνίδι */
+body.game-on .game-overlay { top: 14px; }
 
 /* Μικρό κουμπί ήχου (σίγαση) */
 .sound-btn {
