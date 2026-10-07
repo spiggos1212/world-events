@@ -5,7 +5,7 @@
   "description": "Interactive world map with a playable timeline of world events",
   "scripts": {
     "start": "npx serve public -l 5173",
-    "deploy": "wrangler deploy",
+    "deploy": "node scripts/stamp.js && wrangler deploy",
     "preview": "wrangler dev"
   },
   "devDependencies": {
