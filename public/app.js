@@ -38,7 +38,7 @@
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
-      videoCredit: "Βίντεο:",
+      videoCredit: "Βίντεο:", cinemaMore: "Όλη η ιστορία", cinemaContinue: "Συνέχεια ▶",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -57,7 +57,7 @@
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
-      videoCredit: "Video:",
+      videoCredit: "Video:", cinemaMore: "Full story", cinemaContinue: "Continue ▶",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -163,6 +163,10 @@
     postcardImg: $("#postcard-img"),
     postcardCap: $("#postcard-cap"),
     featuredOnly: $("#featured-only"),
+    intro: $("#intro"), introYear: $("#intro-year"), introTitle: $("#intro-title"),
+    cinema: $("#cinema"), cinemaBackdrop: $("#cinema-backdrop"), cinemaType: $("#cinema-type"), cinemaMeta: $("#cinema-meta"),
+    cinemaTitle: $("#cinema-title"), cinemaMedia: $("#cinema-media"), cinemaCap: $("#cinema-cap"), cinemaCredit: $("#cinema-credit"),
+    cinemaClose: $("#cinema-close"), cinemaMore: $("#cinema-more"), cinemaContinue: $("#cinema-continue"),
     region: $("#region"),
 
     histLoading: $("#hist-loading"),
@@ -282,9 +286,11 @@
       const age = t - ev.s;
       out.push({ ev, age, labeled: true, opacity: 1, fresh: age < 6 });
     }
-    // Ετικέτες μόνο για τα πιο πρόσφατα
-    const labeled = out.filter((a) => a.labeled).sort((a, b) => a.age - b.age);
-    labeled.forEach((a, i) => { if (i >= maxLabels()) a.labeled = false; });
+    // Ταμπέλα μόνο για το πιο πρόσφατο γεγονός (ή όσα ξεκίνησαν την ίδια στιγμή): μόλις εμφανιστεί
+    // το επόμενο, η παλιά ταμπέλα κρύβεται (το γεγονός μένει στο «Συμβαίνει τώρα» ως το τέλος της χρονολογίας του).
+    const newest = out.reduce((m, a) => Math.max(m, a.ev.s), -Infinity);
+    out.forEach((a) => { a.labeled = a.ev.s === newest; });
+    out.filter((a) => a.labeled).forEach((a, i) => { if (i >= maxLabels()) a.labeled = false; });
     return out;
   }
 
@@ -620,6 +626,132 @@
       g.append("text").text(j + 1);
     });
   }
+
+  // ---------- Σινεμά: μεγάλη εισαγωγή + βίντεο όταν εμφανίζεται ένα κορυφαίο γεγονός ----------
+  // Κατά την αναπαραγωγή, μόλις ένα κορυφαίο γεγονός (featured.js) εμφανιστεί στον χάρτη: παύση,
+  // zoom στο σημείο, μεγάλο εφέ + τίτλος σε όλη την οθόνη και μετά μεγάλο popup με το βίντεο
+  // (ή μεγάλη φωτογραφία από τη Wikipedia όταν δεν υπάρχει βίντεο). Στο κλείσιμο συνεχίζει η αναπαραγωγή.
+  const EV_BY_ID = new Map(EVENTS.map((ev) => [ev.id, ev]));
+  const cinemaSeen = new Set(); // γεγονότα που έχουν ήδη παίξει (ξαναπαίζουν αν γυρίσεις πίσω στον χρόνο)
+  let cinemaEv = null, cinemaTimer = 0, cinemaSeq = 0, cinemaPending = false, cinemaResume = false;
+  const cinemaOpen = () => !els.cinema.classList.contains("collapsed");
+  const cinemaActive = () => cinemaPending || cinemaOpen();
+  function cinemaIntro(ev) {
+    if (!FEATURED[ev.id] || cinemaSeen.has(ev.id) || cinemaActive()) return;
+    cinemaSeen.add(ev.id);
+    pause();
+    cinemaResume = true;
+    cinemaPending = true;
+    const seq = ++cinemaSeq;
+    setStoryCollapsed(true); setPanelCollapsed(true); if (isMobile()) setSidebarCollapsed(true, false);
+    focusEvent(ev, isMobile() ? 2.2 : 3);
+    const type = TYPES[ev.type];
+    els.intro.style.setProperty("--c", "var(--c-" + ev.type + ")");
+    els.introYear.textContent = type.icon + "  " + yearOf(ev.start);
+    els.introTitle.textContent = ev.title;
+    els.intro.classList.remove("collapsed");
+    els.intro.setAttribute("aria-hidden", "false");
+    restartAnimations(els.intro);
+    setTimeout(() => { if (seq === cinemaSeq) bigBang(ev); }, 450); // αφού «κάτσει» το zoom
+    clearTimeout(cinemaTimer);
+    cinemaTimer = setTimeout(() => {
+      if (seq !== cinemaSeq) return;
+      hideIntro();
+      cinemaPending = false;
+      openCinema(ev);
+    }, 3300);
+  }
+  function restartAnimations(el) {
+    el.querySelectorAll("*").forEach((n) => { n.style.animation = "none"; });
+    void el.offsetWidth;
+    el.querySelectorAll("*").forEach((n) => { n.style.animation = ""; });
+  }
+  function hideIntro() {
+    els.intro.classList.add("collapsed");
+    els.intro.setAttribute("aria-hidden", "true");
+  }
+  // Πολύ μεγάλο εφέ στο σημείο του γεγονότος: λάμψη, διαδοχικοί κύκλοι και αστέρι
+  function bigBang(ev) {
+    const [x, y] = projection([ev.lng, ev.lat]);
+    if (!isFinite(x) || !isFinite(y)) return;
+    const color = typeColor(ev.type);
+    const g = gFx.append("g").attr("class", "fx-bang").attr("transform", "translate(" + x + "," + y + ") scale(" + bodyScale() + ")");
+    g.append("circle").attr("r", 0).attr("fill", "#fff").attr("opacity", 1)
+      .transition().duration(800).ease(d3.easeCubicOut).attr("r", 110).attr("opacity", 0).remove();
+    for (let i = 0; i < 5; i++) {
+      g.append("circle").attr("r", 6).attr("fill", "none").attr("stroke", i % 2 ? "#fff" : color).attr("stroke-width", 12).attr("opacity", 0.95)
+        .transition().delay(i * 240).duration(2300).ease(d3.easeCubicOut)
+        .attr("r", 380).attr("stroke-width", 0.5).attr("opacity", 0).remove();
+    }
+    g.append("text").attr("class", "bang-star").text("★").attr("fill", "#ffd36b").attr("font-size", 1).attr("opacity", 1)
+      .transition().duration(900).ease(d3.easeBackOut).attr("font-size", 130)
+      .transition().delay(1100).duration(700).attr("opacity", 0).attr("font-size", 170).remove();
+    setTimeout(() => g.remove(), 3600);
+  }
+  async function openCinema(ev) {
+    cinemaEv = ev;
+    const seq = cinemaSeq;
+    const f = FEATURED[ev.id] || {};
+    const type = TYPES[ev.type];
+    els.cinema.style.setProperty("--c", "var(--c-" + ev.type + ")");
+    els.cinemaType.textContent = type.icon + " " + type.label;
+    els.cinemaMeta.textContent = yearOf(ev.start) + (ev.end ? " – " + yearOf(ev.end) : "");
+    els.cinemaTitle.textContent = ev.title;
+    els.cinemaCap.textContent = capOf(f) || ev.description || "";
+    els.cinemaCredit.innerHTML = "";
+    els.cinemaMedia.innerHTML = "";
+    els.cinema.classList.remove("collapsed");
+    els.cinema.setAttribute("aria-hidden", "false");
+    restartAnimations(els.cinema);
+    els.cinemaContinue.focus({ preventScroll: true });
+    if (f.kind === "video" && f.sources) {
+      const v = document.createElement("video");
+      v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
+      f.sources.forEach((s) => { const so = document.createElement("source"); so.src = s.src; so.type = s.type; v.appendChild(so); });
+      els.cinemaMedia.appendChild(v);
+      v.play().catch(() => { /* ο browser μπορεί να θέλει κλικ */ });
+      els.cinemaCredit.innerHTML = esc(t("videoCredit")) + " " + esc(f.credit || "") + (f.page ? ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a>' : "");
+      return;
+    }
+    // Χωρίς βίντεο: μεγάλη φωτογραφία από το άρθρο της Wikipedia
+    els.cinemaMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
+    const w = WIKI[ev.id] || [null, null];
+    if (!w[0] && !w[1]) return;
+    const [sEl, sEn] = await Promise.all([w[1] ? fetchSummary("el", w[1]) : null, w[0] ? fetchSummary("en", w[0]) : null]);
+    if (seq !== cinemaSeq || cinemaEv !== ev) return;
+    const img = pickImage(sEn) || pickImage(sEl);
+    if (!img) return;
+    const im = new Image();
+    im.alt = ev.title;
+    im.onload = () => {
+      if (cinemaEv !== ev) return;
+      els.cinemaMedia.innerHTML = "";
+      els.cinemaMedia.appendChild(im);
+      requestAnimationFrame(() => im.classList.add("in"));
+      els.cinemaCredit.textContent = t("wikiCredit");
+    };
+    im.onerror = () => { const small = (sEn && sEn.thumbnail && sEn.thumbnail.source) || (sEl && sEl.thumbnail && sEl.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
+    im.src = img;
+  }
+  function closeCinema({ resume = true } = {}) {
+    cinemaSeq++;
+    clearTimeout(cinemaTimer);
+    cinemaPending = false;
+    hideIntro();
+    if (cinemaOpen()) {
+      els.cinema.classList.add("collapsed");
+      els.cinema.setAttribute("aria-hidden", "true");
+      els.cinemaMedia.innerHTML = ""; // σταματά και το βίντεο
+    }
+    cinemaEv = null;
+    const r = cinemaResume;
+    cinemaResume = false;
+    if (r && resume && !state.playing) play();
+  }
+  els.cinemaClose.addEventListener("click", () => closeCinema());
+  els.cinemaContinue.addEventListener("click", () => closeCinema());
+  els.cinemaBackdrop.addEventListener("click", () => closeCinema());
+  els.cinemaMore.addEventListener("click", () => { const ev = cinemaEv; closeCinema({ resume: false }); if (ev) showEvent(ev); });
 
   // ---------- Ζωντανές αναπαραστάσεις πάνω στον χάρτη (ανά τύπο γεγονότος) ----------
   let fxCount = 0;
@@ -1293,7 +1425,7 @@
               const g = d3.select(this);
               buildEvent(g, a.ev);
               layoutEvent(g, a.ev, true);
-              if (state.playing) { playScene(a.ev); if (a.labeled) autoRotateTo(a.ev); }
+              if (state.playing) { playScene(a.ev); if (a.labeled) autoRotateTo(a.ev); if (FEATURED[a.ev.id]) cinemaIntro(a.ev); }
             }),
         (update) => update,
         (exit) => exit.remove()
@@ -1661,6 +1793,10 @@
 
   function setTime(t, { fromUser = false } = {}) {
     state.t = clampT(t);
+    if (fromUser) {
+      if (cinemaPending) closeCinema({ resume: false });
+      for (const id of cinemaSeen) { const ev = EV_BY_ID.get(id); if (ev && ev.s > state.t) cinemaSeen.delete(id); }
+    }
     updateUI();
     if (fromUser && state.t >= TOTAL_MONTHS - 1 && state.playing) pause();
   }
@@ -1699,7 +1835,7 @@
 
   function play() {
     if (state.playing) return;
-    if (state.t >= TOTAL_MONTHS - 1) state.t = 0;
+    if (state.t >= TOTAL_MONTHS - 1) { state.t = 0; cinemaSeen.clear(); }
     state.playing = true;
     state.lastFrame = performance.now();
     els.play.classList.add("playing");
@@ -1712,7 +1848,7 @@
     els.play.classList.remove("playing");
     els.play.setAttribute("aria-label", "Play");
   }
-  function toggle() { if (state.playing) pause(); else { if (tour) setStoryCollapsed(true); play(); } }
+  function toggle() { if (cinemaActive()) { closeCinema(); return; } if (state.playing) pause(); else { if (tour) setStoryCollapsed(true); play(); } }
 
   // Σταθερή ταχύτητα: 1 έτος ανά δευτερόλεπτο (δεν αλλάζει από τον χρήστη)
   function setSpeed(s) {
@@ -1742,7 +1878,7 @@
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
       case "ArrowRight": if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
       case "ArrowLeft": if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
-      case "Escape": setStoryCollapsed(true); break;
+      case "Escape": if (cinemaActive()) closeCinema(); else setStoryCollapsed(true); break;
       case "Home": setTime(0, { fromUser: true }); break;
       case "End": setTime(TOTAL_MONTHS - 1, { fromUser: true }); break;
     }
