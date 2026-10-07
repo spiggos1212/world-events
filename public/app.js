@@ -45,7 +45,7 @@
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
-      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις χρονολογία (π.χ. 1520, 500 π.Χ., -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
+      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις έτος (π.χ. 1520· για π.Χ. γράψε -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -71,7 +71,7 @@
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
-      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520, 500 BC, -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
+      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520; for BC type -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -2425,7 +2425,7 @@
   }
   function openYearInput() {
     const yr = monthsToDate(state.t).year;
-    els.yearInput.value = yr <= 0 ? (1 - yr) + " " + t("bc") : String(yr);
+    els.yearInput.value = String(yr <= 0 ? yr - 1 : yr); // σκέτο έτος· αρνητικό = π.Χ. (-500 = 500 π.Χ.)
     els.yearInput.hidden = false;
     els.year.hidden = true;
     els.yearInput.focus();
