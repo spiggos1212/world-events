@@ -110,7 +110,7 @@
     historical: true,
     lang: "el",
     proj: "flat",
-    featuredOnly: false,
+    featuredOnly: true, // by default μόνο τα μεγαλύτερα γεγονότα
     region: null, // επιλεγμένη ήπειρος (key από continents.js) ή null = όλες
   };
 
