@@ -275,21 +275,6 @@ g.hist-year.out { opacity: 0; }
 @media (max-width: 480px) { .narrate-btn .lbl { display: none; } }
 .cinema-title { margin: 0 20px 10px; font-size: clamp(18px, 2.4vw, 26px); line-height: 1.15; }
 .cinema-media { position: relative; flex: none; width: 100%; aspect-ratio: 16 / 9; max-height: 46vh; background: #000; display: grid; place-items: center; overflow: hidden; }
-.cinema-media video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; cursor: pointer; }
-.cinema-media.has-video { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; aspect-ratio: auto; max-height: none; }
-.cinema-media.has-video video { flex: none; width: 100%; height: auto; max-height: 42vh; aspect-ratio: 16 / 9; }
-.vbar { width: 100%; }
-/* Μπάρα ελέγχου βίντεο: πάντα ορατή, με μπάρα προόδου για μετακίνηση */
-.vbar { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #0b1026; border-top: 1px solid var(--border); }
-.vbar button { border: 0; background: transparent; color: #fff; font: inherit; font-size: 15px; cursor: pointer; width: 32px; height: 28px; border-radius: 6px; display: grid; place-items: center; }
-.vbar button:hover { background: rgba(255,255,255,0.12); }
-.vb-time { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 34px; text-align: center; }
-.vb-seek { flex: 1; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; cursor: pointer; margin: 0;
-  background: linear-gradient(to right, var(--accent) 0 var(--pct, 0%), rgba(255,255,255,0.18) var(--pct, 0%) 100%); }
-.vb-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.6); }
-.vb-seek::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--accent); }
-.vb-seek::-moz-range-track { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.18); }
-.vb-seek::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--accent); }
 /* Slideshow φωτογραφιών */
 .gal { position: absolute; inset: 0; background: #000; overflow: hidden; }
 .gal-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 800ms ease; transform-origin: 50% 50%; }

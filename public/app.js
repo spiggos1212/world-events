@@ -506,10 +506,9 @@
     if (isMobile()) setSidebarCollapsed(true);
     // Κορυφαίο γεγονός: βίντεο, 3D ή μίνι ιστορία
     const f = FEATURED[ev.id];
-    if (f && f.kind === "video") renderVideo(f);
-    else if (f && f.kind === "photo") els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>";
+    if (f && (f.kind === "photo" || f.kind === "video")) els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>";
     else if (f && f.kind === "tour") startTour(ev, f);
-    const skipImage = !!(f && f.kind === "video");
+    const skipImage = false;
 
     const w = WIKI[ev.id] || [null, null];
     if (!w[0] && !w[1]) { els.storyWiki.innerHTML = ""; return; }
@@ -523,7 +522,7 @@
     if (img && !skipImage) {
       const im = new Image();
       im.alt = got.title || ev.title;
-      im.onload = () => { if (seq === storySeq) { if (f && f.kind === "photo") showPostcard(ev.lng, ev.lat, img, capOf(f)); els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
+      im.onload = () => { if (seq === storySeq) { if (f && (f.kind === "photo" || f.kind === "video")) showPostcard(ev.lng, ev.lat, img, capOf(f)); els.storyMedia.appendChild(im); requestAnimationFrame(() => im.classList.add("in")); const c = document.createElement("span"); c.className = "credit"; c.textContent = t("wikiCredit"); els.storyMedia.appendChild(c); } };
       im.onerror = () => { const small = (got.thumbnail && got.thumbnail.source) || (sEn && sEn.thumbnail && sEn.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
       im.src = img;
     }
@@ -536,15 +535,6 @@
 
   // ---------- Κορυφαία γεγονότα: βίντεο / 3D μοντέλο / μίνι ιστορία ----------
   const capOf = (f) => (f.caption && (f.caption[state.lang] || f.caption.el)) || "";
-  function renderVideo(f) {
-    const v = document.createElement("video");
-    v.controls = true; v.preload = "metadata"; v.playsInline = true;
-    f.sources.forEach((s) => { const so = document.createElement("source"); so.src = s.src; so.type = s.type; v.appendChild(so); });
-    els.storyMedia.innerHTML = "";
-    els.storyMedia.appendChild(v);
-    els.storyFeature.innerHTML = '<p class="story-caption">' + esc(capOf(f)) + "</p>" +
-      '<div class="story-credit">' + esc(t("videoCredit")) + " " + esc(f.credit) + ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a></div>';
-  }
   // Καρτ ποστάλ: φωτογραφία με λεζάντα, «καρφιτσωμένη» δίπλα στο σημείο του γεγονότος (μόνο σε μεγάλη οθόνη)
   function showPostcard(lng, lat, src, caption) {
     if (isMobile()) return;
@@ -721,18 +711,7 @@
     els.cinema.querySelector(".cinema-box").scrollTop = 0;
     els.cinemaClose.focus({ preventScroll: true });
     loadCinemaStory(ev, seq);
-    if (f.kind === "video" && f.sources) {
-      const v = document.createElement("video");
-      v.autoplay = true; v.playsInline = true; v.preload = "auto";
-      f.sources.forEach((s) => { const so = document.createElement("source"); so.src = s.src; so.type = s.type; v.appendChild(so); });
-      els.cinemaMedia.classList.add("has-video");
-      els.cinemaMedia.appendChild(v);
-      els.cinemaMedia.appendChild(buildVideoBar(v));
-      v.play().catch(() => { /* ο browser μπορεί να θέλει κλικ */ });
-      els.cinemaCredit.innerHTML = esc(t("videoCredit")) + " " + esc(f.credit || "") + (f.page ? ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a>' : "");
-      return;
-    }
-    // Χωρίς βίντεο: slideshow με φωτογραφίες του άρθρου της Wikipedia (ή μία μεγάλη φωτογραφία)
+    // Slideshow με φωτογραφίες του άρθρου της Wikipedia (ή μία μεγάλη φωτογραφία)
     els.cinemaMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
     const [sEl, sEn] = await wikiPair(ev);
     if (seq !== cinemaSeq || cinemaEv !== ev) return;
@@ -751,41 +730,6 @@
     im.onerror = () => { const small = (sEn && sEn.thumbnail && sEn.thumbnail.source) || (sEl && sEl.thumbnail && sEl.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
     im.src = img;
   }
-  // ---- Μπάρα ελέγχου βίντεο: play/pause, πρόοδος (seek), χρόνος, ήχος, πλήρης οθόνη ----
-  const fmtTime = (s) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ":" + (r < 10 ? "0" : "") + r; };
-  function buildVideoBar(v) {
-    const bar = document.createElement("div");
-    bar.className = "vbar";
-    bar.innerHTML = '<button type="button" class="vb-play" aria-label="Play/Pause">▶</button>' +
-      '<span class="vb-time vb-cur">0:00</span>' +
-      '<input type="range" class="vb-seek" min="0" max="1000" step="1" value="0" aria-label="Πρόοδος βίντεο">' +
-      '<span class="vb-time vb-dur">0:00</span>' +
-      '<button type="button" class="vb-mute" aria-label="Ήχος">🔊</button>' +
-      '<button type="button" class="vb-full" aria-label="Πλήρης οθόνη">⛶</button>';
-    const play = bar.querySelector(".vb-play"), seek = bar.querySelector(".vb-seek"), cur = bar.querySelector(".vb-cur"), dur = bar.querySelector(".vb-dur"), mute = bar.querySelector(".vb-mute"), full = bar.querySelector(".vb-full");
-    const duration = () => (isFinite(v.duration) ? v.duration : (v.seekable.length ? v.seekable.end(v.seekable.length - 1) : 0));
-    let scrubbing = false;
-    const sync = () => {
-      const d = duration();
-      dur.textContent = fmtTime(d);
-      cur.textContent = fmtTime(v.currentTime);
-      if (!scrubbing) seek.value = d ? Math.round((v.currentTime / d) * 1000) : 0;
-      seek.style.setProperty("--pct", (d ? (v.currentTime / d) * 100 : 0) + "%");
-      play.textContent = v.paused ? "▶" : "❚❚";
-      mute.textContent = v.muted ? "🔇" : "🔊";
-    };
-    ["timeupdate", "durationchange", "loadedmetadata", "progress", "play", "pause", "volumechange", "ended"].forEach((e) => v.addEventListener(e, sync));
-    play.onclick = () => { if (v.paused) v.play().catch(() => {}); else v.pause(); };
-    v.addEventListener("click", () => play.onclick());
-    const scrubTo = () => { const d = duration(); if (d) { v.currentTime = (Number(seek.value) / 1000) * d; cur.textContent = fmtTime(v.currentTime); } };
-    seek.addEventListener("input", () => { scrubbing = true; scrubTo(); });
-    seek.addEventListener("change", () => { scrubbing = false; scrubTo(); });
-    mute.onclick = () => { v.muted = !v.muted; };
-    full.onclick = () => { const el = v.parentElement; if (el.requestFullscreen) el.requestFullscreen().catch(() => {}); else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen(); };
-    sync();
-    return bar;
-  }
-
   // ---- Slideshow φωτογραφιών από το άρθρο της Wikipedia ----
   // media-list: σειρά εμφάνισης + λεζάντες· imageinfo: διαστάσεις + μεγάλο thumbnail
   const BAD_IMG = /flag|icon|logo|symbol|pictogram|wiki|commons|ambox|disambig|edit-|button|arrow|signature|coat_of_arms|emblem|seal_of|stamp|\.svg$|\.gif$|\.ogv$|\.webm$|\.tiff?$|\.pdf$|\.djvu$/i;
@@ -911,9 +855,9 @@
     els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") + note;
     const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
     els.cinemaLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
-    // Αφήγηση: περιγραφή + οι 2 παράγραφοι, μόνο όταν δεν παίζει βίντεο
+    // Αφήγηση: τίτλος + περιγραφή + οι 2 παράγραφοι, όσο παίζουν οι φωτογραφίες
     cinemaNarration = { text: [ev.title + ".", ev.description || "", ...paras].filter(Boolean).join(" "), lang: gotLang };
-    if (!els.cinemaMedia.classList.contains("has-video")) startNarration();
+    startNarration();
   }
   // Οι πρώτες n παράγραφοι κειμένου (χωρίς επικεφαλίδες "== ... ==")
   function firstParas(text, n) {
@@ -947,7 +891,6 @@
     cinemaNarration = null;
     stopNarration();
     els.cinemaNarrate.hidden = true;
-    els.cinemaMedia.classList.remove("has-video");
     if (cinemaOpen()) {
       els.cinema.classList.add("collapsed");
       els.cinema.setAttribute("aria-hidden", "true");
