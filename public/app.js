@@ -121,6 +121,7 @@
     lang: "el",
     proj: "flat",
     featuredOnly: true, // by default μόνο τα μεγαλύτερα γεγονότα
+    panelOpen: false, // «Συμβαίνει τώρα» ανοιχτό -> ταμπέλες όλων των γεγονότων του στον χάρτη
     region: null, // επιλεγμένη ήπειρος (key από continents.js) ή null = όλες
   };
 
@@ -296,9 +297,12 @@
     }
     // Ταμπέλα μόνο για το πιο πρόσφατο γεγονός (ή όσα ξεκίνησαν την ίδια στιγμή): μόλις εμφανιστεί
     // το επόμενο, η παλιά ταμπέλα κρύβεται (το γεγονός μένει στο «Συμβαίνει τώρα» ως το τέλος της χρονολογίας του).
+    // Με ανοιχτό το «Συμβαίνει τώρα» δείχνονται οι ταμπέλες όλων των γεγονότων της λίστας.
+    const showAll = state.panelOpen;
     const newest = out.reduce((m, a) => Math.max(m, a.ev.s), -Infinity);
-    out.forEach((a) => { a.labeled = a.ev.s === newest; });
-    out.filter((a) => a.labeled).forEach((a, i) => { if (i >= maxLabels()) a.labeled = false; });
+    out.forEach((a) => { a.labeled = showAll || a.ev.s === newest; });
+    const cap = showAll ? 40 : maxLabels();
+    out.filter((a) => a.labeled).sort((a, b) => a.age - b.age).forEach((a, i) => { if (i >= cap) a.labeled = false; });
     return out;
   }
 
@@ -1614,6 +1618,8 @@
   function setPanelCollapsed(v) {
     els.panel.classList.toggle("collapsed", v);
     openBtn.classList.toggle("show", v);
+    const open = !v;
+    if (open !== !!state.panelOpen) { state.panelOpen = open; renderEvents(); } // ταμπέλες όλων των γεγονότων της λίστας στον χάρτη
   }
   els.panelToggle.addEventListener("click", () => setPanelCollapsed(true));
   setPanelCollapsed(true); // κλειστό εξ ορισμού· ανοίγει μόνο αν το ζητήσει ο χρήστης
