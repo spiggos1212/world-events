@@ -140,8 +140,9 @@
     const vol = Math.max(0.05, Math.min(1, 0.35 + S.volume * 0.65)); // η αφήγηση μένει ευδιάκριτη και σε χαμηλή ένταση
     duck(true);
     // Chrome: speak() αμέσως μετά από cancel() χάνεται — μικρή καθυστέρηση
-    setTimeout(() => {
+    const begin = (tries) => {
       if (seq !== SP.seq) return;
+      if ((synth.speaking || synth.pending) && tries < 12) { hardCancel(); setTimeout(() => begin(tries + 1), 60); return; }
       parts.forEach((p, i) => {
         const u = new SpeechSynthesisUtterance(p);
         u.lang = voice ? voice.lang : (lang === "el" ? "el-GR" : "en-US");
@@ -151,11 +152,29 @@
         u.onerror = (e) => { if (seq === SP.seq && e.error !== "interrupted" && e.error !== "canceled") finishSpeech(); };
         synth.speak(u);
       });
-    }, 120);
+    };
+    setTimeout(() => begin(0), 150);
     return true;
   }
   function finishSpeech() { SP.active = false; duck(false); const cb = SP.onEnd; SP.onEnd = null; if (cb) cb(); }
-  function stopSpeech() { if (!synth) return; SP.seq++; if (synth.speaking || synth.pending) synth.cancel(); if (SP.active) { SP.active = false; duck(false); SP.onEnd = null; } }
+  // Άμεσο σταμάτημα: σε Chrome/Windows το cancel() συχνά αγνοείται μέχρι το τέλος της πρότασης,
+  // γι αυτό γίνεται pause + cancel και επαναλαμβάνεται για λίγο μέχρι να σωπάσει· resume() για να μην
+  // μείνει «παγωμένη» η επόμενη αφήγηση.
+  let stopTimer = 0;
+  function hardCancel() {
+    try { synth.pause(); } catch (_) { /* ignore */ }
+    try { synth.cancel(); } catch (_) { /* ignore */ }
+    try { synth.resume(); } catch (_) { /* ignore */ }
+  }
+  function stopSpeech() {
+    if (!synth) return;
+    SP.seq++;
+    if (SP.active) { SP.active = false; duck(false); SP.onEnd = null; }
+    hardCancel();
+    clearInterval(stopTimer);
+    let n = 0;
+    stopTimer = setInterval(() => { if (synth.speaking || synth.pending) hardCancel(); if (++n >= 12 || !(synth.speaking || synth.pending)) clearInterval(stopTimer); }, 60);
+  }
   // Το ambient χαμηλώνει όσο μιλάει ο αφηγητής
   function duck(on) {
     const c = S.ctx; if (!c) return;
