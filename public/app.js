@@ -1763,7 +1763,7 @@
 
   // Μετάβαση σε γεγονός: παύση, σωστή χρονιά, zoom κοντά, popup με την ιστορία και αναπαράσταση στον χάρτη
   function showEvent(ev, { zoom = 2.5 } = {}) {
-    if (gameOn()) return; // στο παιχνίδι δεν ανοίγουν γεγονότα (θα έδιναν την απάντηση)
+    if (gameOn() && G.phase === "ask") return; // όσο εκκρεμεί ερώτηση δεν ανοίγουν γεγονότα (θα έδιναν την απάντηση)
     if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
     const sameYear = Math.floor(state.t / 12) === Math.floor(ev.s / 12);
     const inRange = ev.e != null && state.t >= ev.s && state.t < ev.e;
@@ -2002,7 +2002,7 @@
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     if (tour && (ev.code === "ArrowRight" || ev.code === "ArrowLeft")) { gotoStop(tour.i + (ev.code === "ArrowRight" ? 1 : -1)); return; }
     if (gameOn()) { // στο παιχνίδι: Escape κλείνει, βελάκια = 10 χρόνια στο timeline
-      if (ev.code === "Escape") closeGame();
+      if (ev.code === "Escape") { if (cinemaActive()) closeCinema(); else if (!els.story.classList.contains("collapsed")) setStoryCollapsed(true); else closeGame(); }
       else if (ev.code === "ArrowRight") setTime(state.t + 120, { fromUser: true });
       else if (ev.code === "ArrowLeft") setTime(state.t - 120, { fromUser: true });
       return;
@@ -2289,8 +2289,10 @@
       const p = projection(geo);
       if (!p || !isFinite(p[0]) || !onFront(geo[0], geo[1])) return;
       const g = gGame.append("g").attr("class", "game-mark " + cls).attr("transform", "translate(" + p[0] + "," + p[1] + ") scale(" + sc + ")");
+      if (cls === "truth") g.append("circle").attr("class", "halo").attr("r", 16);
       g.append("circle").attr("r", 10);
       g.append("text").text(txt);
+      if (cls === "truth" && G.q && G.q.ev) { const ev = G.q.ev; g.on("click", (event) => { event.stopPropagation(); showEvent(ev); }).append("title").text(ev.title); }
     });
   }
   function finishAnswer(ok, answer, diff, extra) {

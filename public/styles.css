@@ -179,7 +179,8 @@ g.hist-year.out { opacity: 0; }
 .gq-fb.ok { color: #6fdc8c; }
 .gq-fb.bad { color: #ff8a8a; }
 .gq-fb small { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 600; color: #fff; }
-.gq-actions { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 7; pointer-events: auto; display: flex; gap: 10px; animation: gq-in 400ms cubic-bezier(0.2, 1, 0.3, 1) both; }
+.gq-actions { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 7; pointer-events: auto; display: flex; gap: 10px; animation: gqa-in 400ms cubic-bezier(0.2, 1, 0.3, 1) both; }
+@keyframes gqa-in { from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); } to { opacity: 1; transform: translate(-50%, -50%); } }
 .gq-actions:empty { display: none; }
 .gq-actions button { padding: 14px 30px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
 .gq-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
@@ -252,6 +253,9 @@ body.game-map #map-wrap svg { cursor: crosshair; }
 .game-mark circle { stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .game-mark.guess circle { fill: #ff5a5f; }
 .game-mark.truth circle { fill: #2e8b57; }
+.game-mark.truth { pointer-events: auto; cursor: pointer; }
+.game-mark.truth .halo { fill: none; stroke: #6fdc8c; stroke-width: 2; opacity: 0.9; animation: halo-pulse 1.4s ease-out infinite; transform-origin: center; }
+@keyframes halo-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(1.8); opacity: 0; } }
 .game-mark text { font-size: 12px; font-weight: 900; fill: #fff; text-anchor: middle; dominant-baseline: central; }
 /* Κατά το παιχνίδι τα γεγονότα κρύβονται (για να μη δίνουν την απάντηση), μέχρι την αποκάλυψη */
 body.game-on:not(.game-reveal) .ev, body.game-on:not(.game-reveal) .fx { display: none !important; }
