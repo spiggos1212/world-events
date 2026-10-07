@@ -267,6 +267,12 @@ g.hist-year.out { opacity: 0; }
 .cinema-head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 4px 20px; }
 .cinema-type { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c, var(--muted)); }
 .cinema-meta { flex: 1; font-size: 13px; color: var(--muted); }
+.narrate-btn { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.narrate-btn[hidden] { display: none; }
+.narrate-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.narrate-btn[aria-pressed="true"] .ico { animation: talk 900ms ease-in-out infinite; }
+@keyframes talk { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+@media (max-width: 480px) { .narrate-btn .lbl { display: none; } }
 .cinema-title { margin: 0 20px 10px; font-size: clamp(18px, 2.4vw, 26px); line-height: 1.15; }
 .cinema-media { position: relative; flex: none; width: 100%; aspect-ratio: 16 / 9; max-height: 46vh; background: #000; display: grid; place-items: center; overflow: hidden; }
 .cinema-media video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; cursor: pointer; }

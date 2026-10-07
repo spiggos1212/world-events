@@ -104,8 +104,62 @@
     if (c.state === "suspended" && !S.muted) c.resume().catch(() => {});
     if (!S.muted) startAmbient();
   }
+  // ---------- Αφηγητής (speechSynthesis του browser) ----------
+  const SP = { active: false, seq: 0, onEnd: null };
+  const synth = window.speechSynthesis || null;
+  let voicesReady = [];
+  function loadVoices() { if (synth) voicesReady = synth.getVoices() || []; }
+  if (synth) { loadVoices(); synth.addEventListener && synth.addEventListener("voiceschanged", loadVoices); }
+  // Καλύτερη διαθέσιμη φωνή για τη γλώσσα: προτιμά "Natural"/"Google", μετά οποιαδήποτε της γλώσσας
+  function pickVoice(lang) {
+    loadVoices();
+    const base = lang.toLowerCase().slice(0, 2);
+    const cands = voicesReady.filter((v) => (v.lang || "").toLowerCase().startsWith(base));
+    if (!cands.length) return null;
+    const score = (v) => (/natural/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 3 : 0) + (/online/i.test(v.name) ? 1 : 0) + (v.localService ? 0 : 0.5) + (v.default ? 0.2 : 0);
+    return cands.sort((a, b) => score(b) - score(a))[0];
+  }
+  // Σπάει το κείμενο σε προτάσεις (ως ~220 χαρακτήρες) — μεγάλες εκφωνήσεις κόβονται σε Chrome
+  function chunks(text) {
+    const out = [];
+    const sents = String(text).replace(/\s+/g, " ").match(/[^.!?;…]+[.!?;…]*\s*/g) || [String(text)];
+    let cur = "";
+    for (const s of sents) { if ((cur + s).length > 220 && cur) { out.push(cur.trim()); cur = ""; } cur += s; }
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+  function say(text, lang, onEnd) {
+    stopSpeech();
+    if (!synth || !text || S.muted) return false;
+    const seq = ++SP.seq;
+    SP.active = true; SP.onEnd = onEnd || null;
+    const voice = pickVoice(lang);
+    const parts = chunks(text);
+    const vol = Math.max(0.05, Math.min(1, 0.35 + S.volume * 0.65)); // η αφήγηση μένει ευδιάκριτη και σε χαμηλή ένταση
+    duck(true);
+    parts.forEach((p, i) => {
+      const u = new SpeechSynthesisUtterance(p);
+      u.lang = voice ? voice.lang : (lang === "el" ? "el-GR" : "en-US");
+      if (voice) u.voice = voice;
+      u.rate = 0.98; u.pitch = 1; u.volume = vol;
+      if (i === parts.length - 1) u.onend = () => { if (seq === SP.seq) finishSpeech(); };
+      u.onerror = () => { if (seq === SP.seq) finishSpeech(); };
+      synth.speak(u);
+    });
+    return true;
+  }
+  function finishSpeech() { SP.active = false; duck(false); const cb = SP.onEnd; SP.onEnd = null; if (cb) cb(); }
+  function stopSpeech() { if (!synth) return; SP.seq++; if (synth.speaking || synth.pending) synth.cancel(); if (SP.active) { SP.active = false; duck(false); SP.onEnd = null; } }
+  // Το ambient χαμηλώνει όσο μιλάει ο αφηγητής
+  function duck(on) {
+    const c = S.ctx; if (!c) return;
+    const now = c.currentTime;
+    S.ambGain.gain.cancelScheduledValues(now);
+    S.ambGain.gain.setTargetAtTime(on ? AMB_LEVEL * 0.25 : AMB_LEVEL, now, on ? 0.3 : 1.0);
+  }
   function setMuted(m) {
     S.muted = !!m;
+    if (S.muted) stopSpeech();
     try { localStorage.setItem(KEY, S.muted ? "1" : "0"); } catch (_) { /* ignore */ }
     const c = ctx();
     if (c) {
@@ -157,7 +211,8 @@
       updateBtn();
     }
     ["pointerdown", "keydown", "touchstart"].forEach((e) => document.addEventListener(e, unlock, { passive: true }));
-    document.addEventListener("visibilitychange", () => { if (document.hidden) { if (S.ctx && S.ctx.state === "running") S.ctx.suspend().catch(() => {}); } else if (S.ctx && !S.muted) S.ctx.resume().catch(() => {}); });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) { stopSpeech(); if (SP.onHidden) SP.onHidden(); }
+      if (document.hidden) { if (S.ctx && S.ctx.state === "running") S.ctx.suspend().catch(() => {}); } else if (S.ctx && !S.muted) S.ctx.resume().catch(() => {}); });
   }
-  window.WorldSound = { init, event: playEvent, setMuted, setVolume, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
+  window.WorldSound = { init, event: playEvent, setMuted, setVolume, say, stopSpeech, get speaking() { return SP.active; }, get canSpeak() { return !!synth; }, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
 })();

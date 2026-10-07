@@ -37,7 +37,7 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
-      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
+      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -55,7 +55,7 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
-      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", soundOff: "Sound: muted (click to unmute)",
+      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -159,7 +159,7 @@
     intro: $("#intro"), introYear: $("#intro-year"), introTitle: $("#intro-title"),
     cinema: $("#cinema"), cinemaBackdrop: $("#cinema-backdrop"), cinemaType: $("#cinema-type"), cinemaMeta: $("#cinema-meta"),
     cinemaTitle: $("#cinema-title"), cinemaMedia: $("#cinema-media"), cinemaCap: $("#cinema-cap"), cinemaCredit: $("#cinema-credit"),
-    cinemaClose: $("#cinema-close"), cinemaDesc: $("#cinema-desc"), cinemaWiki: $("#cinema-wiki"), cinemaLinks: $("#cinema-links"),
+    cinemaClose: $("#cinema-close"), cinemaNarrate: $("#cinema-narrate"), cinemaDesc: $("#cinema-desc"), cinemaWiki: $("#cinema-wiki"), cinemaLinks: $("#cinema-links"),
     region: $("#region"),
 
     histLoading: $("#hist-loading"),
@@ -900,30 +900,44 @@
     if (!got) { els.cinemaWiki.innerHTML = '<span class="note">' + esc(t("wikiFail")) + "</span>"; return; }
     const gotLang = got === sEl ? "el" : "en";
     const note = gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "";
-    // Πρώτα η εισαγωγή (έρχεται γρήγορα), μετά ολόκληρο το άρθρο
-    const paras = got.extract.split(/\n+/).filter(Boolean);
+    // Σύντομο κείμενο: οι 2 πρώτες παράγραφοι του άρθρου (ολόκληρο στον σύνδεσμο)
+    let paras = firstParas(got.extract, 2);
+    // Αν η εισαγωγή είναι μία σύντομη παράγραφος, συμπληρώνουμε από το πλήρες άρθρο
+    if (paras.join("").length < 400) {
+      const full = await fetchExtract(gotLang, got.title);
+      if (seq !== cinemaSeq || cinemaEv !== ev) return;
+      if (full) { const fp = firstParas(full, 2); if (fp.join("").length > paras.join("").length) paras = fp; }
+    }
     els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") + note;
     const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
     els.cinemaLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
-    let fullLang = gotLang, full = await fetchExtract(gotLang, got.title);
-    if (seq !== cinemaSeq || cinemaEv !== ev) return;
-    const other = pref[1] && pref[1] !== got && pref[1].extract && pref[1].type !== "disambiguation" ? pref[1] : null;
-    if (other && (!full || full.length < 2500)) {
-      const alt = await fetchExtract(other === sEl ? "el" : "en", other.title);
-      if (seq !== cinemaSeq || cinemaEv !== ev) return;
-      if (alt && alt.length > 3 * ((full && full.length) || 0)) { full = alt; fullLang = other === sEl ? "el" : "en"; }
-    }
-    if (!full) return;
-    const html = extractToHtml(full);
-    const fullNote = fullLang !== state.lang ? "<div class=\"note\">" + esc(t("wikiOtherLang")) + "</div>" : "";
-    if (html.length > els.cinemaWiki.innerHTML.length) els.cinemaWiki.innerHTML = html + fullNote;
+    // Αφήγηση: περιγραφή + οι 2 παράγραφοι, μόνο όταν δεν παίζει βίντεο
+    cinemaNarration = { text: [ev.title + ".", ev.description || "", ...paras].filter(Boolean).join(" "), lang: gotLang };
+    if (!els.cinemaMedia.classList.contains("has-video")) startNarration();
   }
+  // Οι πρώτες n παράγραφοι κειμένου (χωρίς επικεφαλίδες "== ... ==")
+  function firstParas(text, n) {
+    return String(text).split(/\n+/).map((s) => s.trim()).filter((s) => s && !/^=+.*=+$/.test(s) && s.length > 40).slice(0, n);
+  }
+  // ---- Αφηγητής ----
+  let cinemaNarration = null;
+  function setNarrateBtn(on) { els.cinemaNarrate.hidden = !(cinemaNarration && window.WorldSound && WorldSound.canSpeak); els.cinemaNarrate.setAttribute("aria-pressed", String(!!on)); }
+  function startNarration() {
+    if (!cinemaNarration || !window.WorldSound || !WorldSound.canSpeak) { setNarrateBtn(false); return; }
+    const ok = WorldSound.say(cinemaNarration.text, cinemaNarration.lang, () => setNarrateBtn(false));
+    setNarrateBtn(ok);
+  }
+  function stopNarration() { if (window.WorldSound) WorldSound.stopSpeech(); setNarrateBtn(false); }
+  els.cinemaNarrate.addEventListener("click", () => { if (window.WorldSound && WorldSound.speaking) stopNarration(); else { if (WorldSound.muted) WorldSound.setMuted(false); startNarration(); } });
   function closeCinema() {
     cinemaSeq++;
     clearTimeout(cinemaTimer);
     cinemaPending = false;
     hideIntro();
     stopGallery();
+    cinemaNarration = null;
+    stopNarration();
+    els.cinemaNarrate.hidden = true;
     els.cinemaMedia.classList.remove("has-video");
     if (cinemaOpen()) {
       els.cinema.classList.add("collapsed");
