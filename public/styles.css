@@ -256,8 +256,9 @@ g.hist-year.out { opacity: 0; }
 .cinema-title { margin: 0 20px 10px; font-size: clamp(18px, 2.4vw, 26px); line-height: 1.15; }
 .cinema-media { position: relative; flex: none; width: 100%; aspect-ratio: 16 / 9; max-height: 46vh; background: #000; display: grid; place-items: center; overflow: hidden; }
 .cinema-media video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; cursor: pointer; }
-.cinema-media.has-video { display: flex; flex-direction: column; aspect-ratio: auto; max-height: none; }
-.cinema-media.has-video video { flex: 1 1 auto; min-height: 0; height: auto; max-height: 42vh; aspect-ratio: 16 / 9; }
+.cinema-media.has-video { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; aspect-ratio: auto; max-height: none; }
+.cinema-media.has-video video { flex: none; width: 100%; height: auto; max-height: 42vh; aspect-ratio: 16 / 9; }
+.vbar { width: 100%; }
 /* Μπάρα ελέγχου βίντεο: πάντα ορατή, με μπάρα προόδου για μετακίνηση */
 .vbar { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #0b1026; border-top: 1px solid var(--border); }
 .vbar button { border: 0; background: transparent; color: #fff; font: inherit; font-size: 15px; cursor: pointer; width: 32px; height: 28px; border-radius: 6px; display: grid; place-items: center; }
