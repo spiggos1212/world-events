@@ -252,6 +252,19 @@ body.game-circle #map-wrap svg { cursor: crosshair; touch-action: none; }
 .game-draw.ok { fill: rgba(46, 139, 87, 0.25); stroke: #6fdc8c; }
 .game-draw.bad { fill: rgba(176, 58, 58, 0.22); stroke: #ff8a8a; }
 .game-draw-lbl { font-size: 12px; font-weight: 800; fill: #fff; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,0.7); stroke-width: 3px; pointer-events: none; }
+/* Χρονολογική σειρά: 3 καρφίτσες με τίτλο */
+.game-order { pointer-events: auto; cursor: pointer; }
+.game-order circle { fill: rgba(14, 20, 44, 0.85); stroke: #ffd36b; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.game-order:hover circle { fill: rgba(255, 211, 107, 0.35); }
+.game-order text.num { font-size: 15px; font-weight: 900; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+.game-order .lbl rect { fill: rgba(14, 20, 44, 0.92); stroke: rgba(255, 255, 255, 0.25); stroke-width: 1; }
+.game-order .lbl text { font-size: 11px; font-weight: 700; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+.game-order.picked circle { fill: #ffd36b; }
+.game-order.picked text.num { fill: #1a1400; }
+.game-order.correct circle { fill: #2e8b57; stroke: #6fdc8c; }
+.game-order.correct text.num { fill: #fff; }
+.game-order.wrong circle { fill: #b03a3a; stroke: #ff8a8a; }
+.game-order.wrong text.num { fill: #fff; }
 .game-choice { pointer-events: auto; cursor: pointer; }
 .game-choice circle { fill: rgba(255, 211, 107, 0.28); stroke: #ffd36b; stroke-width: 3; vector-effect: non-scaling-stroke; }
 .game-choice:hover circle { fill: rgba(255, 211, 107, 0.5); }

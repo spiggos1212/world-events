@@ -38,10 +38,10 @@
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
       game: "Παιχνίδι", gameShort: "Παιχνίδι", gameWelcome: "Πόσο καλά ξέρεις την ιστορία;",
-      gameRules: "10 ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: κλικ κοντά στο σημείο ή στην αφετηρία ενός γεγονότος, μέσα ή κοντά στη σωστή ήπειρο ή στο σωστό κράτος της εποχής, σε μία από 4 περιοχές, κύκλωμα μιας περιοχής, και «πότε» σέρνοντας το timeline.",
+      gameRules: "10 ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: πού (σημείο, ήπειρος, κράτος, 4 περιοχές, κύκλος), πότε (ξεκίνησε ή τελείωσε, σέρνοντας το timeline) και χρονολογική σειρά 3 γεγονότων.",
       gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου είναι: {pick}", gameNoLand: "εκτός ηπείρου (θάλασσα)", gameNoState: "εκτός κράτους", gamePickPoint: "σημείο {km} χλμ. μακριά από το σωστό", gamePickCircle: "κύκλος ακτίνας {r} χλμ., {km} χλμ. από το σωστό σημείο", gamePickArea: "περιοχή {letter}",
-      gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
+      gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameQOrder: "Βάλε τα 3 γεγονότα σε χρονολογική σειρά", gameOrderHint: "Κάνε κλικ στα γεγονότα στον χάρτη με τη σειρά που έγιναν: πρώτα το παλιότερο, τελευταίο το νεότερο.", gameOrderPick: "{seq}", gameQEnd: "Πότε τελείωσε: {event}; (ξεκίνησε το {year})", gameEndHint: "Ο χάρτης είναι στη χρονιά που ξεκίνησε. Σύρε το timeline στη χρονιά που νομίζεις ότι τελείωσε και πάτα «Απάντηση». Ανοχή ±{n} χρόνια.", gameDuration: "διάρκεια {n} χρόνια", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Η σωστή απάντηση είναι: {answer}", gameAnswerOk: "{answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
@@ -64,10 +64,10 @@
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
       game: "Game", gameShort: "Game", gameWelcome: "How well do you know history?",
-      gameRules: "10 questions, all on the map or the timeline: click near the spot or starting point of an event, inside or near the right continent or the right state of that era, one of 4 areas, circle an area, and 'when' by dragging the timeline.",
+      gameRules: "10 questions, all on the map or the timeline: where (spot, continent, state, 4 areas, circle), when (started or ended, by dragging the timeline) and the chronological order of 3 events.",
       gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick is: {pick}", gameNoLand: "outside any continent (sea)", gameNoState: "outside any state", gamePickPoint: "a point {km} km from the right spot", gamePickCircle: "a circle of radius {r} km, {km} km from the right spot", gamePickArea: "area {letter}",
-      gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
+      gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameQOrder: "Put the 3 events in chronological order", gameOrderHint: "Click the events on the map in the order they happened: the oldest first, the most recent last.", gameOrderPick: "{seq}", gameQEnd: "When did it end: {event}? (it started in {year})", gameEndHint: "The map is at the year it started. Drag the timeline to the year you think it ended and press Answer. Margin ±{n} years.", gameDuration: "lasted {n} years", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "The correct answer is: {answer}", gameAnswerOk: "{answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
@@ -284,10 +284,11 @@
   function activeEvents(t) {
     const out = [];
     // Παιχνίδι, μετά την απάντηση: το γεγονός της ερώτησης φαίνεται πάντα (ακόμα κι αν τα φίλτρα το κρύβουν)
-    const forced = typeof G !== "undefined" && G.on && G.phase !== "ask" && G.q && G.q.ev ? G.q.ev : null;
+    const forcedList = typeof G !== "undefined" && G.on && G.phase !== "ask" && G.q ? (G.q.evs || (G.q.ev ? [G.q.ev] : [])) : [];
+    const forced = forcedList.length ? new Set(forcedList) : null;
     for (const ev of EVENTS) {
-      if (ev.s > t) break; // ταξινομημένα κατά έναρξη
-      if (ev !== forced) {
+      if (ev.s > t && !(forced && forced.has(ev))) { if (ev.s > t && !forced) break; continue; } // ταξινομημένα κατά έναρξη
+      if (!forced || !forced.has(ev)) {
         if (state.hiddenTypes.has(ev.type)) continue;
         if (state.featuredOnly && !FEATURED[ev.id]) continue;
         if (!regionOk(ev)) continue;
@@ -307,7 +308,7 @@
     out.forEach((a) => { a.labeled = showAll || a.ev.s === newest; });
     const cap = showAll ? 40 : maxLabels();
     out.filter((a) => a.labeled).sort((a, b) => a.age - b.age).forEach((a, i) => { if (i >= cap) a.labeled = false; });
-    if (forced) out.forEach((a) => { if (a.ev === forced) { a.labeled = true; a.fresh = true; } });
+    if (forced) out.forEach((a) => { if (forced.has(a.ev)) { a.labeled = true; a.fresh = true; } });
     return out;
   }
 
@@ -2103,10 +2104,25 @@
     const y = evYear(ev);
     const cont = CONTINENTS.list.find((k) => k.key === ev._cont);
     const cname = cont ? cont[state.lang] || cont.el : "";
-    const kinds = ["map", "map", "continent", "choice", "choice", "circle", "circle", "tl", "tl"];
+    const kinds = ["map", "map", "continent", "choice", "choice", "circle", "circle", "tl", "tl", "order", "order"];
+    if (ev.e != null && (ev.e - ev.s) / 12 >= 2) kinds.push("end", "end", "end");
     if (state.historical) kinds.push("country", "state", "state");
     if (ev.from) kinds.push("origin", "origin");
     const kind = kinds[rnd(kinds.length)];
+    if (kind === "end") {
+      const endY = monthsToDate(ev.e).year, dur = Math.max(1, endY - y);
+      const tol = Math.max(3, Math.round(dur * 0.3));
+      return { kind, ev, year: endY, tol, text: fill("gameQEnd", { event: ev.title, year: yearLabel(y) }), answer: yearLabel(endY) + " · " + fill("gameDuration", { n: dur }) };
+    }
+    if (kind === "order") {
+      // 3 γεγονότα με διαφορετικές εποχές (>= 15 χρόνια διαφορά) και μακριά μεταξύ τους στον χάρτη (>= 1.200 χλμ.)
+      const okPair = (a, b) => Math.abs(evYear(a) - evYear(b)) >= 15 && d3.geoDistance([a.lng, a.lat], [b.lng, b.lat]) * 6371 >= 1200;
+      const picks = [ev];
+      for (const o of shuffle(pool.slice())) { if (picks.length >= 3) break; if (picks.every((p) => okPair(p, o))) picks.push(o); }
+      if (picks.length < 3) return makeQuestion(depth + 1);
+      const sorted = picks.slice().sort((a, b) => a.s - b.s);
+      return { kind, ev: null, evs: shuffle(picks), sorted, seq: [], text: t("gameQOrder"), answer: sorted.map((o) => o.title + " (" + yearLabel(evYear(o)) + ")").join(" → ") };
+    }
     if (kind === "circle") return { kind, ev, maxKm: 2000, text: fill("gameQCircle", { event: ev.title }), answer: ev.title + (cname ? " · " + cname : "") };
     if (kind === "map") return { kind, ev, km: 2500, text: fill("gameQMap", { event: ev.title }), answer: ev.title + (cname ? " · " + cname : "") };
     if (kind === "origin") return { kind, ev, km: 2500, truth: [ev.from.lng, ev.from.lat], text: fill("gameQOrigin", { event: ev.title }), answer: ev.title };
@@ -2209,16 +2225,20 @@
     else if (q.kind === "country" || q.kind === "state") hint = t("gameCountryHint");
     else if (q.kind === "choice") hint = t("gameChoiceHint");
     else if (q.kind === "circle") hint = fill("gameCircleHint", { km: fmtNum(q.maxKm) });
+    else if (q.kind === "order") hint = t("gameOrderHint");
+    else if (q.kind === "end") hint = fill("gameEndHint", { n: q.tol });
     else if (q.kind === "tl") hint = fill("gameTlHint", { n: q.tol });
     else hint = fill("gameMapHint", { km: fmtNum(q.km) });
     showOverlay(q.text, "🎯 " + hint);
     gameEls.root.classList.add("compact");
     gameEls.body.innerHTML = scoresHtml();
-    document.body.classList.toggle("game-tl", q.kind === "tl");
-    if (q.kind === "tl") { gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-answer">' + esc(t("gameAnswer")) + "</button>"; gameEls.qActions.querySelector("#game-answer").onclick = answerTl; }
+    document.body.classList.toggle("game-tl", q.kind === "tl" || q.kind === "end");
+    if (q.kind === "tl" || q.kind === "end") { gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-answer">' + esc(t("gameAnswer")) + "</button>"; gameEls.qActions.querySelector("#game-answer").onclick = answerTl; }
+    if (q.kind === "end") setTime(q.ev.s, { fromUser: true }); // ο χάρτης στη χρονιά που ξεκίνησε
     if (q.kind === "country") setTime(q.ev.s, { fromUser: true }); // σύνορα της εποχής του γεγονότος
     if (q.kind === "state") { setTime((q.year - START_YEAR) * 12, { fromUser: true }); if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, isGlobe() ? centeredTransform(1) : d3.zoomIdentity); }
     if (q.kind === "choice") drawChoices(q);
+    if (q.kind === "order") drawOrderPins(q);
     setCircleMode(q.kind === "circle");
   }
   // ---- Σχεδίαση κύκλου από τον παίκτη (πάτημα = κέντρο, σύρσιμο = ακτίνα, άφημα = απάντηση) ----
@@ -2342,6 +2362,41 @@
       g.on("click", (event) => { event.stopPropagation(); answerChoice(c, g); });
     });
   }
+  // 3 καρφίτσες με τίτλο (χωρίς χρονιά): ο παίκτης τις πατά με χρονολογική σειρά
+  function drawOrderPins(q) {
+    const sc = bodyScale();
+    q.evs.forEach((o) => {
+      const p = projection([o.lng, o.lat]);
+      if (!p || !isFinite(p[0]) || !onFront(o.lng, o.lat)) return;
+      const g = gGame.append("g").attr("class", "game-order").attr("transform", "translate(" + p[0] + "," + p[1] + ") scale(" + sc + ")");
+      g.append("circle").attr("r", 16);
+      g.append("text").attr("class", "num").text("?");
+      const lbl = g.append("g").attr("class", "lbl").attr("transform", "translate(0,-24)");
+      const txt = lbl.append("text").text(TYPES[o.type].icon + " " + truncate(o.title, 34));
+      const w = Math.max(40, (TYPES[o.type].icon + " " + truncate(o.title, 34)).length * 6.6 + 16);
+      lbl.insert("rect", "text").attr("x", -w / 2).attr("y", -12).attr("width", w).attr("height", 20).attr("rx", 6);
+      g.on("click", (event) => { event.stopPropagation(); pickOrder(o, g); });
+    });
+  }
+  function pickOrder(o, g) {
+    if (!G.on || G.phase !== "ask" || G.q.kind !== "order") return;
+    const q = G.q;
+    if (q.seq.includes(o)) return;
+    q.seq.push(o);
+    g.classed("picked", true).select("text.num").text(q.seq.length);
+    if (q.seq.length < q.evs.length) return;
+    G.phase = "fb";
+    const ok = q.seq.every((e, i) => e === q.sorted[i]);
+    // αποκάλυψη: σωστή θέση πράσινη, λάθος κόκκινη, και η χρονιά σε κάθε καρφίτσα
+    gGame.selectAll(".game-order").each(function () {
+      const sel = d3.select(this);
+      const idx = Number(sel.select("text.num").text()) - 1;
+      const e = q.seq[idx];
+      sel.classed(e === q.sorted[idx] ? "correct" : "wrong", true).on("click", null);
+      sel.select(".lbl text").text(TYPES[e.type].icon + " " + truncate(e.title, 30) + " · " + yearLabel(evYear(e)));
+    });
+    finishAnswer(ok, q.answer, fill("gameOrderPick", { seq: q.seq.map((e) => truncate(e.title, 22)).join(" → ") }), null);
+  }
   function answerChoice(c, g) {
     if (!G.on || G.phase !== "ask" || G.q.kind !== "choice") return;
     G.phase = "fb";
@@ -2391,6 +2446,7 @@
     const ev = G.q.ev;
     document.body.classList.add("game-reveal");
     if (ev) { setTime(ev.s, { fromUser: true }); renderEvents(); rotateTo(ev.lng, ev.lat, 700); playScene(ev); }
+    else if (G.q.evs) { setTime(G.q.sorted[G.q.sorted.length - 1].s, { fromUser: true }); renderEvents(); }
   }
   function showFinal() {
     G.q = null; G.phase = "end";
