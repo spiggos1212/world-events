@@ -168,6 +168,17 @@ g.hist-year.out { opacity: 0; }
   backdrop-filter: blur(8px);
 }
 .big-toggle:hover { border-color: rgba(255, 211, 107, 0.6); }
+/* Παιχνίδι: η ερώτηση πάνω στον χάρτη, με μεγάλα γράμματα */
+.game-overlay { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 6; width: min(900px, calc(100% - 440px)); text-align: center; pointer-events: none; animation: gq-in 500ms cubic-bezier(0.2, 1, 0.3, 1) both; }
+.game-overlay.collapsed { display: none; }
+@keyframes gq-in { from { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.96); } to { opacity: 1; transform: translateX(-50%); } }
+.gq-text { font-size: clamp(20px, 2.6vw, 36px); font-weight: 900; line-height: 1.2; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,0.95), 0 0 34px rgba(0,0,0,0.9); }
+.gq-hint { margin-top: 8px; font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: #ffd36b; text-shadow: 0 1px 8px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.9); }
+.gq-fb { margin-top: 10px; font-size: clamp(22px, 3vw, 42px); font-weight: 900; text-shadow: 0 2px 14px rgba(0,0,0,0.95), 0 0 34px rgba(0,0,0,0.9); }
+.gq-fb:empty { display: none; }
+.gq-fb.ok { color: #6fdc8c; }
+.gq-fb.bad { color: #ff8a8a; }
+.gq-fb small { display: block; margin-top: 4px; font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: #fff; }
 /* Παιχνίδι (κουίζ) */
 .game { position: absolute; right: 12px; top: 60px; z-index: 6; width: min(380px, calc(100% - 24px)); }
 .game.collapsed { display: none; }
@@ -208,6 +219,14 @@ g.hist-year.out { opacity: 0; }
 body.game-map #map-wrap svg { cursor: crosshair; }
 .game-marks { pointer-events: none; }
 .game-line { fill: none; stroke: #fff; stroke-width: 2; stroke-dasharray: 6 6; vector-effect: non-scaling-stroke; opacity: 0.9; }
+.game-region { fill: rgba(46, 139, 87, 0.22); stroke: #6fdc8c; stroke-width: 2.5; stroke-dasharray: 8 5; vector-effect: non-scaling-stroke; }
+.game-choice { pointer-events: auto; cursor: pointer; }
+.game-choice circle { fill: rgba(255, 211, 107, 0.28); stroke: #ffd36b; stroke-width: 3; vector-effect: non-scaling-stroke; }
+.game-choice:hover circle { fill: rgba(255, 211, 107, 0.5); }
+.game-choice text { font-size: 20px; font-weight: 900; fill: #fff; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,0.6); stroke-width: 3px; }
+.game-choice.off { opacity: 0.35; cursor: default; }
+.game-choice.correct circle { fill: rgba(46, 139, 87, 0.7); stroke: #6fdc8c; }
+.game-choice.wrong circle { fill: rgba(176, 58, 58, 0.7); stroke: #ff8a8a; }
 .game-mark circle { stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .game-mark.guess circle { fill: #ff5a5f; }
 .game-mark.truth circle { fill: #2e8b57; }
@@ -937,8 +956,9 @@ body.game-on .event-marks, body.game-on .panel, body.game-on .panel-open-btn, bo
   .hist-loading { top: auto; bottom: 8px; font-size: 10px; }
   .map-opts { top: 10px; gap: 6px; }
   .big-toggle, .big-select { height: 30px; font-size: 11px; }
-  .game { top: 48px; right: 8px; left: 8px; width: auto; }
-  .game-box { max-height: calc(100% - 110px); }
+  .game { top: auto; bottom: 8px; right: 8px; left: 8px; width: auto; }
+  .game-box { max-height: 40%; }
+  .game-overlay { top: 48px; width: calc(100% - 16px); }
   .game-q { font-size: 15px; }
   .sound-btn { width: 30px; height: 30px; font-size: 13px; }
   .sound-vol { width: 52px; }

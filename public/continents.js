@@ -55,5 +55,5 @@
     { key: "oceania", el: "Ωκεανία", en: "Oceania", bbox: [[110, -50], [180, 10]] },
   ];
 
-  window.WORLD_CONTINENTS = { list: LIST, classify };
+  window.WORLD_CONTINENTS = { list: LIST, classify, polys: Object.fromEntries(ORDER) };
 })();
