@@ -38,9 +38,10 @@
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
       game: "Παιχνίδι", gameShort: "Παιχνίδι", gameWelcome: "Πόσο καλά ξέρεις την ιστορία;",
-      gameRules: "10 ερωτήσεις. Άλλοτε διαλέγεις ανάμεσα σε 4 απαντήσεις, άλλοτε σέρνεις το timeline για να πεις πότε έγινε ένα γεγονός· η ανοχή στα χρόνια εξαρτάται από την εποχή.",
+      gameRules: "10 ερωτήσεις: 4 επιλογές, «πότε» (σέρνεις το timeline· η ανοχή στα χρόνια εξαρτάται από την εποχή) και «πού» (κλικ στον χάρτη, μέσα σε 1.000 χλμ.).",
       gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου: {year}",
+      gameQMap: "Πού συνέβη: {event};", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
@@ -63,9 +64,10 @@
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
       game: "Game", gameShort: "Game", gameWelcome: "How well do you know history?",
-      gameRules: "10 questions. Sometimes you pick one of 4 answers, sometimes you drag the timeline to say when an event happened; the allowed margin depends on the era.",
+      gameRules: "10 questions: 4 options, 'when' (drag the timeline; the allowed margin depends on the era) and 'where' (click on the map, within 1,000 km).",
       gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick: {year}",
+      gameQMap: "Where did this happen: {event}?", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
@@ -2040,7 +2042,8 @@
   }
   function closeGame() {
     G.on = false; G.q = null; G.phase = "";
-    document.body.classList.remove("game-on", "game-reveal");
+    document.body.classList.remove("game-on", "game-reveal", "game-map");
+    gGame.selectAll("*").remove();
     gameEls.root.classList.add("collapsed");
     gameEls.btn.classList.remove("on"); gameEls.btn.setAttribute("aria-pressed", "false");
   }
@@ -2059,7 +2062,7 @@
   function makeQuestion(depth = 0) {
     const pool = gamePool();
     if (pool.length < 8 || depth > 20) return null;
-    const kind = rnd(3); // 0: έτος -> γεγονός, 1: γεγονός -> ήπειρος, 2: timeline
+    const kind = rnd(4); // 0: έτος -> γεγονός, 1: γεγονός -> ήπειρος, 2: timeline, 3: κλικ στον χάρτη
     const ev = pool[rnd(pool.length)];
     const y = evYear(ev);
     if (kind === 0) {
@@ -2073,6 +2076,10 @@
       const name = (k) => k[state.lang] || k.el;
       const others = shuffle(CONTINENTS.list.filter((k) => k !== c)).slice(0, 3);
       return { kind: "mc", ev, text: fill("gameQWhere", { event: ev.title }), options: shuffle([c, ...others]).map((k) => ({ label: name(k), ok: k === c })), answer: name(c) };
+    }
+    if (kind === 3) {
+      const c = CONTINENTS.list.find((k) => k.key === ev._cont);
+      return { kind: "map", ev, km: 1000, text: fill("gameQMap", { event: ev.title }), answer: ev.title + (c ? " · " + (c[state.lang] || c.el) : "") };
     }
     return { kind: "tl", ev, year: y, tol: tolerance(y), text: fill("gameQWhen", { event: ev.title }), answer: yearLabel(y) };
   }
@@ -2098,6 +2105,12 @@
   function renderQuestion() {
     const q = G.q;
     gameEls.status.textContent = statusText();
+    gGame.selectAll("*").remove();
+    document.body.classList.toggle("game-map", q.kind === "map");
+    if (q.kind === "map") {
+      gameEls.body.innerHTML = '<p class="game-q">' + esc(q.text) + '</p><p class="game-hint">🎯 ' + esc(fill("gameMapHint", { km: q.km.toLocaleString(state.lang === "el" ? "el-GR" : "en-US") })) + '</p><div class="game-feedback"></div>' + scoresHtml();
+      return;
+    }
     if (q.kind === "mc") {
       gameEls.body.innerHTML = '<p class="game-q">' + esc(q.text) + '</p><div class="game-opts">' + q.options.map((o, i) => '<button type="button" data-i="' + i + '">' + esc(o.label) + "</button>").join("") + '</div><div class="game-feedback"></div>' + scoresHtml();
       gameEls.body.querySelectorAll(".game-opts button").forEach((b) => { b.onclick = () => answerMc(Number(b.dataset.i)); });
@@ -2122,11 +2135,43 @@
     const diff = Math.abs(q.year - y);
     finishAnswer(diff <= q.tol, q.answer + " · " + fill("gameYourPick", { year: yearLabel(y) }), diff);
   }
-  function finishAnswer(ok, answer, diff) {
+  // Κλικ στον χάρτη (ερώτηση «πού συνέβη»): σημείο -> γεωγραφικές συντεταγμένες
+  const gGame = gRoot.append("g").attr("class", "game-marks");
+  function onGameMapClick(event) {
+    if (!G.on || !G.q || G.q.kind !== "map" || G.phase !== "ask") return;
+    const node = els.svg.node();
+    const [mx, my] = d3.pointer(event, node);
+    const tr = d3.zoomTransform(node);
+    const geo = projection.invert([tr.invertX(mx), tr.invertY(my)]);
+    if (!geo || !isFinite(geo[0]) || !isFinite(geo[1])) return;
+    if (isGlobe() && !onFront(geo[0], geo[1])) return;
+    G.phase = "fb";
+    const q = G.q, truth = [q.ev.lng, q.ev.lat];
+    const km = Math.round(d3.geoDistance(geo, truth) * 6371);
+    drawGameMarks(geo, truth);
+    finishAnswer(km <= q.km, q.answer, null, fill("gameDistance", { km: km.toLocaleString(state.lang === "el" ? "el-GR" : "en-US") }));
+  }
+  els.svg.on("click.game", onGameMapClick);
+  // Σημάδια στον χάρτη: η εκτίμηση του παίκτη (κόκκινο ?), το σωστό σημείο (πράσινο ✓) και η γραμμή ανάμεσά τους
+  function drawGameMarks(guess, truth) {
+    gGame.selectAll("*").remove();
+    const s = bodyScale();
+    const d = path({ type: "LineString", coordinates: [guess, truth] });
+    if (d) gGame.append("path").attr("class", "game-line").attr("d", d);
+    [[guess, "guess", "?"], [truth, "truth", "✓"]].forEach(([geo, cls, txt]) => {
+      const p = projection(geo);
+      if (!p || !isFinite(p[0]) || !onFront(geo[0], geo[1])) return;
+      const g = gGame.append("g").attr("class", "game-mark " + cls).attr("transform", "translate(" + p[0] + "," + p[1] + ") scale(" + s + ")");
+      g.append("circle").attr("r", 10);
+      g.append("text").text(txt);
+    });
+  }
+  function finishAnswer(ok, answer, diff, extra) {
     if (ok) G.scores[G.player]++;
     const fb = gameEls.body.querySelector(".game-feedback");
     fb.className = "game-feedback " + (ok ? "ok" : "bad");
-    fb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? " · " + esc(fill("gameOff", { n: diff })) : "") + "</small>";
+    fb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? " · " + esc(fill("gameOff", { n: diff })) : "") + (extra ? " · " + esc(extra) : "") + "</small>";
+    document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
     const sc = gameEls.body.querySelector(".game-scores");
     if (sc) sc.outerHTML = scoresHtml();
@@ -2145,6 +2190,8 @@
   }
   function showFinal() {
     G.q = null; G.phase = "end";
+    gGame.selectAll("*").remove();
+    document.body.classList.remove("game-map");
     gameEls.status.textContent = "";
     let html;
     if (G.mode === 1) html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(fill("gameFinalSingle", { score: G.scores[0], total: G.total })) + "</p></div>";
