@@ -728,7 +728,7 @@ g.hist-year.out { opacity: 0; }
   height: var(--tl-height);
   flex: none;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 12px;
   padding: 6px 14px;
@@ -737,25 +737,6 @@ g.hist-year.out { opacity: 0; }
   backdrop-filter: blur(10px);
   z-index: 5;
 }
-.tl-left { display: flex; align-items: center; gap: 8px; }
-.play-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: var(--accent);
-  color: var(--accent-ink);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: 0 6px 22px rgba(255, 207, 92, 0.35);
-  transition: transform 100ms, filter 150ms;
-}
-.play-btn:hover { filter: brightness(1.08); }
-.play-btn:active { transform: scale(0.96); }
-.play-btn .ico-pause { display: none; }
-.play-btn.playing .ico-play { display: none; }
-.play-btn.playing .ico-pause { display: block; }
 
 /* συμπαγής μπάρα: έτος και track στην ίδια σειρά */
 .tl-center { min-width: 0; display: flex; flex-direction: row; align-items: center; gap: 12px; }
@@ -818,11 +799,9 @@ g.hist-year.out { opacity: 0; }
 .range-labels { display: none; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
 
 .tl-right { display: flex; align-items: center; gap: 6px; }
-.speed-label {
-  font-size: 11px; font-weight: 600; color: var(--muted);
-  padding: 6px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elev);
-  white-space: nowrap;
-}
+/* «Επόμενο γεγονός»: το βασικό κουμπί πλοήγησης */
+.nav-btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); box-shadow: 0 6px 22px rgba(255, 207, 92, 0.3); }
+.nav-btn.primary:hover { filter: brightness(1.08); }
 
 /* κουμπιά προηγούμενο / επόμενο γεγονός */
 .nav-btn {
@@ -918,27 +897,23 @@ g.hist-year.out { opacity: 0; }
 
   /* timeline: play + έτος + ταχύτητα σε μία σειρά, μπάρα από κάτω */
   .timeline {
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas: "left year speed" "track track track";
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "year speed" "track track";
     gap: 2px 8px;
     padding: 5px 10px calc(5px + env(safe-area-inset-bottom));
   }
-  .tl-left { grid-area: left; gap: 6px; }
   .tl-center { display: contents; }
   .year-display { grid-area: year; min-width: 0; }
   .track-wrap { grid-area: track; padding: 10px 0 2px; }
   .ticks { top: 0; }
   .event-marks { top: 11px; }
   .tl-right { grid-area: speed; gap: 4px; }
-  .play-btn { width: 34px; height: 34px; }
-  .play-btn svg { width: 16px; height: 16px; }
   .nav-btn { height: 28px; padding: 0 8px; font-size: 11px; }
   .year { font-size: 18px; }
   .month { font-size: 11px; min-width: 24px; }
   .era { display: none; }
   .tick-label { display: none; }
   .range-labels { display: flex; }
-  .speed-label { font-size: 10px; padding: 5px 6px; }
   .track::-webkit-slider-thumb { width: 18px; height: 18px; }
   .tooltip { max-width: 220px; }
 }

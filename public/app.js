@@ -33,12 +33,11 @@
       search: "Αναζήτηση", searchPh: "Αναζήτηση: γεγονός, φυτό, ζώο, θρησκεία…",
       events: "Γεγονότα", all: "Όλα", none: "Κανένα", fold: "Σύμπτυξη/ανάπτυξη",
       borders: "Σύνορα:", creditNote: "(GPL-3.0, κατά προσέγγιση)", loadingBorders: "Φόρτωση συνόρων…",
-      now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε Play για να ξεκινήσει η ιστορία.",
+      now: "Συμβαίνει τώρα", hidePanel: "Απόκρυψη πάνελ", pressPlay: "Πάτησε «Επόμενο γεγονός» για να ξεκινήσει η ιστορία.",
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
-      speedLabel: "1 έτος / δευτ.", speedTitle: "Ταχύτητα αναπαραγωγής: ένα έτος ανά δευτερόλεπτο",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
-      videoCredit: "Βίντεο:", cinemaMore: "Όλη η ιστορία", cinemaContinue: "Συνέχεια ▶",
+      videoCredit: "Βίντεο:", cinemaMore: "Όλη η ιστορία", cinemaContinue: "Επόμενο γεγονός ›",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -52,12 +51,11 @@
       search: "Search", searchPh: "Search: event, plant, animal, religion…",
       events: "Events", all: "All", none: "None", fold: "Collapse/expand",
       borders: "Borders:", creditNote: "(GPL-3.0, approximate)", loadingBorders: "Loading borders…",
-      now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press Play to start the story.",
+      now: "Happening now", hidePanel: "Hide panel", pressPlay: "Press 'Next event' to start the story.",
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
-      speedLabel: "1 year / sec", speedTitle: "Playback speed: one year per second",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
-      videoCredit: "Video:", cinemaMore: "Full story", cinemaContinue: "Continue ▶",
+      videoCredit: "Video:", cinemaMore: "Full story", cinemaContinue: "Next event ›",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -100,10 +98,6 @@
   // ---------- State ----------
   const state = {
     t: 0,
-    playing: false,
-    speed: 1,
-    lastFrame: 0,
-    rafId: 0,
     zoomK: 1,
     hiddenTypes: new Set(),
     panelKey: "",
@@ -121,7 +115,6 @@
     svg: d3.select("#map"),
     tooltip: $("#tooltip"),
     loading: $("#loading"),
-    play: $("#play"),
     stepBack: $("#step-back"),
     stepFwd: $("#step-fwd"),
     year: $("#year"),
@@ -241,9 +234,9 @@
     }
     return 12;
   }
-  // Μήνες αναπαραγωγής ανά δευτερόλεπτο: state.speed = έτη/δευτ., σταθερό σε όλες τις εποχές
+  // Βήμα χρόνου με Shift+βελάκια (σε μήνες)
   function playRate() {
-    return 12 * state.speed;
+    return 12;
   }
   // Βήμα με τα βελάκια: 1 έτος, ή μισό δευτερόλεπτο αναπαραγωγής σε μεγάλες ταχύτητες
   function stepMonths() {
@@ -409,21 +402,7 @@
     els.svg.transition("rotate").duration(dur).ease(d3.easeCubicInOut)
       .tween("rotate", () => (t) => { projection.rotate(ip(t)); redrawGlobe(); });
   }
-  let lastAutoRotate = 0;
-  // Κατά την αναπαραγωγή, αν ένα νέο γεγονός είναι στην πίσω πλευρά, η υδρόγειος γυρίζει προς αυτό
-  function autoRotateTo(ev) {
-    if (!isGlobe() || !state.playing) return;
-    if (d3.geoDistance([ev.lng, ev.lat], globeCenter()) < Math.PI * 0.4) return;
-    const now = performance.now();
-    if (now - lastAutoRotate < 1500) return;
-    lastAutoRotate = now;
-    rotateTo(ev.lng, ev.lat, 1200);
-  }
   els.svg.call(zoom).on("dblclick.zoom", null);
-  els.svg.on("dblclick", (e) => {
-    e.preventDefault();
-    toggle();
-  });
 
   function fitProjection() {
     const w = width();
@@ -588,7 +567,6 @@
     tour.i = i;
     const st = stops[i];
     const txt = st[state.lang] || st.el;
-    pause();
     setTime(dateToMonths(st.date), { fromUser: true });
     const [x, y] = projection([st.lng, st.lat]);
     const k = st.k || 3;
@@ -627,20 +605,16 @@
     });
   }
 
-  // ---------- Σινεμά: μεγάλη εισαγωγή + βίντεο όταν εμφανίζεται ένα κορυφαίο γεγονός ----------
-  // Κατά την αναπαραγωγή, μόλις ένα κορυφαίο γεγονός (featured.js) εμφανιστεί στον χάρτη: παύση,
-  // zoom στο σημείο, μεγάλο εφέ + τίτλος σε όλη την οθόνη και μετά μεγάλο popup με το βίντεο
-  // (ή μεγάλη φωτογραφία από τη Wikipedia όταν δεν υπάρχει βίντεο). Στο κλείσιμο συνεχίζει η αναπαραγωγή.
-  const EV_BY_ID = new Map(EVENTS.map((ev) => [ev.id, ev]));
-  const cinemaSeen = new Set(); // γεγονότα που έχουν ήδη παίξει (ξαναπαίζουν αν γυρίσεις πίσω στον χρόνο)
-  let cinemaEv = null, cinemaTimer = 0, cinemaSeq = 0, cinemaPending = false, cinemaResume = false;
+  // ---------- Σινεμά: μεγάλη εισαγωγή + βίντεο όταν φτάνεις σε ένα κορυφαίο γεγονός ----------
+  // Με «Επόμενο / Προηγούμενο γεγονός», όταν το γεγονός είναι κορυφαίο (featured.js): zoom στο σημείο,
+  // μεγάλο εφέ + τίτλος σε όλη την οθόνη και μετά μεγάλο popup με το βίντεο (ή μεγάλη φωτογραφία
+  // από τη Wikipedia όταν δεν υπάρχει βίντεο). Παίζει κάθε φορά που φτάνεις στο γεγονός.
+  let cinemaEv = null, cinemaTimer = 0, cinemaSeq = 0, cinemaPending = false;
   const cinemaOpen = () => !els.cinema.classList.contains("collapsed");
   const cinemaActive = () => cinemaPending || cinemaOpen();
   function cinemaIntro(ev) {
-    if (!FEATURED[ev.id] || cinemaSeen.has(ev.id) || cinemaActive()) return;
-    cinemaSeen.add(ev.id);
-    pause();
-    cinemaResume = true;
+    if (!FEATURED[ev.id]) return;
+    closeCinema();
     cinemaPending = true;
     const seq = ++cinemaSeq;
     setStoryCollapsed(true); setPanelCollapsed(true); if (isMobile()) setSidebarCollapsed(true, false);
@@ -733,7 +707,7 @@
     im.onerror = () => { const small = (sEn && sEn.thumbnail && sEn.thumbnail.source) || (sEl && sEl.thumbnail && sEl.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
     im.src = img;
   }
-  function closeCinema({ resume = true } = {}) {
+  function closeCinema() {
     cinemaSeq++;
     clearTimeout(cinemaTimer);
     cinemaPending = false;
@@ -744,14 +718,11 @@
       els.cinemaMedia.innerHTML = ""; // σταματά και το βίντεο
     }
     cinemaEv = null;
-    const r = cinemaResume;
-    cinemaResume = false;
-    if (r && resume && !state.playing) play();
   }
   els.cinemaClose.addEventListener("click", () => closeCinema());
-  els.cinemaContinue.addEventListener("click", () => closeCinema());
   els.cinemaBackdrop.addEventListener("click", () => closeCinema());
-  els.cinemaMore.addEventListener("click", () => { const ev = cinemaEv; closeCinema({ resume: false }); if (ev) showEvent(ev); });
+  els.cinemaContinue.addEventListener("click", () => { closeCinema(); stepEvent(1); });
+  els.cinemaMore.addEventListener("click", () => { const ev = cinemaEv; closeCinema(); if (ev) showEvent(ev); });
 
   // ---------- Ζωντανές αναπαραστάσεις πάνω στον χάρτη (ανά τύπο γεγονότος) ----------
   let fxCount = 0;
@@ -1425,7 +1396,6 @@
               const g = d3.select(this);
               buildEvent(g, a.ev);
               layoutEvent(g, a.ev, true);
-              if (state.playing) { playScene(a.ev); if (a.labeled) autoRotateTo(a.ev); if (FEATURED[a.ev.id]) cinemaIntro(a.ev); }
             }),
         (update) => update,
         (exit) => exit.remove()
@@ -1595,7 +1565,6 @@
 
   // Μετάβαση σε γεγονός: παύση, σωστή χρονιά, zoom κοντά, popup με την ιστορία και αναπαράσταση στον χάρτη
   function showEvent(ev, { zoom = 2.5 } = {}) {
-    pause();
     if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
     const sameYear = Math.floor(state.t / 12) === Math.floor(ev.s / 12);
     const inRange = ev.e != null && state.t >= ev.s && state.t < ev.e;
@@ -1793,12 +1762,8 @@
 
   function setTime(t, { fromUser = false } = {}) {
     state.t = clampT(t);
-    if (fromUser) {
-      if (cinemaPending) closeCinema({ resume: false });
-      for (const id of cinemaSeen) { const ev = EV_BY_ID.get(id); if (ev && ev.s > state.t) cinemaSeen.delete(id); }
-    }
+    if (fromUser && cinemaActive()) closeCinema();
     updateUI();
-    if (fromUser && state.t >= TOTAL_MONTHS - 1 && state.playing) pause();
   }
 
   // Βελάκια: μετάβαση στο επόμενο / προηγούμενο ορατό γεγονός (όχι κρυμμένου τύπου)
@@ -1815,54 +1780,14 @@
       }
     }
     if (!target) return;
-    pause();
     setStoryCollapsed(true);
     setTime(target.s, { fromUser: true });
+    if (FEATURED[target.id]) { cinemaIntro(target); return; } // κορυφαίο: μεγάλη εισαγωγή + βίντεο
     if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
     rotateTo(target.lng, target.lat, 700);
     playScene(target);
   }
 
-  function tick(now) {
-    if (!state.playing) return;
-    const dt = Math.min(0.5, (now - state.lastFrame) / 1000);
-    state.lastFrame = now;
-    let next = state.t + dt * playRate();
-    if (next >= TOTAL_MONTHS - 1) { setTime(TOTAL_MONTHS - 1); pause(); return; }
-    setTime(next);
-    state.rafId = requestAnimationFrame(tick);
-  }
-
-  function play() {
-    if (state.playing) return;
-    if (state.t >= TOTAL_MONTHS - 1) { state.t = 0; cinemaSeen.clear(); }
-    state.playing = true;
-    state.lastFrame = performance.now();
-    els.play.classList.add("playing");
-    els.play.setAttribute("aria-label", "Pause");
-    state.rafId = requestAnimationFrame(tick);
-  }
-  function pause() {
-    state.playing = false;
-    cancelAnimationFrame(state.rafId);
-    els.play.classList.remove("playing");
-    els.play.setAttribute("aria-label", "Play");
-  }
-  function toggle() { if (cinemaActive()) { closeCinema(); return; } if (state.playing) pause(); else { if (tour) setStoryCollapsed(true); play(); } }
-
-  // Σταθερή ταχύτητα: 1 έτος ανά δευτερόλεπτο (δεν αλλάζει από τον χρήστη)
-  function setSpeed(s) {
-    s = Number(s);
-    if (!Number.isFinite(s) || s <= 0) return;
-    state.speed = s;
-    renderEvents();
-  }
-  function initSpeed() {
-    state.speed = 1;
-    try { localStorage.removeItem("we-speed"); } catch (_) { /* ignore */ }
-  }
-
-  els.play.addEventListener("click", toggle);
   els.stepBack.addEventListener("click", () => stepEvent(-1));
   els.stepFwd.addEventListener("click", () => stepEvent(1));
 
@@ -1874,7 +1799,7 @@
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     if (tour && (ev.code === "ArrowRight" || ev.code === "ArrowLeft")) { gotoStop(tour.i + (ev.code === "ArrowRight" ? 1 : -1)); return; }
     switch (ev.code) {
-      case "Space": ev.preventDefault(); toggle(); break;
+      case "Space": ev.preventDefault(); if (cinemaActive()) closeCinema(); else stepEvent(1); break;
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
       case "ArrowRight": if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
       case "ArrowLeft": if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
@@ -1894,7 +1819,7 @@
   window.WorldEventsApp = {
     get date() { return monthsToDate(state.t); },
     setDate(dateStr) { setTime(dateToMonths(dateStr), { fromUser: true }); },
-    play, pause, setSpeed, focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
+    focusEvent, setTypesVisible, jumpToEvent, setLang, search: searchEvents,
     refreshEvents: renderEvents,
     get projection() { return projection; },
     setProjection, showEvent, openStory, playScene, featured: FEATURED,
@@ -1968,6 +1893,5 @@
   fitProjection();
   state.t = 0; // η σελίδα ανοίγει στην αρχή, 3000 π.Χ.
   updateUI();
-  initSpeed();
   loadWorld();
 })();
