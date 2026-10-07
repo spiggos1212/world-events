@@ -1196,6 +1196,7 @@
   }
 
   function showTooltipHTML(html, x, y, typeClass) {
+    if (gameOn() && G.phase === "ask") return; // όσο εκκρεμεί ερώτηση, τα ονόματα κρατών θα έδιναν την απάντηση
     els.tooltip.innerHTML = html;
     els.tooltip.className = "tooltip show " + (typeClass || "");
     els.tooltip.style.left = x + "px";
@@ -2186,6 +2187,7 @@
   }
   function renderQuestion() {
     const q = G.q;
+    hideTooltip();
     gameEls.status.textContent = statusText();
     gGame.selectAll("*").remove();
     document.body.classList.toggle("game-map", !!MAP_KINDS[q.kind]);
