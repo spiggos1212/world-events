@@ -283,11 +283,15 @@
 
   function activeEvents(t) {
     const out = [];
+    // Παιχνίδι, μετά την απάντηση: το γεγονός της ερώτησης φαίνεται πάντα (ακόμα κι αν τα φίλτρα το κρύβουν)
+    const forced = typeof G !== "undefined" && G.on && G.phase !== "ask" && G.q && G.q.ev ? G.q.ev : null;
     for (const ev of EVENTS) {
       if (ev.s > t) break; // ταξινομημένα κατά έναρξη
-      if (state.hiddenTypes.has(ev.type)) continue;
-      if (state.featuredOnly && !FEATURED[ev.id]) continue;
-      if (!regionOk(ev)) continue;
+      if (ev !== forced) {
+        if (state.hiddenTypes.has(ev.type)) continue;
+        if (state.featuredOnly && !FEATURED[ev.id]) continue;
+        if (!regionOk(ev)) continue;
+      }
       // ορατό μόνο μέσα στο ημερολογιακό έτος που ξεκίνησε (ή ως το τέλος του, αν διαρκεί περισσότερο)
       const yearEnd = (Math.floor(ev.s / 12) + 1) * 12;
       const end = ev.e != null ? Math.max(ev.e, yearEnd) : yearEnd;
@@ -303,6 +307,7 @@
     out.forEach((a) => { a.labeled = showAll || a.ev.s === newest; });
     const cap = showAll ? 40 : maxLabels();
     out.filter((a) => a.labeled).sort((a, b) => a.age - b.age).forEach((a, i) => { if (i >= cap) a.labeled = false; });
+    if (forced) out.forEach((a) => { if (a.ev === forced) { a.labeled = true; a.fresh = true; } });
     return out;
   }
 
@@ -2381,7 +2386,7 @@
     // Αποκάλυψη: ο χάρτης πάει στη χρονιά του γεγονότος και το δείχνει με την αναπαράστασή του
     const ev = G.q.ev;
     document.body.classList.add("game-reveal");
-    if (ev) { setTime(ev.s, { fromUser: true }); rotateTo(ev.lng, ev.lat, 700); playScene(ev); }
+    if (ev) { setTime(ev.s, { fromUser: true }); renderEvents(); rotateTo(ev.lng, ev.lat, 700); playScene(ev); }
   }
   function showFinal() {
     G.q = null; G.phase = "end";
