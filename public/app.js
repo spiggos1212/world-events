@@ -2035,7 +2035,7 @@
   //  tl       «Πότε συνέβη: Χ;» — σύρσιμο του timeline (ανοχή ανάλογα με την εποχή)
   // Η ερώτηση εμφανίζεται με μεγάλα γράμματα πάνω στον χάρτη· η κάρτα δεξιά έχει σκορ και κουμπιά.
   const G = { on: false, mode: 1, round: 0, total: 10, player: 0, scores: [0, 0], q: null, phase: "", seq: 0 };
-  const gameEls = { root: $("#game"), body: $("#game-body"), status: $("#game-status"), btn: $("#game-btn"), close: $("#game-close"), overlay: $("#game-overlay"), qText: $("#gq-text"), qHint: $("#gq-hint"), qFb: $("#gq-fb") };
+  const gameEls = { root: $("#game"), body: $("#game-body"), status: $("#game-status"), btn: $("#game-btn"), close: $("#game-close"), overlay: $("#game-overlay"), qText: $("#gq-text"), qHint: $("#gq-hint"), qFb: $("#gq-fb"), qActions: $("#gq-actions") };
   const gameOn = () => G.on;
   const rnd = (n) => Math.floor(Math.random() * n);
   const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -2065,9 +2065,9 @@
     gameEls.root.classList.add("collapsed");
     gameEls.btn.classList.remove("on"); gameEls.btn.setAttribute("aria-pressed", "false");
   }
-  function hideOverlay() { gameEls.overlay.classList.add("collapsed"); gameEls.qText.textContent = ""; gameEls.qHint.textContent = ""; gameEls.qFb.innerHTML = ""; gameEls.qFb.className = "gq-fb"; }
+  function hideOverlay() { gameEls.overlay.classList.add("collapsed"); gameEls.qText.textContent = ""; gameEls.qHint.textContent = ""; gameEls.qFb.innerHTML = ""; gameEls.qFb.className = "gq-fb"; gameEls.qActions.innerHTML = ""; document.body.classList.remove("game-tl"); gameEls.root.classList.remove("compact"); }
   function showOverlay(text, hint) {
-    gameEls.qText.textContent = text; gameEls.qHint.textContent = hint || ""; gameEls.qFb.innerHTML = ""; gameEls.qFb.className = "gq-fb";
+    gameEls.qText.textContent = text; gameEls.qHint.textContent = hint || ""; gameEls.qFb.innerHTML = ""; gameEls.qFb.className = "gq-fb"; gameEls.qActions.innerHTML = "";
     gameEls.overlay.classList.remove("collapsed");
     gameEls.overlay.style.animation = "none"; void gameEls.overlay.offsetWidth; gameEls.overlay.style.animation = "";
   }
@@ -2196,8 +2196,10 @@
     else if (q.kind === "tl") hint = fill("gameTlHint", { n: q.tol });
     else hint = fill("gameMapHint", { km: fmtNum(q.km) });
     showOverlay(q.text, "🎯 " + hint);
-    gameEls.body.innerHTML = scoresHtml() + (q.kind === "tl" ? '<div class="game-actions"><button type="button" class="primary" id="game-answer">' + esc(t("gameAnswer")) + "</button></div>" : "");
-    if (q.kind === "tl") gameEls.body.querySelector("#game-answer").onclick = answerTl;
+    gameEls.root.classList.add("compact");
+    gameEls.body.innerHTML = scoresHtml();
+    document.body.classList.toggle("game-tl", q.kind === "tl");
+    if (q.kind === "tl") { gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-answer">' + esc(t("gameAnswer")) + "</button>"; gameEls.qActions.querySelector("#game-answer").onclick = answerTl; }
     if (q.kind === "country") setTime(q.ev.s, { fromUser: true }); // σύνορα της εποχής του γεγονότος
     if (q.kind === "state") { setTime((q.year - START_YEAR) * 12, { fromUser: true }); if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, isGlobe() ? centeredTransform(1) : d3.zoomIdentity); }
     if (q.kind === "choice") drawChoices(q);
@@ -2298,8 +2300,10 @@
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
     G.round++;
-    gameEls.body.innerHTML = scoresHtml() + '<div class="game-actions"><button type="button" class="primary" id="game-next">' + esc(G.round >= G.total ? t("gameResults") : t("gameNext")) + " ›</button></div>";
-    gameEls.body.querySelector("#game-next").onclick = nextQuestion;
+    document.body.classList.remove("game-tl");
+    gameEls.body.innerHTML = scoresHtml();
+    gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-next">' + esc(G.round >= G.total ? t("gameResults") : t("gameNext")) + " ›</button>";
+    gameEls.qActions.querySelector("#game-next").onclick = nextQuestion;
     // Αποκάλυψη: ο χάρτης πάει στη χρονιά του γεγονότος και το δείχνει με την αναπαράστασή του
     const ev = G.q.ev;
     document.body.classList.add("game-reveal");

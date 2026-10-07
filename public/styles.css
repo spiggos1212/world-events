@@ -179,6 +179,27 @@ g.hist-year.out { opacity: 0; }
 .gq-fb.ok { color: #6fdc8c; }
 .gq-fb.bad { color: #ff8a8a; }
 .gq-fb small { display: block; margin-top: 4px; font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: #fff; }
+.gq-actions { pointer-events: auto; margin-top: 14px; display: flex; justify-content: center; gap: 10px; }
+.gq-actions:empty { display: none; }
+.gq-actions button { padding: 12px 26px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+.gq-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.gq-actions button:hover { filter: brightness(1.08); }
+/* Σκορ: μικρή διακριτική κάρτα όσο τρέχει ερώτηση */
+.game.compact { width: 170px; }
+.game.compact .game-box { border-top-width: 1px; background: rgba(14, 20, 44, 0.6); box-shadow: none; animation: none; }
+.game.compact .game-head { padding: 6px 6px 4px 10px; }
+.game.compact .game-title { display: none; }
+.game.compact .game-status { text-align: left; font-size: 11px; }
+.game.compact .game-body { padding: 6px 8px 8px; }
+.game.compact .game-scores { margin-top: 0; gap: 6px; }
+.game.compact .game-score { padding: 4px 6px; background: transparent; }
+.game.compact .game-score .n { font-size: 16px; }
+.game.compact .game-score .who { font-size: 10px; }
+/* Ερώτηση «πότε»: η μπάρα του timeline φωτίζεται */
+body.game-tl .timeline { box-shadow: inset 0 0 0 2px var(--accent), 0 -6px 30px rgba(255, 211, 107, 0.35); animation: tl-pulse 1.3s ease-in-out infinite; }
+body.game-tl .track::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(255, 211, 107, 0.35), 0 0 18px rgba(255, 211, 107, 0.9); }
+body.game-tl .track::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(255, 211, 107, 0.35), 0 0 18px rgba(255, 211, 107, 0.9); }
+@keyframes tl-pulse { 0%, 100% { box-shadow: inset 0 0 0 2px var(--accent), 0 -6px 30px rgba(255, 211, 107, 0.3); } 50% { box-shadow: inset 0 0 0 3px #fff3c4, 0 -10px 44px rgba(255, 211, 107, 0.6); } }
 /* Παιχνίδι (κουίζ) */
 .game { position: absolute; right: 12px; top: 60px; z-index: 6; width: min(380px, calc(100% - 24px)); }
 .game.collapsed { display: none; }
