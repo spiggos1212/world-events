@@ -296,7 +296,7 @@
       // ορατό μόνο μέσα στο ημερολογιακό έτος που ξεκίνησε (ή ως το τέλος του, αν διαρκεί περισσότερο)
       const yearEnd = (Math.floor(ev.s / 12) + 1) * 12;
       const end = ev.e != null ? Math.max(ev.e, yearEnd) : yearEnd;
-      if (t >= end) continue;
+      if (t >= end && !(forced && forced.has(ev))) continue; // τα γεγονότα της ερώτησης φαίνονται ούτως ή άλλως
       const age = t - ev.s;
       out.push({ ev, age, labeled: true, opacity: 1, fresh: age < 6 });
     }
