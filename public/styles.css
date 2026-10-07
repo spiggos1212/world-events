@@ -169,19 +169,19 @@ g.hist-year.out { opacity: 0; }
 }
 .big-toggle:hover { border-color: rgba(255, 211, 107, 0.6); }
 /* Παιχνίδι: η ερώτηση πάνω στον χάρτη, με μεγάλα γράμματα */
-.game-overlay { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 6; width: min(900px, calc(100% - 440px)); text-align: center; pointer-events: none; animation: gq-in 500ms cubic-bezier(0.2, 1, 0.3, 1) both; }
+.game-overlay { position: absolute; left: 16px; top: 64px; z-index: 6; width: min(440px, calc(100% - 220px)); text-align: left; pointer-events: none; animation: gq-in 500ms cubic-bezier(0.2, 1, 0.3, 1) both; }
 .game-overlay.collapsed { display: none; }
-@keyframes gq-in { from { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.96); } to { opacity: 1; transform: translateX(-50%); } }
-.gq-text { font-size: clamp(20px, 2.6vw, 36px); font-weight: 900; line-height: 1.2; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,0.95), 0 0 34px rgba(0,0,0,0.9); }
-.gq-hint { margin-top: 8px; font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: #ffd36b; text-shadow: 0 1px 8px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.9); }
-.gq-fb { margin-top: 10px; font-size: clamp(22px, 3vw, 42px); font-weight: 900; text-shadow: 0 2px 14px rgba(0,0,0,0.95), 0 0 34px rgba(0,0,0,0.9); }
+@keyframes gq-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+.gq-text { font-size: clamp(17px, 1.6vw, 23px); font-weight: 800; line-height: 1.25; color: #fff; text-shadow: 0 1px 8px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.85); }
+.gq-hint { margin-top: 6px; font-size: 12.5px; font-weight: 500; color: #ffd36b; opacity: 0.9; line-height: 1.4; text-shadow: 0 1px 6px rgba(0,0,0,0.95), 0 0 14px rgba(0,0,0,0.9); }
+.gq-fb { margin-top: 8px; font-size: clamp(18px, 1.8vw, 26px); font-weight: 900; text-shadow: 0 1px 8px rgba(0,0,0,0.95), 0 0 20px rgba(0,0,0,0.9); }
 .gq-fb:empty { display: none; }
 .gq-fb.ok { color: #6fdc8c; }
 .gq-fb.bad { color: #ff8a8a; }
-.gq-fb small { display: block; margin-top: 4px; font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: #fff; }
-.gq-actions { pointer-events: auto; margin-top: 14px; display: flex; justify-content: center; gap: 10px; }
+.gq-fb small { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 600; color: #fff; }
+.gq-actions { pointer-events: auto; margin-top: 10px; display: flex; justify-content: flex-start; gap: 8px; }
 .gq-actions:empty { display: none; }
-.gq-actions button { padding: 12px 26px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+.gq-actions button { padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(8px); }
 .gq-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .gq-actions button:hover { filter: brightness(1.08); }
 /* Σκορ: μικρή διακριτική κάρτα όσο τρέχει ερώτηση */
@@ -980,7 +980,7 @@ body.game-on .event-marks, body.game-on .panel, body.game-on .panel-open-btn, bo
   .big-toggle, .big-select { height: 30px; font-size: 11px; }
   .game { top: auto; bottom: 8px; right: 8px; left: 8px; width: auto; }
   .game-box { max-height: 40%; }
-  .game-overlay { top: 48px; width: calc(100% - 16px); }
+  .game-overlay { top: 48px; left: 8px; width: calc(100% - 16px); }
   .game-q { font-size: 15px; }
   .sound-btn { width: 30px; height: 30px; font-size: 13px; }
   .sound-vol { width: 52px; }
