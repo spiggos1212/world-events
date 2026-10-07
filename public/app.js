@@ -1746,6 +1746,8 @@
     const sameYear = Math.floor(state.t / 12) === Math.floor(ev.s / 12);
     const inRange = ev.e != null && state.t >= ev.s && state.t < ev.e;
     if (!sameYear && !inRange) setTime(ev.s, { fromUser: true });
+    // Κορυφαίο γεγονός: πάντα η μεγάλη εισαγωγή + popup με φωτογραφίες και αφήγηση (όχι το πλαϊνό πάνελ)
+    if (FEATURED[ev.id]) { setStoryCollapsed(true); cinemaIntro(ev); return; }
     focusEvent(ev, zoom);
     openStory(ev);
     playScene(ev);
