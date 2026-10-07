@@ -255,7 +255,6 @@
   const regionOk = (ev) => (state.region ? ev._cont === state.region : !ev.regional);
   // Κορυφαία γεγονότα με βίντεο / 3D / μίνι ιστορία (featured.js)
   const FEATURED = window.WORLD_FEATURED || {};
-  const isMajor = (ev) => !!FEATURED[ev.id] || ev.type === "disaster"; // αναπαράσταση: κορυφαία + όλες οι φυσικές καταστροφές
   // Κείμενα ανά γλώσσα: τα ελληνικά είναι στα αρχεία δεδομένων, τα αγγλικά στο window.WORLD_EVENTS_EN
   {
     const EN = window.WORLD_EVENTS_EN || {};
@@ -907,7 +906,7 @@
   const kw = (ev, re) => re.test([ev.title, ev.description, ev.en && ev.en.title, ev.en && ev.en.description].filter(Boolean).join(" ").toLowerCase());
   const typeColor = (type) => getComputedStyle(document.documentElement).getPropertyValue("--c-" + type).trim() || "#fff";
   function playScene(ev) {
-    if (!isMajor(ev)) return; // μόνο τα πολύ σημαντικά γεγονότα παίζουν αναπαράσταση
+    // Όλα τα γεγονότα παίζουν αναπαράσταση (βελάκια διαδρομής, κύκλοι, φωτιά κ.λπ.) όταν φτάνεις σε αυτά
     if (fxCount >= FX_MAX) return;
     const [x, y] = projection([ev.lng, ev.lat]);
     if (!isFinite(x) || !isFinite(y)) return;
