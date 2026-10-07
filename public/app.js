@@ -2045,6 +2045,7 @@
     gameEls.win.hidden = true;
   }
   function showModeSelect() {
+    if (!G.on) return;
     gameEls.status.textContent = "";
     document.body.classList.remove("game-reveal");
     gameEls.win.hidden = true;
@@ -2077,6 +2078,7 @@
     return { kind: "tl", ev, year: y, text: fill("gameQWhen", { event: ev.title }), answer: yearLabel(y) };
   }
   function nextQuestion() {
+    if (!G.on) return;
     if (G.round >= G.total) return showFinal();
     const q = makeQuestion();
     if (!q) { closeGame(); return; }
@@ -2120,14 +2122,14 @@
     gameEls.win.querySelector(".game-window-lbl").textContent = yearLabel(lo) + " – " + yearLabel(hi);
   }
   function answerMc(i) {
-    if (G.phase !== "ask") return;
+    if (!G.on || G.phase !== "ask") return;
     G.phase = "fb";
     const q = G.q, ok = q.options[i].ok;
     gameEls.body.querySelectorAll(".game-opts button").forEach((b, j) => { b.disabled = true; if (q.options[j].ok) b.classList.add("correct"); else if (j === i) b.classList.add("wrong"); });
     finishAnswer(ok, q.answer, null);
   }
   function answerTl() {
-    if (G.phase !== "ask") return;
+    if (!G.on || G.phase !== "ask") return;
     G.phase = "fb";
     const q = G.q, y = curYear();
     const diff = Math.abs(q.year - y);
