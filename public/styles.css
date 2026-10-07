@@ -168,6 +168,13 @@ g.hist-year.out { opacity: 0; }
   backdrop-filter: blur(8px);
 }
 .big-toggle:hover { border-color: rgba(255, 211, 107, 0.6); }
+/* Μικρό κουμπί ήχου (σίγαση) */
+.sound-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--panel); color: var(--text);
+  font-size: 15px; line-height: 1; display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow); backdrop-filter: blur(8px); padding: 0;
+}
+.sound-btn:hover { border-color: rgba(255, 211, 107, 0.6); }
+.sound-btn.off { opacity: 0.6; }
 .big-toggle .star { opacity: 0.55; }
 .big-toggle.on { background: #ffd36b; border-color: #ffd36b; color: #1a1400; }
 .big-toggle.on .star { opacity: 1; color: #1a1400; }
@@ -884,6 +891,7 @@ g.hist-year.out { opacity: 0; }
   .hist-loading { top: auto; bottom: 8px; font-size: 10px; }
   .map-opts { top: 10px; gap: 6px; }
   .big-toggle, .big-select { height: 30px; font-size: 11px; }
+  .sound-btn { width: 30px; height: 30px; font-size: 13px; }
   .big-toggle { padding: 0 12px 0 10px; }
   .big-select { padding: 0 24px 0 10px; background-position: right 9px center; }
   .big-toggle .txt-long { display: none; }
