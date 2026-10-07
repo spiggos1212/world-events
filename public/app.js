@@ -2035,7 +2035,7 @@
   const gamePool = () => EVENTS.filter((ev) => !ev.regional && ev.title && isFinite(ev.lng) && !state.hiddenTypes.has(ev.type));
   const evYear = (ev) => parseDate(ev.start).y;
   // Ανοχή στα χρόνια ανάλογα με την εποχή του γεγονότος (όσο πιο παλιό, τόσο πιο χαλαρή)
-  const tolerance = (y) => (y < -500 ? 200 : y < 500 ? 100 : y < 1500 ? 50 : y < 1900 ? 25 : 10);
+  const tolerance = (y) => (y < -500 ? 500 : y < 500 ? 300 : y < 1500 ? 150 : y < 1800 ? 75 : y < 1900 ? 50 : 30);
   const fill = (key, vars) => Object.keys(vars).reduce((s, k) => s.split("{" + k + "}").join(String(vars[k])), t(key));
   function openGame() {
     closeCinema(); setStoryCollapsed(true); setPanelCollapsed(true); hidePostcard();
