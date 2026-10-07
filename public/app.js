@@ -2301,7 +2301,7 @@
   function finishAnswer(ok, answer, diff, extra) {
     if (ok) G.scores[G.player]++;
     gameEls.qFb.className = "gq-fb " + (ok ? "ok" : "bad");
-    gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? " · " + esc(fill("gameOff", { n: diff })) : "") + (extra ? " · " + esc(extra) : "") + "</small>";
+    gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? ' · <b class="off">' + esc(fill("gameOff", { n: diff })) + "</b>" : "") + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>";
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
     G.round++;
@@ -2334,12 +2334,12 @@
   // ---------- Πληκτρολόγηση χρονολογίας: κλικ στο έτος -> πεδίο -> Enter ----------
   // Δέχεται «1520», «500 π.Χ.», «500 BC», «-500», «1969-07» (έτος-μήνας)
   function parseTypedYear(str) {
-    const raw = String(str || "").trim().toLowerCase().replace(/s+/g, " ");
+    const raw = String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
     if (!raw) return null;
-    const bc = /π.?χ|bc|b.c|π.χ/.test(raw);
-    const m = raw.match(/-?d{1,4}(?:-d{1,2})?/);
+    const bc = /π\.?χ|bc|b\.c/.test(raw);
+    const m = raw.match(/-?\d{1,4}(?:-\d{1,2})?/);
     if (!m) return null;
-    let [yStr, moStr] = m[0].split(/(?<=d)-/);
+    let [yStr, moStr] = m[0].split(/(?<=\d)-/);
     let y = parseInt(yStr, 10);
     if (!Number.isFinite(y)) return null;
     if (bc && y > 0) y = 1 - y; else if (yStr.startsWith("-")) y = 1 + y; // -500 = 500 π.Χ.
