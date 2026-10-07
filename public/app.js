@@ -654,7 +654,8 @@
     cinemaPending = true;
     const seq = ++cinemaSeq;
     setStoryCollapsed(true); setPanelCollapsed(true); if (isMobile()) setSidebarCollapsed(true, false);
-    focusEvent(ev, isMobile() ? 2.2 : 3);
+    if (state.zoomK > 1.01) els.svg.transition().duration(500).call(zoom.transform, isGlobe() ? centeredTransform(1) : d3.zoomIdentity);
+    rotateTo(ev.lng, ev.lat, 700);
     const type = TYPES[ev.type];
     els.intro.style.setProperty("--c", "var(--c-" + ev.type + ")");
     els.introYear.textContent = type.icon + "  " + yearOf(ev.start);
@@ -721,23 +722,26 @@
     loadCinemaStory(ev, seq);
     if (f.kind === "video" && f.sources) {
       const v = document.createElement("video");
-      v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
+      v.autoplay = true; v.playsInline = true; v.preload = "auto";
       f.sources.forEach((s) => { const so = document.createElement("source"); so.src = s.src; so.type = s.type; v.appendChild(so); });
+      els.cinemaMedia.classList.add("has-video");
       els.cinemaMedia.appendChild(v);
+      els.cinemaMedia.appendChild(buildVideoBar(v));
       v.play().catch(() => { /* ο browser μπορεί να θέλει κλικ */ });
       els.cinemaCredit.innerHTML = esc(t("videoCredit")) + " " + esc(f.credit || "") + (f.page ? ' · <a href="' + esc(f.page) + '" target="_blank" rel="noopener">Wikimedia Commons ↗</a>' : "");
       return;
     }
-    // Χωρίς βίντεο: μεγάλη φωτογραφία από το άρθρο της Wikipedia
+    // Χωρίς βίντεο: slideshow με φωτογραφίες του άρθρου της Wikipedia (ή μία μεγάλη φωτογραφία)
     els.cinemaMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
     const [sEl, sEn] = await wikiPair(ev);
     if (seq !== cinemaSeq || cinemaEv !== ev) return;
+    loadGallery(ev, seq, sEl, sEn);
     const img = pickImage(sEn) || pickImage(sEl);
     if (!img) return;
     const im = new Image();
     im.alt = ev.title;
     im.onload = () => {
-      if (cinemaEv !== ev) return;
+      if (cinemaEv !== ev || cinemaGal) return;
       els.cinemaMedia.innerHTML = "";
       els.cinemaMedia.appendChild(im);
       requestAnimationFrame(() => im.classList.add("in"));
@@ -746,6 +750,134 @@
     im.onerror = () => { const small = (sEn && sEn.thumbnail && sEn.thumbnail.source) || (sEl && sEl.thumbnail && sEl.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
     im.src = img;
   }
+  // ---- Μπάρα ελέγχου βίντεο: play/pause, πρόοδος (seek), χρόνος, ήχος, πλήρης οθόνη ----
+  const fmtTime = (s) => { if (!isFinite(s) || s < 0) s = 0; const m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ":" + (r < 10 ? "0" : "") + r; };
+  function buildVideoBar(v) {
+    const bar = document.createElement("div");
+    bar.className = "vbar";
+    bar.innerHTML = '<button type="button" class="vb-play" aria-label="Play/Pause">▶</button>' +
+      '<span class="vb-time vb-cur">0:00</span>' +
+      '<input type="range" class="vb-seek" min="0" max="1000" step="1" value="0" aria-label="Πρόοδος βίντεο">' +
+      '<span class="vb-time vb-dur">0:00</span>' +
+      '<button type="button" class="vb-mute" aria-label="Ήχος">🔊</button>' +
+      '<button type="button" class="vb-full" aria-label="Πλήρης οθόνη">⛶</button>';
+    const play = bar.querySelector(".vb-play"), seek = bar.querySelector(".vb-seek"), cur = bar.querySelector(".vb-cur"), dur = bar.querySelector(".vb-dur"), mute = bar.querySelector(".vb-mute"), full = bar.querySelector(".vb-full");
+    const duration = () => (isFinite(v.duration) ? v.duration : (v.seekable.length ? v.seekable.end(v.seekable.length - 1) : 0));
+    let scrubbing = false;
+    const sync = () => {
+      const d = duration();
+      dur.textContent = fmtTime(d);
+      cur.textContent = fmtTime(v.currentTime);
+      if (!scrubbing) seek.value = d ? Math.round((v.currentTime / d) * 1000) : 0;
+      seek.style.setProperty("--pct", (d ? (v.currentTime / d) * 100 : 0) + "%");
+      play.textContent = v.paused ? "▶" : "❚❚";
+      mute.textContent = v.muted ? "🔇" : "🔊";
+    };
+    ["timeupdate", "durationchange", "loadedmetadata", "progress", "play", "pause", "volumechange", "ended"].forEach((e) => v.addEventListener(e, sync));
+    play.onclick = () => { if (v.paused) v.play().catch(() => {}); else v.pause(); };
+    v.addEventListener("click", () => play.onclick());
+    const scrubTo = () => { const d = duration(); if (d) { v.currentTime = (Number(seek.value) / 1000) * d; cur.textContent = fmtTime(v.currentTime); } };
+    seek.addEventListener("input", () => { scrubbing = true; scrubTo(); });
+    seek.addEventListener("change", () => { scrubbing = false; scrubTo(); });
+    mute.onclick = () => { v.muted = !v.muted; };
+    full.onclick = () => { const el = v.parentElement; if (el.requestFullscreen) el.requestFullscreen().catch(() => {}); else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen(); };
+    sync();
+    return bar;
+  }
+
+  // ---- Slideshow φωτογραφιών από το άρθρο της Wikipedia ----
+  // media-list: σειρά εμφάνισης + λεζάντες· imageinfo: διαστάσεις + μεγάλο thumbnail
+  const BAD_IMG = /flag|icon|logo|symbol|pictogram|wiki|commons|ambox|disambig|edit-|button|arrow|signature|coat_of_arms|emblem|seal_of|stamp|\.svg$|\.gif$|\.ogv$|\.webm$|\.tiff?$|\.pdf$|\.djvu$/i;
+  const normTitle = (s) => s.replace(/_/g, " ");
+  function fetchGallery(lang, title, max = 10) {
+    const key = "g:" + lang + ":" + title;
+    if (wikiCache.has(key)) return wikiCache.get(key);
+    const p = (async () => {
+      const ml = await fetch("https://" + lang + ".wikipedia.org/api/rest_v1/page/media-list/" + encodeURIComponent(title.replace(/ /g, "_"))).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (!ml || !ml.items) return [];
+      const items = ml.items.filter((it) => it.type === "image" && it.title && !BAD_IMG.test(it.title)).slice(0, 40);
+      if (!items.length) return [];
+      const q = await fetch("https://" + lang + ".wikipedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url|size|mime&iiurlwidth=1280&format=json&formatversion=2&origin=*&titles=" + encodeURIComponent(items.map((i) => i.title).join("|"))).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      const info = new Map();
+      if (q && q.query && q.query.pages) for (const pg of q.query.pages) { const ii = pg.imageinfo && pg.imageinfo[0]; if (ii) info.set(normTitle(pg.title), ii); }
+      const out = [], seen = new Set();
+      for (const it of items) {
+        const ii = info.get(normTitle(it.title));
+        if (!ii || !/^image\/(jpeg|png|webp)$/.test(ii.mime || "") || ii.width < 480 || ii.height < 300) continue;
+        const ar = ii.width / ii.height;
+        if (ar > 3.2 || ar < 0.5) continue; // πανοράματα / πολύ στενές εικόνες
+        const src = ii.thumburl || ii.url;
+        if (seen.has(src)) continue;
+        seen.add(src);
+        out.push({ src, cap: it.caption && it.caption.text ? it.caption.text.replace(/\s+/g, " ").trim() : "" });
+        if (out.length >= max) break;
+      }
+      return out;
+    })();
+    wikiCache.set(key, p);
+    return p;
+  }
+  let cinemaGal = null; // { items, i, timer }
+  async function loadGallery(ev, seq, sEl, sEn) {
+    const pref = state.lang === "el" ? [sEl, sEn] : [sEn, sEl];
+    const arts = pref.filter((s) => s && s.title && s.type !== "disambiguation");
+    let items = [];
+    for (const a of arts) {
+      const got = await fetchGallery(a === sEl ? "el" : "en", a.title);
+      if (seq !== cinemaSeq || cinemaEv !== ev) return;
+      if (got.length > items.length) items = got;
+      if (items.length >= 4) break;
+    }
+    if (items.length < 2) return; // με 1 εικόνα μένει η μεγάλη φωτογραφία
+    startGallery(items);
+    els.cinemaCredit.textContent = t("wikiCredit");
+  }
+  function startGallery(items) {
+    stopGallery();
+    const root = document.createElement("div");
+    root.className = "gal";
+    root.innerHTML = '<div class="gal-count"></div><div class="gal-cap"></div>' +
+      '<button type="button" class="gal-btn gal-prev" aria-label="Προηγούμενη">‹</button><button type="button" class="gal-btn gal-next" aria-label="Επόμενη">›</button>' +
+      '<div class="gal-dots">' + items.map(() => "<span></span>").join("") + "</div>";
+    els.cinemaMedia.innerHTML = "";
+    els.cinemaMedia.appendChild(root);
+    const g = (cinemaGal = { items, i: -1, timer: 0, root });
+    const dots = [...root.querySelectorAll(".gal-dots span")];
+    const show = (i, dir = 1) => {
+      i = (i + items.length) % items.length;
+      if (i === g.i) return;
+      g.i = i;
+      const it = items[i];
+      const old = root.querySelector("img.show");
+      const im = new Image();
+      im.className = "gal-img";
+      im.alt = it.cap || "";
+      im.onload = () => {
+        if (cinemaGal !== g || g.i !== i) return;
+        root.insertBefore(im, root.firstChild);
+        requestAnimationFrame(() => { im.classList.add("show"); if (old) { old.classList.remove("show"); setTimeout(() => old.remove(), 800); } });
+      };
+      im.onerror = () => { if (cinemaGal === g && g.i === i) show(i + dir, dir); };
+      im.src = it.src;
+      root.querySelector(".gal-cap").textContent = it.cap;
+      root.querySelector(".gal-count").textContent = (i + 1) + " / " + items.length;
+      dots.forEach((d, j) => d.classList.toggle("on", j === i));
+      // προφόρτωση της επόμενης
+      const nx = new Image(); nx.src = items[(i + 1) % items.length].src;
+      restartTimer();
+    };
+    const restartTimer = () => { clearInterval(g.timer); g.timer = setInterval(() => show(g.i + 1), 5000); };
+    root.querySelector(".gal-prev").onclick = () => show(g.i - 1, -1);
+    root.querySelector(".gal-next").onclick = () => show(g.i + 1, 1);
+    dots.forEach((d, j) => { d.onclick = () => show(j); });
+    show(0);
+  }
+  function stopGallery() {
+    if (!cinemaGal) return;
+    clearInterval(cinemaGal.timer);
+    cinemaGal = null;
+  }
+
   // Τα δύο άρθρα (el/en) της Wikipedia για ένα γεγονός, με cache ανά γεγονός
   const wikiPairCache = new Map();
   function wikiPair(ev) {
@@ -790,6 +922,8 @@
     clearTimeout(cinemaTimer);
     cinemaPending = false;
     hideIntro();
+    stopGallery();
+    els.cinemaMedia.classList.remove("has-video");
     if (cinemaOpen()) {
       els.cinema.classList.add("collapsed");
       els.cinema.setAttribute("aria-hidden", "true");
@@ -1877,8 +2011,8 @@
     switch (ev.code) {
       case "Space": ev.preventDefault(); if (cinemaActive()) closeCinema(); else stepEvent(1); break;
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
-      case "ArrowRight": if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
-      case "ArrowLeft": if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
+      case "ArrowRight": if (cinemaOpen() && cinemaGal) { cinemaGal.root.querySelector(".gal-next").click(); break; } if (ev.shiftKey) setTime(state.t + stepMonths() * 10, { fromUser: true }); else stepEvent(1); break;
+      case "ArrowLeft": if (cinemaOpen() && cinemaGal) { cinemaGal.root.querySelector(".gal-prev").click(); break; } if (ev.shiftKey) setTime(state.t - stepMonths() * 10, { fromUser: true }); else stepEvent(-1); break;
       case "Escape": if (cinemaActive()) closeCinema(); else setStoryCollapsed(true); break;
       case "Home": setTime(0, { fromUser: true }); break;
       case "End": setTime(TOTAL_MONTHS - 1, { fromUser: true }); break;
