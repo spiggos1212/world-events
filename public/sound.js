@@ -143,6 +143,7 @@
     const begin = (tries) => {
       if (seq !== SP.seq) return;
       if ((synth.speaking || synth.pending) && tries < 12) { hardCancel(); setTimeout(() => begin(tries + 1), 60); return; }
+      clearInterval(stopTimer); // να μην κόψει ο βρόχος σταματήματος τη νέα αφήγηση
       parts.forEach((p, i) => {
         const u = new SpeechSynthesisUtterance(p);
         u.lang = voice ? voice.lang : (lang === "el" ? "el-GR" : "en-US");
