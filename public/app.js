@@ -37,6 +37,13 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
+      game: "Παιχνίδι", gameShort: "Παιχνίδι", gameWelcome: "Πόσο καλά ξέρεις την ιστορία;",
+      gameRules: "10 ερωτήσεις. Άλλοτε διαλέγεις ανάμεσα σε 4 απαντήσεις, άλλοτε τοποθετείς ένα παράθυρο 100 ετών πάνω στο timeline για να πεις πότε έγινε ένα γεγονός.",
+      gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
+      gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};",
+      gameTlHint: "Σύρε το timeline κάτω ώστε το κίτρινο παράθυρο των 100 ετών να καλύπτει τη σωστή εποχή και πάτα «Απάντηση». Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
+      gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
+      gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
       videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
@@ -55,6 +62,13 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
+      game: "Game", gameShort: "Game", gameWelcome: "How well do you know history?",
+      gameRules: "10 questions. Sometimes you pick one of 4 answers, sometimes you place a 100-year window on the timeline to say when an event happened.",
+      gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
+      gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?",
+      gameTlHint: "Drag the timeline below so the yellow 100-year window covers the right period, then press Answer. Arrow keys ← → move 10 years.",
+      gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
+      gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
       videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
@@ -1741,6 +1755,7 @@
 
   // Μετάβαση σε γεγονός: παύση, σωστή χρονιά, zoom κοντά, popup με την ιστορία και αναπαράσταση στον χάρτη
   function showEvent(ev, { zoom = 2.5 } = {}) {
+    if (gameOn()) return; // στο παιχνίδι δεν ανοίγουν γεγονότα (θα έδιναν την απάντηση)
     if (state.hiddenTypes.has(ev.type)) setTypesVisible([ev.type], true);
     const sameYear = Math.floor(state.t / 12) === Math.floor(ev.s / 12);
     const inRange = ev.e != null && state.t >= ev.s && state.t < ev.e;
@@ -1947,6 +1962,7 @@
 
   // Βελάκια: μετάβαση στο επόμενο / προηγούμενο ορατό γεγονός (όχι κρυμμένου τύπου)
   function stepEvent(dir) {
+    if (gameOn()) return;
     const visible = EVENTS.filter((ev) => !state.hiddenTypes.has(ev.type) && (!state.featuredOnly || FEATURED[ev.id]) && regionOk(ev));
     if (!visible.length) return;
     const cur = state.t;
@@ -1977,6 +1993,12 @@
   document.addEventListener("keydown", (ev) => {
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     if (tour && (ev.code === "ArrowRight" || ev.code === "ArrowLeft")) { gotoStop(tour.i + (ev.code === "ArrowRight" ? 1 : -1)); return; }
+    if (gameOn()) { // στο παιχνίδι: Escape κλείνει, βελάκια = 10 χρόνια στο timeline
+      if (ev.code === "Escape") closeGame();
+      else if (ev.code === "ArrowRight") setTime(state.t + 120, { fromUser: true });
+      else if (ev.code === "ArrowLeft") setTime(state.t - 120, { fromUser: true });
+      return;
+    }
     switch (ev.code) {
       case "Space": ev.preventDefault(); if (cinemaActive()) closeCinema(); else stepEvent(1); break;
       // Βελάκια: επόμενο/προηγούμενο γεγονός· με Shift: βήμα 10 ετών
@@ -1993,6 +2015,161 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => { fitProjection(); layoutTickLabels(); }, 80);
   });
+
+  // ---------- Παιχνίδι (κουίζ): ένας ή δύο παίκτες, 10 ερωτήσεις ----------
+  // Τύποι ερώτησης: (α) 4 επιλογές — «ποιο γεγονός συνέβη το Χ» / «σε ποια ήπειρο», (β) timeline —
+  // ο παίκτης σέρνει το timeline ώστε ένα παράθυρο 100 ετών να καλύπτει την εποχή του γεγονότος.
+  const G = { on: false, mode: 1, round: 0, total: 10, player: 0, scores: [0, 0], q: null, phase: "" };
+  const gameEls = { root: $("#game"), body: $("#game-body"), status: $("#game-status"), btn: $("#game-btn"), close: $("#game-close"), win: $("#game-window") };
+  const gameOn = () => G.on;
+  const rnd = (n) => Math.floor(Math.random() * n);
+  const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const gamePool = () => EVENTS.filter((ev) => !ev.regional && ev.title && isFinite(ev.lng) && !state.hiddenTypes.has(ev.type));
+  const evYear = (ev) => parseDate(ev.start).y;
+  const yearToMonths = (y) => (y - START_YEAR) * 12;
+  const fill = (key, vars) => Object.keys(vars).reduce((s, k) => s.split("{" + k + "}").join(String(vars[k])), t(key));
+  function openGame() {
+    closeCinema(); setStoryCollapsed(true); setPanelCollapsed(true); hidePostcard();
+    if (isMobile()) setSidebarCollapsed(true, false);
+    G.on = true;
+    document.body.classList.add("game-on");
+    gameEls.root.classList.remove("collapsed");
+    gameEls.btn.classList.add("on"); gameEls.btn.setAttribute("aria-pressed", "true");
+    showModeSelect();
+  }
+  function closeGame() {
+    G.on = false; G.q = null; G.phase = "";
+    document.body.classList.remove("game-on", "game-reveal");
+    gameEls.root.classList.add("collapsed");
+    gameEls.btn.classList.remove("on"); gameEls.btn.setAttribute("aria-pressed", "false");
+    gameEls.win.hidden = true;
+  }
+  function showModeSelect() {
+    gameEls.status.textContent = "";
+    document.body.classList.remove("game-reveal");
+    gameEls.win.hidden = true;
+    gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint">' + esc(t("gameRules")) + "</p>" +
+      '<div class="game-actions"><button type="button" class="primary" data-mode="1">👤 ' + esc(t("gameSingle")) + '</button><button type="button" data-mode="2">👥 ' + esc(t("gameDual")) + "</button></div>";
+    gameEls.body.querySelectorAll("[data-mode]").forEach((b) => { b.onclick = () => startGame(Number(b.dataset.mode)); });
+  }
+  function startGame(mode) {
+    G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0]; G.total = 10;
+    nextQuestion();
+  }
+  function makeQuestion(depth = 0) {
+    const pool = gamePool();
+    if (pool.length < 8 || depth > 20) return null;
+    const kind = rnd(3); // 0: έτος -> γεγονός, 1: γεγονός -> ήπειρος, 2: timeline
+    const ev = pool[rnd(pool.length)];
+    const y = evYear(ev);
+    if (kind === 0) {
+      const others = shuffle(pool.filter((o) => o !== ev && Math.abs(evYear(o) - y) >= 40 && o.title !== ev.title)).slice(0, 3);
+      if (others.length < 3) return makeQuestion(depth + 1);
+      return { kind: "mc", ev, text: fill("gameQYear", { year: yearLabel(y) }), options: shuffle([ev, ...others]).map((o) => ({ label: o.title, ok: o === ev })), answer: ev.title };
+    }
+    if (kind === 1) {
+      const c = CONTINENTS.list.find((k) => k.key === ev._cont);
+      if (!c) return makeQuestion(depth + 1);
+      const name = (k) => k[state.lang] || k.el;
+      const others = shuffle(CONTINENTS.list.filter((k) => k !== c)).slice(0, 3);
+      return { kind: "mc", ev, text: fill("gameQWhere", { event: ev.title }), options: shuffle([c, ...others]).map((k) => ({ label: name(k), ok: k === c })), answer: name(c) };
+    }
+    return { kind: "tl", ev, year: y, text: fill("gameQWhen", { event: ev.title }), answer: yearLabel(y) };
+  }
+  function nextQuestion() {
+    if (G.round >= G.total) return showFinal();
+    const q = makeQuestion();
+    if (!q) { closeGame(); return; }
+    G.q = q; G.phase = "ask";
+    if (G.mode === 2) G.player = G.round % 2;
+    document.body.classList.remove("game-reveal");
+    renderQuestion();
+  }
+  function statusText() {
+    let s = fill("gameRound", { n: G.round + 1, total: G.total });
+    if (G.mode === 2) s += " · " + fill("gamePlayer", { n: G.player + 1 });
+    return s;
+  }
+  function scoresHtml() {
+    if (G.mode === 1) return '<div class="game-scores"><div class="game-score active"><div class="n">' + G.scores[0] + '</div><div class="who">' + esc(t("gameScore")) + "</div></div></div>";
+    return '<div class="game-scores">' + [0, 1].map((i) => '<div class="game-score' + (i === G.player ? " active" : "") + '"><div class="n">' + G.scores[i] + '</div><div class="who">' + esc(fill("gamePlayer", { n: i + 1 })) + "</div></div>").join("") + "</div>";
+  }
+  function renderQuestion() {
+    const q = G.q;
+    gameEls.status.textContent = statusText();
+    gameEls.win.hidden = true;
+    if (q.kind === "mc") {
+      gameEls.body.innerHTML = '<p class="game-q">' + esc(q.text) + '</p><div class="game-opts">' + q.options.map((o, i) => '<button type="button" data-i="' + i + '">' + esc(o.label) + "</button>").join("") + '</div><div class="game-feedback"></div>' + scoresHtml();
+      gameEls.body.querySelectorAll(".game-opts button").forEach((b) => { b.onclick = () => answerMc(Number(b.dataset.i)); });
+      return;
+    }
+    gameEls.body.innerHTML = '<p class="game-q">' + esc(q.text) + '</p><p class="game-hint">' + esc(t("gameTlHint")) + "</p>" +
+      '<div class="game-actions"><button type="button" class="primary" id="game-answer">' + esc(t("gameAnswer")) + '</button></div><div class="game-feedback"></div>' + scoresHtml();
+    gameEls.body.querySelector("#game-answer").onclick = answerTl;
+    gameEls.win.hidden = false;
+    updateGameWindow();
+  }
+  const curYear = () => monthsToDate(state.t).year;
+  function updateGameWindow() {
+    if (gameEls.win.hidden) return;
+    const y = curYear();
+    const lo = Math.max(START_YEAR, y - 50), hi = Math.min(END_YEAR, y + 49);
+    const a = (monthsToTrack(yearToMonths(lo)) / TRACK_MAX) * 100, b = (monthsToTrack(yearToMonths(hi + 1)) / TRACK_MAX) * 100;
+    gameEls.win.style.left = a + "%";
+    gameEls.win.style.width = Math.max(0.6, b - a) + "%";
+    gameEls.win.querySelector(".game-window-lbl").textContent = yearLabel(lo) + " – " + yearLabel(hi);
+  }
+  function answerMc(i) {
+    if (G.phase !== "ask") return;
+    G.phase = "fb";
+    const q = G.q, ok = q.options[i].ok;
+    gameEls.body.querySelectorAll(".game-opts button").forEach((b, j) => { b.disabled = true; if (q.options[j].ok) b.classList.add("correct"); else if (j === i) b.classList.add("wrong"); });
+    finishAnswer(ok, q.answer, null);
+  }
+  function answerTl() {
+    if (G.phase !== "ask") return;
+    G.phase = "fb";
+    const q = G.q, y = curYear();
+    const diff = Math.abs(q.year - y);
+    gameEls.win.hidden = true;
+    finishAnswer(diff <= 50, q.answer, diff);
+  }
+  function finishAnswer(ok, answer, diff) {
+    if (ok) G.scores[G.player]++;
+    const fb = gameEls.body.querySelector(".game-feedback");
+    fb.className = "game-feedback " + (ok ? "ok" : "bad");
+    fb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? " · " + esc(fill("gameOff", { n: diff })) : "") + "</small>";
+    if (window.WorldSound) WorldSound.ding(ok);
+    const sc = gameEls.body.querySelector(".game-scores");
+    if (sc) sc.outerHTML = scoresHtml();
+    G.round++;
+    const act = document.createElement("div");
+    act.className = "game-actions";
+    act.innerHTML = '<button type="button" class="primary">' + esc(G.round >= G.total ? t("gameResults") : t("gameNext")) + " ›</button>";
+    act.querySelector("button").onclick = nextQuestion;
+    gameEls.body.appendChild(act);
+    // Αποκάλυψη: ο χάρτης πάει στη χρονιά του γεγονότος και το δείχνει με την αναπαράστασή του
+    const ev = G.q.ev;
+    document.body.classList.add("game-reveal");
+    setTime(ev.s, { fromUser: true });
+    rotateTo(ev.lng, ev.lat, 700);
+    playScene(ev);
+  }
+  function showFinal() {
+    G.q = null; G.phase = "end";
+    gameEls.win.hidden = true;
+    gameEls.status.textContent = "";
+    let html;
+    if (G.mode === 1) html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(fill("gameFinalSingle", { score: G.scores[0], total: G.total })) + "</p></div>";
+    else { const [a, b] = G.scores; html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(a === b ? t("gameTie") : fill("gameWinner", { n: a > b ? 1 : 2 })) + "</p>" + scoresHtml() + "</div>"; }
+    html += '<div class="game-actions"><button type="button" class="primary" id="game-again">↻ ' + esc(t("gameAgain")) + '</button><button type="button" id="game-quit">' + esc(t("close")) + "</button></div>";
+    gameEls.body.innerHTML = html;
+    gameEls.body.querySelector("#game-again").onclick = showModeSelect;
+    gameEls.body.querySelector("#game-quit").onclick = closeGame;
+  }
+  gameEls.btn.addEventListener("click", () => (G.on ? closeGame() : openGame()));
+  gameEls.close.addEventListener("click", closeGame);
+  els.track.addEventListener("input", updateGameWindow);
 
   // ---------- Public API ----------
   window.WorldEventsApp = {

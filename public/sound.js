@@ -240,5 +240,19 @@
     document.addEventListener("visibilitychange", () => { if (document.hidden) { stopSpeech(); if (SP.onHidden) SP.onHidden(); }
       if (document.hidden) { if (S.ctx && S.ctx.state === "running") S.ctx.suspend().catch(() => {}); } else if (S.ctx && !S.muted) S.ctx.resume().catch(() => {}); });
   }
-  window.WorldSound = { init, event: playEvent, setMuted, setVolume, say, stopSpeech, get speaking() { return SP.active; }, get canSpeak() { return !!synth; }, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
+  // Σύντομος ήχος σωστού (δύο ανοδικές νότες) / λάθους (χαμηλό βουητό)
+  function ding(ok) {
+    const c = ctx();
+    if (!c || S.muted) return;
+    if (c.state === "suspended") c.resume().catch(() => {});
+    const t = c.currentTime + 0.02;
+    if (ok) {
+      [[659.25, 0], [987.77, 0.12]].forEach(([f, d]) => { const o = osc("sine", f), g = gain(0); env(g, t + d, 0.01, 0.5, 0.35); chain(o, g, S.fxGain); o.start(t + d); o.stop(t + d + 0.6); });
+    } else {
+      const o = osc("sawtooth", 110), lp = filter("lowpass", 400), g = gain(0);
+      o.frequency.setValueAtTime(110, t); o.frequency.linearRampToValueAtTime(70, t + 0.5);
+      env(g, t, 0.02, 0.55, 0.3); chain(o, lp, g, S.fxGain); o.start(t); o.stop(t + 0.7);
+    }
+  }
+  window.WorldSound = { init, event: playEvent, setMuted, setVolume, ding, say, stopSpeech, get speaking() { return SP.active; }, get canSpeak() { return !!synth; }, get muted() { return S.muted; }, setLabels(l) { if (S.btn) { S.btn.dataset.labelOn = l.on; S.btn.dataset.labelOff = l.off; updateBtn(); } } };
 })();
