@@ -2404,16 +2404,18 @@
   // ---------- Πληκτρολόγηση χρονολογίας: κλικ στο έτος -> πεδίο -> Enter ----------
   // Δέχεται «1520», «500 π.Χ.», «500 BC», «-500», «1969-07» (έτος-μήνας)
   function parseTypedYear(str) {
-    const raw = String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+    const raw = String(str || "").trim().toLowerCase();
     if (!raw) return null;
-    const bc = /π\.?χ|bc|b\.c/.test(raw);
-    const m = raw.match(/-?\d{1,4}(?:-\d{1,2})?/);
-    if (!m) return null;
-    let [yStr, moStr] = m[0].split(/(?<=\d)-/);
-    let y = parseInt(yStr, 10);
+    const bc = /π\.?χ|bc|b\.c/.test(raw) || /^\s*-/.test(raw);
+    const nums = (raw.match(/\d+/g) || []).map(Number);
+    if (!nums.length) return null;
+    let y, mo = 1;
+    if (nums.length === 1) y = nums[0];
+    else if (nums.length === 2) { if (nums[0] > 31) { y = nums[0]; mo = nums[1]; } else { mo = nums[0]; y = nums[1]; } } // 1969-07 ή 7/1969
+    else { if (nums[0] > 31) { y = nums[0]; mo = nums[1]; } else { y = nums[2]; mo = nums[1]; } } // 1969-07-20 ή 20/7/1969
     if (!Number.isFinite(y)) return null;
-    if (bc && y > 0) y = 1 - y; else if (yStr.startsWith("-")) y = 1 + y; // -500 = 500 π.Χ.
-    const mo = Math.max(0, Math.min(11, (parseInt(moStr, 10) || 1) - 1));
+    if (bc) y = 1 - y; // 500 π.Χ. / -500 = αστρονομικό έτος -499
+    mo = Math.max(0, Math.min(11, (mo || 1) - 1));
     return Math.max(0, Math.min(TOTAL_MONTHS - 1, (y - START_YEAR) * 12 + mo));
   }
   function openYearInput() {
@@ -2432,10 +2434,11 @@
   els.year.addEventListener("click", openYearInput);
   els.year.addEventListener("keydown", (e) => { if (e.code === "Enter" || e.code === "Space") { e.preventDefault(); openYearInput(); } });
   els.yearInput.addEventListener("keydown", (e) => {
-    if (e.code === "Enter") { e.preventDefault(); closeYearInput(true); }
-    else if (e.code === "Escape") { e.preventDefault(); closeYearInput(false); }
+    if (e.key === "Enter" || e.code === "Enter" || e.keyCode === 13) { e.preventDefault(); closeYearInput(true); }
+    else if (e.key === "Escape" || e.code === "Escape") { e.preventDefault(); closeYearInput(false); }
     e.stopPropagation();
   });
+  els.yearInput.addEventListener("change", () => { if (!els.yearInput.hidden) closeYearInput(true); }); // κινητά: «Done/Go» στο πληκτρολόγιο
   els.yearInput.addEventListener("blur", () => { if (!els.yearInput.hidden) closeYearInput(true); });
 
   // ---------- Public API ----------
