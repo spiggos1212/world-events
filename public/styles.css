@@ -269,6 +269,8 @@ g.hist-year.out { opacity: 0; }
 .cinema-desc:empty { display: none; }
 .cinema-wiki { font-size: 14.5px; line-height: 1.6; color: #d7ddf0; }
 .cinema-wiki p { margin: 0 0 10px; }
+.cinema-wiki h3 { margin: 18px 0 8px; font-size: 17px; color: var(--text); }
+.cinema-wiki h4 { margin: 14px 0 6px; font-size: 15px; color: var(--text); }
 .cinema-wiki .loading { color: var(--muted); font-style: italic; }
 .cinema-wiki .note { color: var(--muted); font-size: 12px; margin-top: 4px; }
 .cinema-links { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }

@@ -436,6 +436,42 @@
     }
     return wikiCache.get(key);
   }
+  // Ολόκληρο το άρθρο σε απλό κείμενο (TextExtracts API), με τις επικεφαλίδες ως "== Τίτλος =="
+  function fetchExtract(lang, title) {
+    const key = "x:" + lang + ":" + title;
+    if (!wikiCache.has(key)) {
+      const url = "https://" + lang + ".wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&exsectionformat=wiki&redirects=1&format=json&formatversion=2&origin=*&titles=" + encodeURIComponent(title);
+      wikiCache.set(key, fetch(url).then((r) => (r.ok ? r.json() : null)).then((j) => {
+        const p = j && j.query && j.query.pages && j.query.pages[0];
+        return p && p.extract ? p.extract : null;
+      }).catch(() => null));
+    }
+    return wikiCache.get(key);
+  }
+  // Απλό κείμενο άρθρου -> HTML: παράγραφοι και ενότητες (χωρίς Παραπομπές / Εξωτερικούς συνδέσμους κ.λπ.)
+  const WIKI_SKIP = /^(παραπομπές|σημειώσεις|βιβλιογραφία|πηγές|εξωτερικοί σύνδεσμοι|δείτε επίσης|περαιτέρω ανάγνωση|references|notes|bibliography|sources|external links|see also|further reading|citations|footnotes|gallery|εικόνες)$/i;
+  function extractToHtml(text, maxChars = 12000) {
+    const out = [];
+    let used = 0, skipping = false;
+    for (const raw of text.split(/\n+/)) {
+      const line = raw.trim();
+      if (!line) continue;
+      const h = line.match(/^(={2,6})\s*(.+?)\s*\1$/);
+      if (h) {
+        if (h[1].length === 2) skipping = WIKI_SKIP.test(h[2]);
+        if (skipping) continue;
+        out.push("<h" + Math.min(4, h[1].length + 1) + ">" + esc(h[2]) + "</h" + Math.min(4, h[1].length + 1) + ">");
+        continue;
+      }
+      if (skipping) continue;
+      if (used + line.length > maxChars) { out.push("<p>" + esc(line.slice(0, Math.max(0, maxChars - used))).replace(/\s+\S*$/, "") + "…</p>"); break; }
+      used += line.length;
+      out.push("<p>" + esc(line) + "</p>");
+    }
+    // Να μην τελειώνει με ορφανή επικεφαλίδα
+    while (out.length && /^<h\d>/.test(out[out.length - 1])) out.pop();
+    return out.join("");
+  }
   // Μεγαλύτερη εικόνα από το thumbnail, χωρίς να ξεπεράσει το πρωτότυπο
   function pickImage(sum) {
     if (!sum || !sum.thumbnail || !sum.thumbnail.source) return null;
@@ -730,11 +766,16 @@
     const got = pref.find((s) => s && s.extract && s.type !== "disambiguation");
     if (!got) { els.cinemaWiki.innerHTML = '<span class="note">' + esc(t("wikiFail")) + "</span>"; return; }
     const gotLang = got === sEl ? "el" : "en";
+    const note = gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "";
+    // Πρώτα η εισαγωγή (έρχεται γρήγορα), μετά ολόκληρο το άρθρο
     const paras = got.extract.split(/\n+/).filter(Boolean);
-    els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") +
-      (gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "");
+    els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") + note;
     const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
     els.cinemaLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
+    const full = await fetchExtract(gotLang, got.title);
+    if (seq !== cinemaSeq || cinemaEv !== ev || !full) return;
+    const html = extractToHtml(full);
+    if (html.length > els.cinemaWiki.innerHTML.length) els.cinemaWiki.innerHTML = html + note;
   }
   function closeCinema() {
     cinemaSeq++;
