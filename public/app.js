@@ -45,7 +45,7 @@
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
-      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
+      videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις χρονολογία (π.χ. 1520, 500 π.Χ., -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -71,7 +71,7 @@
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
-      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
+      videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520, 500 BC, -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -134,7 +134,7 @@
     loading: $("#loading"),
     stepBack: $("#step-back"),
     stepFwd: $("#step-fwd"),
-    year: $("#year"),
+    year: $("#year"), yearInput: $("#year-input"),
     month: $("#month"),
     era: $("#era"),
     track: $("#track"),
@@ -2000,6 +2000,7 @@
   els.track.addEventListener("input", () => setTime(trackToMonths(Number(els.track.value)), { fromUser: true }));
 
   document.addEventListener("keydown", (ev) => {
+    if (ev.target === els.yearInput) return;
     if (ev.target && /INPUT|TEXTAREA|BUTTON/.test(ev.target.tagName) && ev.code !== "Space") return;
     if (tour && (ev.code === "ArrowRight" || ev.code === "ArrowLeft")) { gotoStop(tour.i + (ev.code === "ArrowRight" ? 1 : -1)); return; }
     if (gameOn()) { // στο παιχνίδι: Escape κλείνει, βελάκια = 10 χρόνια στο timeline
@@ -2329,6 +2330,43 @@
   }
   gameEls.btn.addEventListener("click", () => (G.on ? closeGame() : openGame()));
   gameEls.close.addEventListener("click", closeGame);
+
+  // ---------- Πληκτρολόγηση χρονολογίας: κλικ στο έτος -> πεδίο -> Enter ----------
+  // Δέχεται «1520», «500 π.Χ.», «500 BC», «-500», «1969-07» (έτος-μήνας)
+  function parseTypedYear(str) {
+    const raw = String(str || "").trim().toLowerCase().replace(/s+/g, " ");
+    if (!raw) return null;
+    const bc = /π.?χ|bc|b.c|π.χ/.test(raw);
+    const m = raw.match(/-?d{1,4}(?:-d{1,2})?/);
+    if (!m) return null;
+    let [yStr, moStr] = m[0].split(/(?<=d)-/);
+    let y = parseInt(yStr, 10);
+    if (!Number.isFinite(y)) return null;
+    if (bc && y > 0) y = 1 - y; else if (yStr.startsWith("-")) y = 1 + y; // -500 = 500 π.Χ.
+    const mo = Math.max(0, Math.min(11, (parseInt(moStr, 10) || 1) - 1));
+    return Math.max(0, Math.min(TOTAL_MONTHS - 1, (y - START_YEAR) * 12 + mo));
+  }
+  function openYearInput() {
+    const yr = monthsToDate(state.t).year;
+    els.yearInput.value = yr <= 0 ? (1 - yr) + " " + t("bc") : String(yr);
+    els.yearInput.hidden = false;
+    els.year.hidden = true;
+    els.yearInput.focus();
+    els.yearInput.select();
+  }
+  function closeYearInput(apply) {
+    if (apply) { const tm = parseTypedYear(els.yearInput.value); if (tm != null) setTime(tm, { fromUser: true }); }
+    els.yearInput.hidden = true;
+    els.year.hidden = false;
+  }
+  els.year.addEventListener("click", openYearInput);
+  els.year.addEventListener("keydown", (e) => { if (e.code === "Enter" || e.code === "Space") { e.preventDefault(); openYearInput(); } });
+  els.yearInput.addEventListener("keydown", (e) => {
+    if (e.code === "Enter") { e.preventDefault(); closeYearInput(true); }
+    else if (e.code === "Escape") { e.preventDefault(); closeYearInput(false); }
+    e.stopPropagation();
+  });
+  els.yearInput.addEventListener("blur", () => { if (!els.yearInput.hidden) closeYearInput(true); });
 
   // ---------- Public API ----------
   window.WorldEventsApp = {
