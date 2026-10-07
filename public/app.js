@@ -772,10 +772,18 @@
     els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") + note;
     const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
     els.cinemaLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
-    const full = await fetchExtract(gotLang, got.title);
-    if (seq !== cinemaSeq || cinemaEv !== ev || !full) return;
+    let fullLang = gotLang, full = await fetchExtract(gotLang, got.title);
+    if (seq !== cinemaSeq || cinemaEv !== ev) return;
+    const other = pref[1] && pref[1] !== got && pref[1].extract && pref[1].type !== "disambiguation" ? pref[1] : null;
+    if (other && (!full || full.length < 2500)) {
+      const alt = await fetchExtract(other === sEl ? "el" : "en", other.title);
+      if (seq !== cinemaSeq || cinemaEv !== ev) return;
+      if (alt && alt.length > 3 * ((full && full.length) || 0)) { full = alt; fullLang = other === sEl ? "el" : "en"; }
+    }
+    if (!full) return;
     const html = extractToHtml(full);
-    if (html.length > els.cinemaWiki.innerHTML.length) els.cinemaWiki.innerHTML = html + note;
+    const fullNote = fullLang !== state.lang ? "<div class=\"note\">" + esc(t("wikiOtherLang")) + "</div>" : "";
+    if (html.length > els.cinemaWiki.innerHTML.length) els.cinemaWiki.innerHTML = html + fullNote;
   }
   function closeCinema() {
     cinemaSeq++;
