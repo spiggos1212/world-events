@@ -37,7 +37,7 @@
       loadingMap: "Φόρτωση χάρτη…", loadError: "Αποτυχία φόρτωσης χάρτη. Έλεγξε τη σύνδεση και κάνε ανανέωση.",
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
-      videoCredit: "Βίντεο:", cinemaMore: "Όλη η ιστορία", cinemaContinue: "Επόμενο γεγονός ›",
+      videoCredit: "Βίντεο:",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
       wikiLoading: "Φόρτωση από τη Wikipedia…", wikiFail: "Δεν βρέθηκε άρθρο στη Wikipedia.",
       wikiOtherLang: "Το άρθρο υπάρχει μόνο στα αγγλικά.", wikiCredit: "Εικόνα: Wikipedia / Wikimedia Commons",
@@ -55,7 +55,7 @@
       loadingMap: "Loading map…", loadError: "Failed to load the map. Check your connection and refresh.",
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
-      videoCredit: "Video:", cinemaMore: "Full story", cinemaContinue: "Next event ›",
+      videoCredit: "Video:",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
       wikiLoading: "Loading from Wikipedia…", wikiFail: "No Wikipedia article found.",
       wikiOtherLang: "The article is only available in Greek.", wikiCredit: "Image: Wikipedia / Wikimedia Commons",
@@ -159,7 +159,7 @@
     intro: $("#intro"), introYear: $("#intro-year"), introTitle: $("#intro-title"),
     cinema: $("#cinema"), cinemaBackdrop: $("#cinema-backdrop"), cinemaType: $("#cinema-type"), cinemaMeta: $("#cinema-meta"),
     cinemaTitle: $("#cinema-title"), cinemaMedia: $("#cinema-media"), cinemaCap: $("#cinema-cap"), cinemaCredit: $("#cinema-credit"),
-    cinemaClose: $("#cinema-close"), cinemaMore: $("#cinema-more"), cinemaContinue: $("#cinema-continue"),
+    cinemaClose: $("#cinema-close"), cinemaDesc: $("#cinema-desc"), cinemaWiki: $("#cinema-wiki"), cinemaLinks: $("#cinema-links"),
     region: $("#region"),
 
     histLoading: $("#hist-loading"),
@@ -626,14 +626,14 @@
     els.intro.classList.remove("collapsed");
     els.intro.setAttribute("aria-hidden", "false");
     restartAnimations(els.intro);
-    setTimeout(() => { if (seq === cinemaSeq) bigBang(ev); }, 450); // αφού «κάτσει» το zoom
+    setTimeout(() => { if (seq === cinemaSeq) bigBang(ev); }, 350); // αφού «κάτσει» το zoom
     clearTimeout(cinemaTimer);
     cinemaTimer = setTimeout(() => {
       if (seq !== cinemaSeq) return;
       hideIntro();
       cinemaPending = false;
       openCinema(ev);
-    }, 3300);
+    }, 2300);
   }
   function restartAnimations(el) {
     el.querySelectorAll("*").forEach((n) => { n.style.animation = "none"; });
@@ -651,16 +651,16 @@
     const color = typeColor(ev.type);
     const g = gFx.append("g").attr("class", "fx-bang").attr("transform", "translate(" + x + "," + y + ") scale(" + bodyScale() + ")");
     g.append("circle").attr("r", 0).attr("fill", "#fff").attr("opacity", 1)
-      .transition().duration(800).ease(d3.easeCubicOut).attr("r", 110).attr("opacity", 0).remove();
-    for (let i = 0; i < 5; i++) {
-      g.append("circle").attr("r", 6).attr("fill", "none").attr("stroke", i % 2 ? "#fff" : color).attr("stroke-width", 12).attr("opacity", 0.95)
-        .transition().delay(i * 240).duration(2300).ease(d3.easeCubicOut)
-        .attr("r", 380).attr("stroke-width", 0.5).attr("opacity", 0).remove();
+      .transition().duration(600).ease(d3.easeCubicOut).attr("r", 70).attr("opacity", 0).remove();
+    for (let i = 0; i < 4; i++) {
+      g.append("circle").attr("r", 5).attr("fill", "none").attr("stroke", i % 2 ? "#fff" : color).attr("stroke-width", 9).attr("opacity", 0.95)
+        .transition().delay(i * 200).duration(1700).ease(d3.easeCubicOut)
+        .attr("r", 220).attr("stroke-width", 0.5).attr("opacity", 0).remove();
     }
     g.append("text").attr("class", "bang-star").text("★").attr("fill", "#ffd36b").attr("font-size", 1).attr("opacity", 1)
-      .transition().duration(900).ease(d3.easeBackOut).attr("font-size", 130)
-      .transition().delay(1100).duration(700).attr("opacity", 0).attr("font-size", 170).remove();
-    setTimeout(() => g.remove(), 3600);
+      .transition().duration(700).ease(d3.easeBackOut).attr("font-size", 80)
+      .transition().delay(700).duration(500).attr("opacity", 0).attr("font-size", 100).remove();
+    setTimeout(() => g.remove(), 2600);
   }
   async function openCinema(ev) {
     cinemaEv = ev;
@@ -671,13 +671,18 @@
     els.cinemaType.textContent = type.icon + " " + type.label;
     els.cinemaMeta.textContent = yearOf(ev.start) + (ev.end ? " – " + yearOf(ev.end) : "");
     els.cinemaTitle.textContent = ev.title;
-    els.cinemaCap.textContent = capOf(f) || ev.description || "";
+    els.cinemaCap.textContent = capOf(f);
     els.cinemaCredit.innerHTML = "";
+    els.cinemaDesc.textContent = ev.description || "";
+    els.cinemaWiki.innerHTML = "";
+    els.cinemaLinks.innerHTML = "";
     els.cinemaMedia.innerHTML = "";
     els.cinema.classList.remove("collapsed");
     els.cinema.setAttribute("aria-hidden", "false");
     restartAnimations(els.cinema);
-    els.cinemaContinue.focus({ preventScroll: true });
+    els.cinema.querySelector(".cinema-box").scrollTop = 0;
+    els.cinemaClose.focus({ preventScroll: true });
+    loadCinemaStory(ev, seq);
     if (f.kind === "video" && f.sources) {
       const v = document.createElement("video");
       v.controls = true; v.autoplay = true; v.playsInline = true; v.preload = "auto";
@@ -689,9 +694,7 @@
     }
     // Χωρίς βίντεο: μεγάλη φωτογραφία από το άρθρο της Wikipedia
     els.cinemaMedia.innerHTML = '<div class="ph">' + esc(type.icon) + "</div>";
-    const w = WIKI[ev.id] || [null, null];
-    if (!w[0] && !w[1]) return;
-    const [sEl, sEn] = await Promise.all([w[1] ? fetchSummary("el", w[1]) : null, w[0] ? fetchSummary("en", w[0]) : null]);
+    const [sEl, sEn] = await wikiPair(ev);
     if (seq !== cinemaSeq || cinemaEv !== ev) return;
     const img = pickImage(sEn) || pickImage(sEl);
     if (!img) return;
@@ -707,6 +710,32 @@
     im.onerror = () => { const small = (sEn && sEn.thumbnail && sEn.thumbnail.source) || (sEl && sEl.thumbnail && sEl.thumbnail.source); if (small && im.src !== small) { im.onerror = null; im.src = small; } };
     im.src = img;
   }
+  // Τα δύο άρθρα (el/en) της Wikipedia για ένα γεγονός, με cache ανά γεγονός
+  const wikiPairCache = new Map();
+  function wikiPair(ev) {
+    if (!wikiPairCache.has(ev.id)) {
+      const w = WIKI[ev.id] || [null, null];
+      wikiPairCache.set(ev.id, Promise.all([w[1] ? fetchSummary("el", w[1]) : null, w[0] ? fetchSummary("en", w[0]) : null]));
+    }
+    return wikiPairCache.get(ev.id);
+  }
+  // Ολόκληρη η ιστορία μέσα στο popup: κείμενο από τη Wikipedia + σύνδεσμος
+  async function loadCinemaStory(ev, seq) {
+    const w = WIKI[ev.id] || [null, null];
+    if (!w[0] && !w[1]) return;
+    els.cinemaWiki.innerHTML = '<span class="loading">' + esc(t("wikiLoading")) + "</span>";
+    const [sEl, sEn] = await wikiPair(ev);
+    if (seq !== cinemaSeq || cinemaEv !== ev) return;
+    const pref = state.lang === "el" ? [sEl, sEn] : [sEn, sEl];
+    const got = pref.find((s) => s && s.extract && s.type !== "disambiguation");
+    if (!got) { els.cinemaWiki.innerHTML = '<span class="note">' + esc(t("wikiFail")) + "</span>"; return; }
+    const gotLang = got === sEl ? "el" : "en";
+    const paras = got.extract.split(/\n+/).filter(Boolean);
+    els.cinemaWiki.innerHTML = paras.map((p) => "<p>" + esc(p) + "</p>").join("") +
+      (gotLang !== state.lang ? '<div class="note">' + esc(t("wikiOtherLang")) + "</div>" : "");
+    const url = got.content_urls && got.content_urls.desktop ? got.content_urls.desktop.page : "https://" + gotLang + ".wikipedia.org/wiki/" + encodeURIComponent(got.title);
+    els.cinemaLinks.innerHTML = '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(t("readMore")) + " ↗</a>";
+  }
   function closeCinema() {
     cinemaSeq++;
     clearTimeout(cinemaTimer);
@@ -721,8 +750,6 @@
   }
   els.cinemaClose.addEventListener("click", () => closeCinema());
   els.cinemaBackdrop.addEventListener("click", () => closeCinema());
-  els.cinemaContinue.addEventListener("click", () => { closeCinema(); stepEvent(1); });
-  els.cinemaMore.addEventListener("click", () => { const ev = cinemaEv; closeCinema(); if (ev) showEvent(ev); });
 
   // ---------- Ζωντανές αναπαραστάσεις πάνω στον χάρτη (ανά τύπο γεγονότος) ----------
   let fxCount = 0;
