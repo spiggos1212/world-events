@@ -110,13 +110,15 @@
   let voicesReady = [];
   function loadVoices() { if (synth) voicesReady = synth.getVoices() || []; }
   if (synth) { loadVoices(); synth.addEventListener && synth.addEventListener("voiceschanged", loadVoices); }
-  // Καλύτερη διαθέσιμη φωνή για τη γλώσσα: προτιμά "Natural"/"Google", μετά οποιαδήποτε της γλώσσας
+  // Καλύτερη διαθέσιμη φωνή για τη γλώσσα: προτιμά αντρική φωνή, μετά "Natural"/"Google"
+  const MALE = /stefanos|nikos|nestoras|david|mark|george|guy|ryan|christopher|eric|andrew|brian|daniel|james|thomas|william|alex|fred|rishi|liam|male/i;
+  const FEMALE = /zira|hazel|susan|aria|jenny|michelle|sonia|libby|natasha|samantha|victoria|karen|moira|tessa|fiona|athina|melina|female|woman/i;
   function pickVoice(lang) {
     loadVoices();
     const base = lang.toLowerCase().slice(0, 2);
     const cands = voicesReady.filter((v) => (v.lang || "").toLowerCase().startsWith(base));
     if (!cands.length) return null;
-    const score = (v) => (/natural/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 3 : 0) + (/online/i.test(v.name) ? 1 : 0) + (v.localService ? 0 : 0.5) + (v.default ? 0.2 : 0);
+    const score = (v) => (MALE.test(v.name) ? 10 : 0) - (FEMALE.test(v.name) ? 6 : 0) + (/natural/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0) + (/online/i.test(v.name) ? 1 : 0) + (v.default ? 0.2 : 0);
     return cands.sort((a, b) => score(b) - score(a))[0];
   }
   // Σπάει το κείμενο σε προτάσεις (ως ~220 χαρακτήρες) — μεγάλες εκφωνήσεις κόβονται σε Chrome
@@ -137,15 +139,19 @@
     const parts = chunks(text);
     const vol = Math.max(0.05, Math.min(1, 0.35 + S.volume * 0.65)); // η αφήγηση μένει ευδιάκριτη και σε χαμηλή ένταση
     duck(true);
-    parts.forEach((p, i) => {
-      const u = new SpeechSynthesisUtterance(p);
-      u.lang = voice ? voice.lang : (lang === "el" ? "el-GR" : "en-US");
-      if (voice) u.voice = voice;
-      u.rate = 0.98; u.pitch = 1; u.volume = vol;
-      if (i === parts.length - 1) u.onend = () => { if (seq === SP.seq) finishSpeech(); };
-      u.onerror = () => { if (seq === SP.seq) finishSpeech(); };
-      synth.speak(u);
-    });
+    // Chrome: speak() αμέσως μετά από cancel() χάνεται — μικρή καθυστέρηση
+    setTimeout(() => {
+      if (seq !== SP.seq) return;
+      parts.forEach((p, i) => {
+        const u = new SpeechSynthesisUtterance(p);
+        u.lang = voice ? voice.lang : (lang === "el" ? "el-GR" : "en-US");
+        if (voice) u.voice = voice;
+        u.rate = 0.95; u.pitch = 0.9; u.volume = vol;
+        if (i === parts.length - 1) u.onend = () => { if (seq === SP.seq) finishSpeech(); };
+        u.onerror = (e) => { if (seq === SP.seq && e.error !== "interrupted" && e.error !== "canceled") finishSpeech(); };
+        synth.speak(u);
+      });
+    }, 120);
     return true;
   }
   function finishSpeech() { SP.active = false; duck(false); const cb = SP.onEnd; SP.onEnd = null; if (cb) cb(); }

@@ -903,7 +903,7 @@
     // Σύντομο κείμενο: οι 2 πρώτες παράγραφοι του άρθρου (ολόκληρο στον σύνδεσμο)
     let paras = firstParas(got.extract, 2);
     // Αν η εισαγωγή είναι μία σύντομη παράγραφος, συμπληρώνουμε από το πλήρες άρθρο
-    if (paras.join("").length < 400) {
+    if (paras.length < 2 || paras.join("").length < 400) {
       const full = await fetchExtract(gotLang, got.title);
       if (seq !== cinemaSeq || cinemaEv !== ev) return;
       if (full) { const fp = firstParas(full, 2); if (fp.join("").length > paras.join("").length) paras = fp; }
