@@ -2378,8 +2378,8 @@
     if (ok) G.scores[G.player]++;
     gameEls.qFb.className = "gq-fb " + (ok ? "ok" : "bad");
     gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) +
-      "<small>" + esc(fill(ok ? "gameAnswerOk" : "gameAnswerWas", { answer })) + "</small>" +
-      (pick ? "<small>" + esc(fill("gameYourPick", { pick: "" })) + ' <b class="off">' + esc(pick) + "</b>" + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>" : "");
+      "<small>" + (ok ? "" : esc(fill("gameAnswerWas", { answer: "" })).trim() + " ") + '<b class="ans">' + esc(answer) + "</b></small>" +
+      (pick ? "<small>" + esc(fill("gameYourPick", { pick: "" })).trim() + ' <b class="off">' + esc(pick) + "</b>" + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>" : "");
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
     G.round++;
