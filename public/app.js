@@ -924,7 +924,7 @@
   function cleanWiki(s) {
     let out = String(s);
     for (let i = 0; i < 3; i++) out = out.replace(/\s*\[[^\[\]]*\]/g, ""); // [ ... ], και φωλιασμένα
-    const noisy = /romani[sz]|pronounc|pronunciation|listen|ipa|transliterat|\b(ancient greek|greek|latin|arabic|hebrew|russian|chinese|japanese|german|french|italian|spanish|portuguese|dutch|turkish|persian|hindi|egyptian|norse|old english|sanskrit|lit\.|literally|abbreviated|abbr\.|also known as|aka)\b\s*:|ελληνικά:|αρχαία ελληνικά:|λατινικά:|προφ(ορά|έρεται)|μεταγραφ|[ˈˌːʰʷʲθðŋɔɛəɪʊæɑɒɜɐʁχ]|^\/.*\/$/i;
+    const noisy = /romani[sz]|pronounc|pronunciation|listen|ipa|transliterat|\b(ancient greek|greek|latin|arabic|hebrew|russian|chinese|japanese|german|french|italian|spanish|portuguese|dutch|turkish|persian|hindi|egyptian|norse|old english|sanskrit|lit\.|literally|abbreviated|abbr\.|also known as|aka)\b\s*:|ελληνικά:|αρχαία ελληνικά:|λατινικά:|προφ(ορά|έρεται)|μεταγραφ|[ˈˌːʰʷʲðŋɔɛəɪʊæɑɒɜɐʁ]|^\/.*\/$/i;
     for (let i = 0; i < 3; i++) out = out.replace(/\s*\(([^()]*)\)/g, (m, inner) => (noisy.test(inner.trim()) ? "" : m));
     return out.replace(/\s+([,.;:!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
   }
