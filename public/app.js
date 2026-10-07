@@ -41,7 +41,7 @@
       gameRules: "10 ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: κλικ κοντά στο σημείο ή στην αφετηρία ενός γεγονότος, μέσα ή κοντά στη σωστή ήπειρο ή στο σωστό κράτος της εποχής, σε μία από 4 περιοχές, κύκλωμα μιας περιοχής, και «πότε» σέρνοντας το timeline.",
       gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου: {year}",
-      gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα ή κοντά στο σωστό κράτος.", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
+      gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
@@ -67,7 +67,7 @@
       gameRules: "10 questions, all on the map or the timeline: click near the spot or starting point of an event, inside or near the right continent or the right state of that era, one of 4 areas, circle an area, and 'when' by dragging the timeline.",
       gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick: {year}",
-      gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside or near the right state.", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
+      gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
@@ -2133,12 +2133,15 @@
   }
   const featName = (f) => (f.properties && (f.properties.NAME || f.properties.SUBJECTO)) || "";
   // Χαλαρή αποδοχή για κράτη: μέσα στα σύνορα, ή ως 800 χλμ. έξω από την «ακτίνα» του κράτους
+  const STATE_MARGIN_KM = 300;
+  function featureZone(f) {
+    const sr = f._sr != null ? f._sr : d3.geoArea(f);
+    return { center: d3.geoCentroid(f), km: Math.sqrt((sr * 6371 * 6371) / Math.PI) + STATE_MARGIN_KM };
+  }
   function nearFeature(f, geo) {
     if (d3.geoContains(f, geo)) return true;
-    const sr = f._sr != null ? f._sr : d3.geoArea(f);
-    const radiusKm = Math.sqrt((sr * 6371 * 6371) / Math.PI);
-    const km = d3.geoDistance(d3.geoCentroid(f), geo) * 6371;
-    return km <= radiusKm + 800;
+    const z = featureZone(f);
+    return d3.geoDistance(z.center, geo) * 6371 <= z.km;
   }
   // Κύκλος αποδεκτής περιοχής γύρω από ένα σημείο (για την αποκάλυψη)
   function drawZone(center, km) {
@@ -2291,6 +2294,7 @@
     const q = G.q;
     if (q.kind === "state") {
       const ok = nearFeature(q.feat, geo);
+      const z = featureZone(q.feat); drawZone(z.center, z.km);
       gGame.append("path").attr("class", "game-region").attr("d", safePath(q.feat));
       drawGameMarks(geo, null, false);
       finishAnswer(ok, q.answer, null, null);
@@ -2306,12 +2310,14 @@
     }
     if (q.kind === "continent") {
       const got = CONTINENTS.classify(geo[0], geo[1]);
+      const bb = q.cont.bbox, inBox = geo[0] >= bb[0][0] - 2 && geo[0] <= bb[1][0] + 2 && geo[1] >= bb[0][1] - 2 && geo[1] <= bb[1][1] + 2;
       drawRegionPolys((CONTINENTS.polys && CONTINENTS.polys[q.cont.key]) || []);
       drawGameMarks(geo, truth, false);
-      finishAnswer(got === q.cont.key, q.answer, null, null);
+      finishAnswer(got === q.cont.key && inBox, q.answer, null, null);
       return;
     }
     const ok = nearFeature(q.feat, geo); // country
+    { const z = featureZone(q.feat); drawZone(z.center, z.km); }
     gGame.append("path").attr("class", "game-region").attr("d", safePath(q.feat));
     drawGameMarks(geo, truth, false);
     finishAnswer(ok, q.answer, null, null);
