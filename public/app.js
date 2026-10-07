@@ -43,7 +43,7 @@
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου: {year}",
       gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
-      gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Σωστή απάντηση: {answer}", gameOff: "απόκλιση {n} έτη",
+      gameAnswer: "Απάντηση", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Η σωστή απάντηση είναι: {answer}", gameAnswerOk: "{answer}", gameOff: "απόκλιση {n} έτη",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
       videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις έτος (π.χ. 1520· για π.Χ. γράψε -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
@@ -69,7 +69,7 @@
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick: {year}",
       gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
-      gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "Correct answer: {answer}", gameOff: "{n} years off",
+      gameAnswer: "Answer", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "The correct answer is: {answer}", gameAnswerOk: "{answer}", gameOff: "{n} years off",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
       videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520; for BC type -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
@@ -2375,7 +2375,7 @@
   function finishAnswer(ok, answer, diff, extra) {
     if (ok) G.scores[G.player]++;
     gameEls.qFb.className = "gq-fb " + (ok ? "ok" : "bad");
-    gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill("gameAnswerWas", { answer })) + (diff != null && diff > 0 ? ' · <b class="off">' + esc(fill("gameOff", { n: diff })) + "</b>" : "") + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>";
+    gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) + "<small>" + esc(fill(ok ? "gameAnswerOk" : "gameAnswerWas", { answer })) + (diff != null && diff > 0 ? ' · <b class="off">' + esc(fill("gameOff", { n: diff })) + "</b>" : "") + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>";
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
     G.round++;
