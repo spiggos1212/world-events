@@ -38,7 +38,7 @@
       prevYear: "Προηγούμενο γεγονός", nextYear: "Επόμενο γεγονός", prevEvent: "Προηγούμενο γεγονός", nextEvent: "Επόμενο γεγονός", prevEventShort: "Προηγ.", nextEventShort: "Επόμ.", trackAria: "Θέση στο timeline",
       featuredOnly: "Μόνο τα μεγαλύτερα γεγονότα", featuredOnlyShort: "Μεγαλύτερα", region: "Ήπειρος", regionAll: "Όλες οι ήπειροι", tourStop: "Στάση", tourNext: "Επόμενη στάση ›", tourPrev: "‹ Προηγούμενη", tourRestart: "↻ Από την αρχή",
       game: "Παιχνίδι", gameShort: "Παιχνίδι", gameWelcome: "Πόσο καλά ξέρεις την ιστορία;",
-      gameRules: "10 ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: πού (σημείο, ήπειρος, κράτος, 4 περιοχές, κύκλος), πότε (ξεκίνησε ή τελείωσε, σέρνοντας το timeline) και χρονολογική σειρά 3 γεγονότων.",
+      gameQuestions: "Ερωτήσεις", gameRules: "{n} ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: πού (σημείο, ήπειρος, κράτος, 4 περιοχές, κύκλος), πότε (ξεκίνησε ή τελείωσε, σέρνοντας το timeline) και χρονολογική σειρά 3 γεγονότων.",
       gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου είναι: {pick}", gameNoLand: "εκτός ηπείρου (θάλασσα)", gameNoState: "εκτός κράτους", gamePickPoint: "σημείο {km} χλμ. μακριά από το σωστό", gamePickCircle: "κύκλος ακτίνας {r} χλμ., {km} χλμ. από το σωστό σημείο", gamePickArea: "περιοχή {letter}",
       gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameQOrder: "Βάλε τα 3 γεγονότα σε χρονολογική σειρά", gameOrderHint: "Κάνε κλικ στα γεγονότα στον χάρτη με τη σειρά που έγιναν: πρώτα το παλιότερο, τελευταίο το νεότερο.", gameOrderPick: "{seq}", gameQEnd: "Πότε τελείωσε: {event}; (ξεκίνησε το {year})", gameEndHint: "Ο χάρτης είναι στη χρονιά που ξεκίνησε. Σύρε το timeline στη χρονιά που νομίζεις ότι τελείωσε και πάτα «Απάντηση». Ανοχή ±{n} χρόνια.", gameDuration: "διάρκεια {n} χρόνια", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
@@ -64,7 +64,7 @@
       prevYear: "Previous event", nextYear: "Next event", prevEvent: "Previous event", nextEvent: "Next event", prevEventShort: "Prev", nextEventShort: "Next", trackAria: "Timeline position",
       featuredOnly: "Biggest events only", featuredOnlyShort: "Biggest", region: "Continent", regionAll: "All continents", tourStop: "Stop", tourNext: "Next stop ›", tourPrev: "‹ Previous", tourRestart: "↻ Start over",
       game: "Game", gameShort: "Game", gameWelcome: "How well do you know history?",
-      gameRules: "10 questions, all on the map or the timeline: where (spot, continent, state, 4 areas, circle), when (started or ended, by dragging the timeline) and the chronological order of 3 events.",
+      gameQuestions: "Questions", gameRules: "{n} questions, all on the map or the timeline: where (spot, continent, state, 4 areas, circle), when (started or ended, by dragging the timeline) and the chronological order of 3 events.",
       gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick is: {pick}", gameNoLand: "outside any continent (sea)", gameNoState: "outside any state", gamePickPoint: "a point {km} km from the right spot", gamePickCircle: "a circle of radius {r} km, {km} km from the right spot", gamePickArea: "area {letter}",
       gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameQOrder: "Put the 3 events in chronological order", gameOrderHint: "Click the events on the map in the order they happened: the oldest first, the most recent last.", gameOrderPick: "{seq}", gameQEnd: "When did it end: {event}? (it started in {year})", gameEndHint: "The map is at the year it started. Drag the timeline to the year you think it ended and press Answer. Margin ±{n} years.", gameDuration: "lasted {n} years", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
@@ -2083,18 +2083,35 @@
     gameEls.overlay.classList.remove("collapsed");
     gameEls.overlay.style.animation = "none"; void gameEls.overlay.offsetWidth; gameEls.overlay.style.animation = "";
   }
+  // Πλήθος ερωτήσεων ανά παιχνίδι: επιλογή στην οθόνη έναρξης, θυμάται την τελευταία
+  const TOTAL_KEY = "we-game-total", TOTALS = [10, 20, 30, 50];
+  function loadTotal() {
+    let n = 10;
+    try { n = Number(localStorage.getItem(TOTAL_KEY)) || 10; } catch (_) { /* ignore */ }
+    return TOTALS.includes(n) ? n : 10;
+  }
   function showModeSelect() {
     if (!G.on) return;
     gameEls.status.textContent = "";
     document.body.classList.remove("game-reveal", "game-map");
     gGame.selectAll("*").remove();
     hideOverlay();
-    gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint">' + esc(t("gameRules")) + "</p>" +
+    G.total = loadTotal();
+    gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint" id="game-rules">' + esc(fill("gameRules", { n: G.total })) + "</p>" +
+      '<div class="game-total"><span class="lbl">' + esc(t("gameQuestions")) + "</span>" + TOTALS.map((n) => '<button type="button" data-total="' + n + '"' + (n === G.total ? ' class="on"' : "") + ">" + n + "</button>").join("") + "</div>" +
       '<div class="game-actions"><button type="button" class="primary" data-mode="1">👤 ' + esc(t("gameSingle")) + '</button><button type="button" data-mode="2">👥 ' + esc(t("gameDual")) + "</button></div>";
+    gameEls.body.querySelectorAll("[data-total]").forEach((b) => {
+      b.onclick = () => {
+        G.total = Number(b.dataset.total);
+        try { localStorage.setItem(TOTAL_KEY, String(G.total)); } catch (_) { /* ignore */ }
+        gameEls.body.querySelectorAll("[data-total]").forEach((x) => x.classList.toggle("on", x === b));
+        gameEls.body.querySelector("#game-rules").textContent = fill("gameRules", { n: G.total });
+      };
+    });
     gameEls.body.querySelectorAll("[data-mode]").forEach((b) => { b.onclick = () => startGame(Number(b.dataset.mode)); });
   }
   function startGame(mode) {
-    G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0]; G.total = 10;
+    G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0];
     if (window.WorldSound) WorldSound.jingle(); // παιχνιδιάρικος ήχος έναρξης
     nextQuestion();
   }
