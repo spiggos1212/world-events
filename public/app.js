@@ -2637,7 +2637,7 @@
     NET.code = code; NET.id = myId();
     const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/api/room/" + code + "/ws");
     NET.ws = ws;
-    ws.onopen = () => netSend({ type: "hello", id: NET.id, name: myName() });
+    ws.onopen = () => netSend({ type: "hello", id: NET.id, name: myName(), proto: 2 });
     ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch (_) { return; } onNetMessage(m); };
     ws.onclose = () => {
       if (NET.ws !== ws) return;
@@ -2692,6 +2692,7 @@
   function onNetMessage(m) {
     if (!G.on || G.mode !== 3) return;
     switch (m.type) {
+      case "welcome": try { sessionStorage.removeItem("we-reloaded"); } catch (_) { /* ignore */ } break;
       case "error":
         leaveToMenu(m.code === "started" ? t("gameRoomStarted") : m.code === "full" ? t("gameRoomFull") : t("gameRoomNotFound"));
         break;
@@ -2708,6 +2709,9 @@
       case "question": onNetQuestion(m); break;
       case "reveal": onNetReveal(m); break;
       case "final": showFinal(m.players); break;
+      case "reload": // ο server τρέχει νεότερη έκδοση από αυτή τη σελίδα: ξαναφορτώνουμε (μία φορά) κρατώντας το δωμάτιο στο URL
+        if (!sessionStorage.getItem("we-reloaded")) { try { sessionStorage.setItem("we-reloaded", "1"); } catch (_) { /* ignore */ } netClose(); location.replace(location.pathname + "?room=" + NET.code); }
+        break;
       default: break;
     }
   }

@@ -14,6 +14,7 @@ const QUESTION_MS = 45_000;       // χρόνος ανά ερώτηση
 const GRACE_MS = 2_500;           // ανοχή για απαντήσεις που φτάνουν λίγο μετά το όριο
 const ROOM_IDLE_MS = 30 * 60_000; // άδειο δωμάτιο: σβήνεται μετά από μισή ώρα
 const TOTALS = [10, 20, 30, 50];
+const PROTO = 2; // έκδοση πρωτοκόλλου client/server: παλιότερος client -> του ζητάμε να ξαναφορτώσει τη σελίδα
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // χωρίς I/O/0/1 που μπερδεύονται
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -160,6 +161,7 @@ export class Room {
     if (m.type === "hello") {
       const id = clean(m.id, 40);
       if (!id) return;
+      if (Number(m.proto || 0) < PROTO) { this.send(ws, { type: "reload" }); } // παλιά σελίδα (ανοιχτή από πριν το deploy)
       const name = clean(m.name);
       const existing = r.players[id];
       if (!existing) {
@@ -192,9 +194,11 @@ export class Room {
         if (TOTALS.includes(Number(m.total))) r.total = Number(m.total);
         break;
       }
+      case "start": // παλιός client: «Έναρξη» = έτοιμος (+ επιλογή πλήθους ερωτήσεων αν είναι ο οικοδεσπότης)
       case "ready": { // «Έναρξη»: το παιχνίδι ξεκινά μόνο με >= 2 παίκτες online που ΟΛΟΙ το πάτησαν
         if (!(r.phase === "lobby" || r.phase === "end")) return;
-        p.ready = !!m.ready;
+        if (m.type === "start") { p.ready = true; if (isHost && TOTALS.includes(Number(m.total))) r.total = Number(m.total); }
+        else p.ready = !!m.ready;
         const online = this.onlineIds();
         const here = Object.values(r.players).filter((pl) => online.has(pl.id));
         if (here.length >= 2 && here.every((pl) => pl.ready)) {

@@ -22,10 +22,11 @@ function client(name, code) {
   await bad.until((m) => m.type === "error" && m.code === "not-found"); log("ok: unknown room rejected");
 
   const a = client("A", code), b = client("B", code);
-  await a.open; a.send({ type: "hello", id: a.id, name: "Alice" });
+  await a.open; a.send({ type: "hello", id: a.id, name: "Alice", proto: 2 });
   await a.until((m) => m.type === "state" && m.hostId === a.id); log("ok: A is host");
-  await b.open; b.send({ type: "hello", id: b.id, name: "Bob" });
+  await b.open; b.send({ type: "hello", id: b.id, name: "Bob" }); // χωρίς proto = παλιός client
   await b.until((m) => m.type === "state" && m.players.length === 2); log("ok: 2 players");
+  await b.until((m) => m.type === "reload"); log("ok: old client is told to reload");
 
   b.send({ type: "total", total: 50 }); await wait(200);
   if (a.msgs.some((m) => m.type === "state" && m.total === 50)) throw new Error("non-host changed total");
@@ -34,8 +35,8 @@ function client(name, code) {
   a.send({ type: "ready", ready: true }); await wait(300);
   if (a.msgs.some((m) => m.type === "state" && m.phase === "starting")) throw new Error("started with one ready player");
   log("ok: one ready player is not enough");
-  b.send({ type: "ready", ready: true });
-  await a.until((m) => m.type === "state" && m.phase === "starting" && m.total === 20); log("ok: starts when both pressed Start");
+  b.send({ type: "start", total: 50 }); // παλιό μήνυμα «Έναρξη» = έτοιμος (δεν αλλάζει το πλήθος, δεν είναι host)
+  await a.until((m) => m.type === "state" && m.phase === "starting" && m.total === 20); log("ok: starts when both pressed Start (legacy start accepted)");
   a.send({ type: "question", spec: { kind: "map", id: 1, km: 2500 } });
   await b.until((m) => m.type === "question" && m.round === 1); log("ok: question delivered to B");
   a.send({ type: "answer", ok: true, pick: "near" });
