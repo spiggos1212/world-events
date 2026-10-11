@@ -27,11 +27,15 @@ function client(name, code) {
   await b.open; b.send({ type: "hello", id: b.id, name: "Bob" });
   await b.until((m) => m.type === "state" && m.players.length === 2); log("ok: 2 players");
 
-  b.send({ type: "start", total: 10 }); await wait(300);
-  if (a.msgs.some((m) => m.type === "state" && m.phase === "starting")) throw new Error("non-host could start");
-  log("ok: non-host cannot start");
-  a.send({ type: "start", total: 20 });
-  await a.until((m) => m.type === "state" && m.phase === "starting" && m.total === 20); log("ok: starting");
+  b.send({ type: "total", total: 50 }); await wait(200);
+  if (a.msgs.some((m) => m.type === "state" && m.total === 50)) throw new Error("non-host changed total");
+  a.send({ type: "total", total: 20 });
+  await b.until((m) => m.type === "state" && m.total === 20); log("ok: only the host picks the question count");
+  a.send({ type: "ready", ready: true }); await wait(300);
+  if (a.msgs.some((m) => m.type === "state" && m.phase === "starting")) throw new Error("started with one ready player");
+  log("ok: one ready player is not enough");
+  b.send({ type: "ready", ready: true });
+  await a.until((m) => m.type === "state" && m.phase === "starting" && m.total === 20); log("ok: starts when both pressed Start");
   a.send({ type: "question", spec: { kind: "map", id: 1, km: 2500 } });
   await b.until((m) => m.type === "question" && m.round === 1); log("ok: question delivered to B");
   a.send({ type: "answer", ok: true, pick: "near" });

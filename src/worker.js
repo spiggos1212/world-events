@@ -5,7 +5,8 @@
 // Ο οικοδεσπότης (ο πρώτος που μπήκε) φτιάχνει τις ερωτήσεις στον browser του και τις στέλνει
 // εδώ· ο server τις μοιράζει σε όλους, μαζεύει τις απαντήσεις και κάνει την αποκάλυψη όταν
 // απαντήσουν όλοι ή τελειώσει ο χρόνος. Το «Registry» (ένα μόνο object) μοιράζει τους κωδικούς
-// και κρατά το όριο των ταυτόχρονων δωματίων.
+// και κρατά το όριο των ταυτόχρονων δωματίων. Το παιχνίδι ξεκινά όταν είναι τουλάχιστον 2 παίκτες
+// στο δωμάτιο και όλοι έχουν πατήσει «Έναρξη».
 
 const MAX_ROOMS = 10;             // πόσα παιχνίδια μπορούν να παίζονται ταυτόχρονα
 const MAX_PLAYERS = 12;           // παίκτες ανά δωμάτιο
@@ -113,7 +114,7 @@ export class Room {
     return Object.values(this.room.players)
       .sort((a, b) => a.joined - b.joined)
       // όσο τρέχει η ερώτηση φαίνεται μόνο ΠΟΙΟΣ απάντησε, όχι αν ήταν σωστός (θα έδινε στοιχεία στους άλλους)
-      .map((p) => ({ id: p.id, name: p.name, score: p.score, answered: p.answered, ok: ask ? null : p.ok, pick: ask ? "" : p.pick, online: online.has(p.id) }));
+      .map((p) => ({ id: p.id, name: p.name, score: p.score, answered: p.answered, ok: ask ? null : p.ok, pick: ask ? "" : p.pick, ready: !!p.ready, online: online.has(p.id) }));
   }
   stateMsg() {
     const r = this.room;
@@ -164,7 +165,7 @@ export class Room {
       if (!existing) {
         if (r.phase !== "lobby") { this.send(ws, { type: "error", code: "started" }); try { ws.close(1000); } catch (_) { /* ignore */ } return; }
         if (Object.keys(r.players).length >= MAX_PLAYERS) { this.send(ws, { type: "error", code: "full" }); try { ws.close(1000); } catch (_) { /* ignore */ } return; }
-        r.players[id] = { id, name: name || "Player", score: 0, answered: false, ok: null, pick: "", joined: Date.now() };
+        r.players[id] = { id, name: name || "Player", score: 0, answered: false, ok: null, pick: "", ready: false, joined: Date.now() };
       } else if (name) existing.name = name;
       // Παλιό socket του ίδιου παίκτη (π.χ. refresh): κλείνει
       for (const o of this.sockets()) { if (o !== ws && this.idOf(o) === id) { try { o.close(1000, "replaced"); } catch (_) { /* ignore */ } } }
@@ -186,12 +187,21 @@ export class Room {
     let changed = true;
     switch (m.type) {
       case "name": { const n = clean(m.name); if (n) p.name = n; break; }
-      case "start": {
+      case "total": { // ο οικοδεσπότης διαλέγει πόσες ερωτήσεις
         if (!isHost || !(r.phase === "lobby" || r.phase === "end")) return;
-        r.total = TOTALS.includes(Number(m.total)) ? Number(m.total) : 10;
-        r.round = 0; r.q = null;
-        for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; }
-        r.phase = "starting"; // ο οικοδεσπότης φτιάχνει την 1η ερώτηση
+        if (TOTALS.includes(Number(m.total))) r.total = Number(m.total);
+        break;
+      }
+      case "ready": { // «Έναρξη»: το παιχνίδι ξεκινά μόνο με >= 2 παίκτες online που ΟΛΟΙ το πάτησαν
+        if (!(r.phase === "lobby" || r.phase === "end")) return;
+        p.ready = !!m.ready;
+        const online = this.onlineIds();
+        const here = Object.values(r.players).filter((pl) => online.has(pl.id));
+        if (here.length >= 2 && here.every((pl) => pl.ready)) {
+          r.round = 0; r.q = null;
+          for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.ready = false; }
+          r.phase = "starting"; // ο οικοδεσπότης φτιάχνει την 1η ερώτηση
+        }
         break;
       }
       case "question": {
@@ -226,7 +236,7 @@ export class Room {
       case "restart": {
         if (!isHost || r.phase !== "end") return;
         r.phase = "lobby"; r.round = 0; r.q = null;
-        for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; }
+        for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.ready = false; }
         break;
       }
       case "leave": {

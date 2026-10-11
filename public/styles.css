@@ -234,6 +234,8 @@ body.game-tl .track::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(255, 211, 107
 .game-total button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .game-actions button { flex: 1; text-align: center; }
 .game-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.game-actions button.primary.ready { background: #2e8b57; border-color: #2e8b57; color: #fff; }
+.game-actions button:disabled { opacity: 0.5; cursor: default; }
 .game-actions button:hover { filter: brightness(1.08); }
 .game-feedback { margin-top: 12px; font-size: 15px; font-weight: 800; }
 .game-feedback:empty { display: none; }
