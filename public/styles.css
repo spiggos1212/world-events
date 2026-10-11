@@ -290,6 +290,11 @@ body.game-circle #map-wrap svg { cursor: crosshair; touch-action: none; }
 .game-mark.truth circle { fill: #2e8b57; }
 .game-mark.pick circle { fill: #ffd36b; }
 .game-mark.pick text { fill: #1a1400; }
+.game-mark.rival circle { fill: #5aa9ff; }
+.game-mark.rival.ok circle { fill: #3cb371; }
+.game-mark.rival text.lbl, .game-choice text.rival { font-size: 11px; font-weight: 800; fill: #fff; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,0.75); stroke-width: 3px; }
+.game-draw.rival { fill: rgba(90, 169, 255, 0.12); stroke: #5aa9ff; stroke-dasharray: 6 4; }
+.game-draw.rival.ok { fill: rgba(60, 179, 113, 0.14); stroke: #3cb371; }
 .game-mark.truth { pointer-events: auto; cursor: pointer; }
 .game-mark.truth .halo { fill: none; stroke: #6fdc8c; stroke-width: 2; opacity: 0.9; animation: halo-pulse 1.4s ease-out infinite; transform-origin: center; }
 @keyframes halo-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(1.8); opacity: 0; } }

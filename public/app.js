@@ -2742,7 +2742,14 @@
     gameEls.qActions.classList.remove("ask"); gameEls.qActions.innerHTML = "";
     gameEls.qFb.className = "gq-fb wait";
     gameEls.qFb.innerHTML = esc(t("gameSent")) + '<small id="gq-waitline"></small>';
-    netSend({ type: "answer", ok, pick: (pick || "") + (pick && extra ? " · " + extra : "") }); // οι άλλοι βλέπουν την επιλογή στην αποκάλυψη
+    // Οι άλλοι βλέπουν στην αποκάλυψη την επιλογή μας: το κείμενο και το σημείο / τον κύκλο / το γράμμα πάνω στον χάρτη
+    const mark = {}, pk = G.pick;
+    if (pk && G.q) {
+      if (G.q.kind === "circle" && pk.center) { mark.geo = pk.center; mark.km = pk.km; }
+      else if (pk.geo) mark.geo = pk.geo;
+      else if (pk.c && pk.c.letter) mark.letter = pk.c.letter;
+    }
+    netSend({ type: "answer", ok, pick: (pick || "") + (pick && extra ? " · " + extra : ""), ...mark });
     updateWaitLine();
   }
   function updateWaitLine() {
@@ -2765,6 +2772,36 @@
     gGame.style("visibility", null);
     const h = NET.held; NET.held = null;
     revealAnswer(h.ok, h.answer, h.pick, h.extra);
+    drawRivalMarks();
+  }
+  // Στην αποκάλυψη: τα σημεία / οι κύκλοι / τα γράμματα που διάλεξαν οι άλλοι παίκτες, με το όνομά τους
+  function drawRivalMarks() {
+    const q = G.q;
+    if (!q) return;
+    gGame.selectAll(".rival").remove();
+    const sc = bodyScale();
+    NET.players.forEach((p) => {
+      if (p.id === NET.id || !p.mark) return;
+      const m = p.mark, nm = truncate(p.name, 14), cls = p.ok ? "ok" : "bad";
+      if (m.letter && q.kind === "choice") {
+        gGame.selectAll(".game-choice").filter((d) => d.letter === m.letter).each(function () {
+          const g = d3.select(this), n = g.selectAll(".rival").size();
+          g.append("text").attr("class", "rival lbl " + cls).attr("y", 36 + n * 14).text(nm);
+        });
+        return;
+      }
+      if (!m.geo) return;
+      const pt = projection(m.geo);
+      if (!pt || !isFinite(pt[0]) || !onFront(m.geo[0], m.geo[1])) return;
+      if (q.kind === "circle" && m.km) {
+        const d = path(d3.geoCircle().center(m.geo).radius((m.km / 6371) * (180 / Math.PI))());
+        if (d) gGame.insert("path", ".game-mark").attr("class", "game-draw rival " + cls).attr("d", d);
+      }
+      const g = gGame.append("g").attr("class", "game-mark rival " + cls).attr("transform", "translate(" + pt[0] + "," + pt[1] + ") scale(" + sc + ")");
+      g.append("circle").attr("r", 10);
+      g.append("text").text((p.name || "?").trim().charAt(0).toUpperCase() || "?");
+      g.append("text").attr("class", "lbl").attr("y", 22).text(nm + (q.kind === "circle" && m.km ? " · " + fmtNum(m.km) + " km" : ""));
+    });
   }
   // Σημάδια της σωστής απάντησης χωρίς επιλογή παίκτη (όταν έληξε ο χρόνος)
   function revealTruthOnly() {

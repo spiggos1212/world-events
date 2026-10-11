@@ -19,6 +19,10 @@ const PROTO = 2; // έκδοση πρωτοκόλλου client/server: παλι�
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // χωρίς I/O/0/1 που μπερδεύονται
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
+// Γεωμετρία απάντησης στον χάρτη: σημείο [lng, lat], ακτίνα κύκλου σε χλμ., γράμμα επιλογής A-D
+const num = (v, lo, hi) => (typeof v === "number" && isFinite(v) && v >= lo && v <= hi ? v : null);
+const cleanGeo = (g) => (Array.isArray(g) && num(g[0], -180, 180) != null && num(g[1], -90, 90) != null ? [Math.round(g[0] * 1e4) / 1e4, Math.round(g[1] * 1e4) / 1e4] : null);
+const cleanMark = (m) => { const geo = cleanGeo(m.geo); const km = num(m.km, 0, 40000); const letter = /^[A-Z]$/.test(m.letter) ? m.letter : ""; return geo || letter ? { geo, km: geo && km != null ? Math.round(km) : null, letter } : null; };
 const clean = (s, n = 24) => String(s == null ? "" : s).replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, n);
 const registry = (env) => env.REGISTRY.get(env.REGISTRY.idFromName("main"));
 
@@ -128,7 +132,7 @@ export class Room {
     return Object.values(this.room.players)
       .sort((a, b) => a.joined - b.joined)
       // όσο τρέχει η ερώτηση φαίνεται μόνο ΠΟΙΟΣ απάντησε, όχι αν ήταν σωστός (θα έδινε στοιχεία στους άλλους)
-      .map((p) => ({ id: p.id, name: p.name, score: p.score, answered: p.answered, ok: ask ? null : p.ok, pick: ask ? "" : p.pick, ready: !!p.ready, online: online.has(p.id) }));
+      .map((p) => ({ id: p.id, name: p.name, score: p.score, answered: p.answered, ok: ask ? null : p.ok, pick: ask ? "" : p.pick, mark: ask ? null : p.mark || null, ready: !!p.ready, online: online.has(p.id) }));
   }
   stateMsg() {
     const r = this.room;
@@ -216,7 +220,7 @@ export class Room {
         const here = Object.values(r.players).filter((pl) => online.has(pl.id));
         if (here.length >= 2 && here.every((pl) => pl.ready)) {
           r.round = 0; r.q = null;
-          for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.ready = false; }
+          for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.mark = null; pl.ready = false; }
           r.phase = "starting"; // ο οικοδεσπότης φτιάχνει την 1η ερώτηση
         }
         break;
@@ -224,7 +228,7 @@ export class Room {
       case "question": {
         if (!isHost || r.phase !== "starting" || !m.spec || typeof m.spec !== "object") return;
         r.q = m.spec; r.round++; r.phase = "ask"; r.deadline = Date.now() + QUESTION_MS;
-        for (const pl of Object.values(r.players)) { pl.answered = false; pl.ok = null; pl.pick = ""; }
+        for (const pl of Object.values(r.players)) { pl.answered = false; pl.ok = null; pl.pick = ""; pl.mark = null; }
         await this.ctx.storage.setAlarm(r.deadline + GRACE_MS);
         this.touchRegistry(false);
         this.broadcast({ type: "question", spec: r.q, round: r.round, total: r.total, deadline: r.deadline, now: Date.now() });
@@ -232,7 +236,7 @@ export class Room {
       }
       case "answer": {
         if (r.phase !== "ask" || p.answered || Date.now() > r.deadline + GRACE_MS) return;
-        p.answered = true; p.ok = !!m.ok; p.pick = clean(m.pick, 160);
+        p.answered = true; p.ok = !!m.ok; p.pick = clean(m.pick, 160); p.mark = cleanMark(m);
         if (p.ok) p.score++;
         const online = this.onlineIds();
         const pending = Object.values(r.players).filter((pl) => online.has(pl.id) && !pl.answered);
@@ -253,7 +257,7 @@ export class Room {
       case "restart": {
         if (!isHost || r.phase !== "end") return;
         r.phase = "lobby"; r.round = 0; r.q = null;
-        for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.ready = false; }
+        for (const pl of Object.values(r.players)) { pl.score = 0; pl.answered = false; pl.ok = null; pl.pick = ""; pl.mark = null; pl.ready = false; }
         break;
       }
       case "leave": {
@@ -274,7 +278,7 @@ export class Room {
     const r = this.room;
     if (!r || r.phase !== "ask") return;
     r.phase = "reveal";
-    for (const pl of Object.values(r.players)) if (!pl.answered) { pl.answered = true; pl.ok = false; pl.pick = ""; }
+    for (const pl of Object.values(r.players)) if (!pl.answered) { pl.answered = true; pl.ok = false; pl.pick = ""; pl.mark = null; }
     await this.ctx.storage.deleteAlarm();
     r.touched = Date.now();
     await this.save();
