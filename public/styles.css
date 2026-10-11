@@ -284,6 +284,8 @@ body.game-on:not(.game-reveal) .ev, body.game-on:not(.game-reveal) .fx { display
 body.game-on .event-marks, body.game-on .panel, body.game-on .panel-open-btn, body.game-on .postcard { display: none !important; }
 body.game-on .brand { display: none !important; } /* ο τίτλος φεύγει όσο παίζει το παιχνίδι */
 body.game-on .game-overlay { top: 14px; }
+/* Σε παιχνίδι το popup της ιστορίας (κλικ σε γεγονός στην αποκάλυψη) μπαίνει ΠΑΝΩ από την κάρτα του παιχνιδιού, για να φαίνεται το × του */
+body.game-on .story { z-index: 7; }
 
 /* Μικρό κουμπί ήχου (σίγαση) */
 .sound-btn {
