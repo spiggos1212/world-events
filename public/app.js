@@ -2742,7 +2742,7 @@
     gameEls.qActions.classList.remove("ask"); gameEls.qActions.innerHTML = "";
     gameEls.qFb.className = "gq-fb wait";
     gameEls.qFb.innerHTML = esc(t("gameSent")) + '<small id="gq-waitline"></small>';
-    netSend({ type: "answer", ok, pick: pick || "" });
+    netSend({ type: "answer", ok, pick: (pick || "") + (pick && extra ? " · " + extra : "") }); // οι άλλοι βλέπουν την επιλογή στην αποκάλυψη
     updateWaitLine();
   }
   function updateWaitLine() {
@@ -2798,10 +2798,11 @@
     NET.timer = setInterval(tick, 250);
   }
   function stopCountdown() { if (NET.timer) clearInterval(NET.timer); NET.timer = null; gameEls.status.classList.remove("urgent"); }
-  // Κάρτα σκορ στο online: όλοι οι παίκτες, με ✓ σε όποιον έχει απαντήσει και ✅/❌ στην αποκάλυψη
+  // Κάρτα σκορ στο online: όλοι οι παίκτες, με ✓ σε όποιον έχει απαντήσει και ✅/❌ + την επιλογή του καθενός στην αποκάλυψη
   function playersHtml() {
     const list = NET.players.slice().sort((a, b) => b.score - a.score);
-    return '<ul class="room-score">' + list.map((p) => '<li class="' + (p.id === NET.id ? "me" : "") + (p.online ? "" : " off") + '"><span class="st">' + (p.ok != null ? (p.ok ? "✅" : "❌") : p.answered ? "✓" : "…") + '</span><span class="nm">' + esc(p.name) + "</span><b>" + p.score + "</b></li>").join("") + "</ul>";
+    return '<ul class="room-score">' + list.map((p) => '<li class="' + (p.id === NET.id ? "me" : "") + (p.online ? "" : " off") + '"><span class="st">' + (p.ok != null ? (p.ok ? "✅" : "❌") : p.answered ? "✓" : "…") + '</span><span class="nm">' + esc(p.name) + "</span><b>" + p.score + "</b>" +
+      (p.ok != null ? '<small class="pk' + (p.ok ? " ok" : "") + '">' + esc(p.pick || t("gameNoAnswer")) + "</small>" : "") + "</li>").join("") + "</ul>";
   }
   function playersListHtml() {
     return NET.players.map((p) => '<li class="' + (p.online ? "" : "off") + (p.id === NET.id ? " me" : "") + '">' + (p.ready ? "✅ " : "") + (p.id === NET.hostId ? "⭐ " : "") + esc(p.name) + (p.id === NET.id ? " <small>(" + esc(t("gameYou")) + ")</small>" : "") + (p.online ? "" : " <small>(" + esc(t("gameOffline")) + ")</small>") + "</li>").join("");

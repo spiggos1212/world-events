@@ -321,13 +321,15 @@ body.game-circle #map-wrap svg { cursor: crosshair; touch-action: none; }
 .room-players small, .room-rank small { font-weight: 500; color: var(--muted); }
 .room-status { min-height: 1em; margin-bottom: 0; }
 .room-score { list-style: none; margin: 0; padding: 0; }
-.room-score li { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.room-score li { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; padding: 3px 0; font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .room-score li:last-child { border-bottom: 0; }
 .room-score li.me .nm { color: var(--accent); }
 .room-score li.off { opacity: 0.5; }
 .room-score .st { width: 18px; text-align: center; font-size: 11px; }
 .room-score .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .room-score b { font-size: 14px; }
+.room-score .pk { flex-basis: 100%; padding: 0 0 2px 24px; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+.room-score .pk.ok { color: #6fdc8c; }
 .room-rank { margin: 0 0 12px; padding: 0 0 0 22px; }
 .room-rank li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .room-rank li.top { color: #ffd36b; font-weight: 800; }
