@@ -122,7 +122,7 @@
     historical: true,
     lang: "el",
     proj: "flat",
-    featuredOnly: true, // by default μόνο τα μεγαλύτερα γεγονότα
+    featuredOnly: false, // «Μόνο τα μεγαλύτερα γεγονότα»: ανενεργό όταν ανοίγει η σελίδα
     panelOpen: false, // «Συμβαίνει τώρα» ανοιχτό -> ταμπέλες όλων των γεγονότων του στον χάρτη
     region: null, // επιλεγμένη ήπειρος (key από continents.js) ή null = όλες
   };
