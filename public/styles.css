@@ -187,6 +187,9 @@ g.hist-year.out { opacity: 0; }
 .gq-actions button { padding: 14px 30px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
 .gq-actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .gq-actions button:hover { filter: brightness(1.08); }
+/* Όσο εκκρεμεί ερώτηση το «Απάντηση» κάθεται κάτω στη μέση, για να μην κρύβει τον χάρτη */
+.gq-actions.ask { top: auto; bottom: 18px; transform: translateX(-50%); animation: none; }
+.gq-actions button:disabled { opacity: 0.45; cursor: default; filter: none; }
 /* Σκορ: μικρή διακριτική κάρτα όσο τρέχει ερώτηση */
 .game.compact { width: 170px; }
 .game.compact .game-box { border-top-width: 1px; background: rgba(14, 20, 44, 0.6); box-shadow: none; animation: none; }
@@ -270,11 +273,15 @@ body.game-circle #map-wrap svg { cursor: crosshair; touch-action: none; }
 .game-choice:hover circle { fill: rgba(255, 211, 107, 0.5); }
 .game-choice text { font-size: 20px; font-weight: 900; fill: #fff; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: rgba(0,0,0,0.6); stroke-width: 3px; }
 .game-choice.off { opacity: 0.35; cursor: default; }
+.game-choice.sel circle { fill: rgba(255, 211, 107, 0.9); stroke: #fff; }
+.game-choice.sel text { fill: #1a1400; stroke: none; }
 .game-choice.correct circle { fill: rgba(46, 139, 87, 0.7); stroke: #6fdc8c; }
 .game-choice.wrong circle { fill: rgba(176, 58, 58, 0.7); stroke: #ff8a8a; }
 .game-mark circle { stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
 .game-mark.guess circle { fill: #ff5a5f; }
 .game-mark.truth circle { fill: #2e8b57; }
+.game-mark.pick circle { fill: #ffd36b; }
+.game-mark.pick text { fill: #1a1400; }
 .game-mark.truth { pointer-events: auto; cursor: pointer; }
 .game-mark.truth .halo { fill: none; stroke: #6fdc8c; stroke-width: 2; opacity: 0.9; animation: halo-pulse 1.4s ease-out infinite; transform-origin: center; }
 @keyframes halo-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(1.8); opacity: 0; } }
@@ -1014,6 +1021,7 @@ body.game-on .story { z-index: 7; }
   .game-box { max-height: 40%; }
   .game-overlay { top: 48px; left: 8px; width: calc(100% - 16px); }
   .game-q { font-size: 15px; }
+  .gq-actions.ask { bottom: 96px; } /* πάνω από την κάρτα του σκορ */
   .sound-btn { width: 30px; height: 30px; font-size: 13px; }
   .sound-vol { width: 52px; }
   .big-toggle { padding: 0 12px 0 10px; }
