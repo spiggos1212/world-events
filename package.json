@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx serve public -l 5173",
     "deploy": "node scripts/stamp.js && wrangler deploy",
-    "preview": "wrangler dev"
+    "preview": "wrangler dev",
+    "smoke:online": "node scripts/smoke-online.js"
   },
   "devDependencies": {
     "wrangler": "^4.147.0"
