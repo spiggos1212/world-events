@@ -44,6 +44,7 @@
       gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameQOrder: "Βάλε τα 3 γεγονότα σε χρονολογική σειρά", gameOrderHint: "Κάνε κλικ στα γεγονότα στον χάρτη με τη σειρά που έγιναν: πρώτα το παλιότερο, τελευταίο το νεότερο.", gameOrderPick: "{seq}", gameQEnd: "Πότε τελείωσε: {event}; (ξεκίνησε το {year})", gameEndHint: "Ο χάρτης είναι στη χρονιά που ξεκίνησε. Σύρε το timeline στη χρονιά που νομίζεις ότι τελείωσε και πάτα «Απάντηση». Ανοχή ±{n} χρόνια.", gameDuration: "διάρκεια {n} χρόνια", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameSubmitHint: "Μπορείς να αλλάξεις την επιλογή σου όσες φορές θέλεις· όταν είσαι σίγουρος, πάτα «Απάντηση».", gameOrderUndo: "Κλικ ξανά σε καρφίτσα για να την αφαιρέσεις από τη σειρά.", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Η σωστή απάντηση είναι: {answer}", gameAnswerOk: "{answer}", gameOff: "απόκλιση {n} έτη",
+      gameOnlineHint: "Παίξε online με φίλους από άλλους υπολογιστές: φτιάξε δωμάτιο και στείλε τους το link ή τον κωδικό.", gameCreateRoom: "Νέο δωμάτιο", gameJoinRoom: "Μπες", gameRoomCode: "Κωδικός", gameRoom: "Δωμάτιο", gameYourName: "Το όνομά σου", gamePlayers: "Παίκτες", gameCopyLink: "Αντιγραφή link", gameCopied: "Αντιγράφηκε!", gameStart: "Έναρξη", gameWaitHost: "Περιμένουμε τον/την {name} να ξεκινήσει το παιχνίδι…", gameInvite: "Στείλε το link ή τον κωδικό στους φίλους σου. Όλοι βλέπουν τις ίδιες ερωτήσεις, με 45 δευτερόλεπτα για κάθε μία.", gameLeave: "Αποχώρηση", gameConnecting: "Σύνδεση…", gameReconnecting: "Χάθηκε η σύνδεση, προσπαθούμε ξανά…", gameRoomNotFound: "Το δωμάτιο δεν βρέθηκε. Έλεγξε τον κωδικό.", gameRoomStarted: "Το παιχνίδι σε αυτό το δωμάτιο έχει ήδη ξεκινήσει. Περίμενε να τελειώσει ή φτιάξε νέο δωμάτιο.", gameRoomFull: "Το δωμάτιο είναι γεμάτο.", gameRoomsFull: "Παίζονται ήδη {n} παιχνίδια ταυτόχρονα (το μέγιστο). Δοκίμασε ξανά σε λίγο.", gameBadCode: "Ο κωδικός είναι 4 γράμματα/αριθμοί.", gameNetError: "Κάτι πήγε στραβά με τη σύνδεση. Δοκίμασε ξανά.", gameSent: "Η απάντηση καταχωρήθηκε ✓", gameWaitOthers: "Περιμένουμε τους υπόλοιπους ({n}/{total})…", gameNoAnswer: "δεν απάντησες εγκαίρως", gameWaitNext: "Περιμένουμε τον/την {name} για την επόμενη ερώτηση…", gameYou: "εσύ", gameOffline: "εκτός σύνδεσης", gameFinalOnline: "Τελική κατάταξη", gameHostYou: "Είσαι ο οικοδεσπότης: διαλέγεις πόσες ερωτήσεις και ξεκινάς όταν είναι όλοι μέσα.",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
       videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις έτος (π.χ. 1520· για π.Χ. γράψε -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
@@ -70,6 +71,7 @@
       gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameQOrder: "Put the 3 events in chronological order", gameOrderHint: "Click the events on the map in the order they happened: the oldest first, the most recent last.", gameOrderPick: "{seq}", gameQEnd: "When did it end: {event}? (it started in {year})", gameEndHint: "The map is at the year it started. Drag the timeline to the year you think it ended and press Answer. Margin ±{n} years.", gameDuration: "lasted {n} years", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameSubmitHint: "You can change your pick as many times as you like; when you're sure, press Answer.", gameOrderUndo: "Click a pin again to remove it from the sequence.", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "The correct answer is: {answer}", gameAnswerOk: "{answer}", gameOff: "{n} years off",
+      gameOnlineHint: "Play online with friends on other computers: create a room and send them the link or the code.", gameCreateRoom: "New room", gameJoinRoom: "Join", gameRoomCode: "Code", gameRoom: "Room", gameYourName: "Your name", gamePlayers: "Players", gameCopyLink: "Copy link", gameCopied: "Copied!", gameStart: "Start", gameWaitHost: "Waiting for {name} to start the game…", gameInvite: "Send the link or the code to your friends. Everyone gets the same questions, with 45 seconds for each.", gameLeave: "Leave", gameConnecting: "Connecting…", gameReconnecting: "Connection lost, retrying…", gameRoomNotFound: "Room not found. Check the code.", gameRoomStarted: "The game in this room has already started. Wait for it to finish or create a new room.", gameRoomFull: "The room is full.", gameRoomsFull: "{n} games are already being played at the same time (the maximum). Try again in a little while.", gameBadCode: "The code is 4 letters/digits.", gameNetError: "Something went wrong with the connection. Please try again.", gameSent: "Answer sent ✓", gameWaitOthers: "Waiting for the others ({n}/{total})…", gameNoAnswer: "no answer in time", gameWaitNext: "Waiting for {name} to start the next question…", gameYou: "you", gameOffline: "offline", gameFinalOnline: "Final ranking", gameHostYou: "You are the host: pick how many questions and start when everyone is in.",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
       videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520; for BC type -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
@@ -2050,6 +2052,7 @@
   const gameOn = () => G.on;
   const rnd = (n) => Math.floor(Math.random() * n);
   const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const EVENT_BY_ID = new Map(EVENTS.map((e) => [e.id, e]));
   const gamePool = () => EVENTS.filter((ev) => !ev.regional && ev.title && isFinite(ev.lng) && !state.hiddenTypes.has(ev.type));
   const evYear = (ev) => parseDate(ev.start).y;
   // Ανοχή στα χρόνια ανάλογα με την εποχή του γεγονότος (όσο πιο παλιό, τόσο πιο χαλαρή)
@@ -2069,6 +2072,7 @@
     showModeSelect();
   }
   function closeGame() {
+    netLeave();
     G.on = false; G.q = null; G.phase = ""; G.seq++; G.pick = null;
     setCircleMode(false);
     document.body.classList.remove("game-on", "game-reveal", "game-map");
@@ -2099,7 +2103,13 @@
     G.total = loadTotal();
     gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint" id="game-rules">' + esc(fill("gameRules", { n: G.total })) + "</p>" +
       '<div class="game-total"><span class="lbl">' + esc(t("gameQuestions")) + "</span>" + TOTALS.map((n) => '<button type="button" data-total="' + n + '"' + (n === G.total ? ' class="on"' : "") + ">" + n + "</button>").join("") + "</div>" +
-      '<div class="game-actions"><button type="button" class="primary" data-mode="1">👤 ' + esc(t("gameSingle")) + '</button><button type="button" data-mode="2">👥 ' + esc(t("gameDual")) + "</button></div>";
+      '<div class="game-actions"><button type="button" class="primary" data-mode="1">👤 ' + esc(t("gameSingle")) + '</button><button type="button" data-mode="2">👥 ' + esc(t("gameDual")) + "</button></div>" +
+      '<div class="game-online"><p class="game-hint">🌐 ' + esc(t("gameOnlineHint")) + '</p><div class="game-actions"><button type="button" class="primary" id="room-create">🌐 ' + esc(t("gameCreateRoom")) + "</button></div>" +
+      '<div class="room-join"><input id="room-code" maxlength="6" placeholder="' + esc(t("gameRoomCode")) + '" autocomplete="off" spellcheck="false" autocapitalize="characters"><button type="button" id="room-join">' + esc(t("gameJoinRoom")) + '</button></div><p class="room-msg" id="room-msg"></p></div>';
+    gameEls.body.querySelector("#room-create").onclick = createRoom;
+    const codeInp = gameEls.body.querySelector("#room-code");
+    codeInp.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") joinRoom(codeInp.value); });
+    gameEls.body.querySelector("#room-join").onclick = () => joinRoom(codeInp.value);
     gameEls.body.querySelectorAll("[data-total]").forEach((b) => {
       b.onclick = () => {
         G.total = Number(b.dataset.total);
@@ -2121,54 +2131,95 @@
     const ev = pool[rnd(pool.length)];
     const y = evYear(ev);
     const cont = CONTINENTS.list.find((k) => k.key === ev._cont);
-    const cname = cont ? cont[state.lang] || cont.el : "";
     const kinds = ["map", "map", "continent", "choice", "choice", "circle", "circle", "tl", "tl", "order", "order"];
     if (ev.e != null && (ev.e - ev.s) / 12 >= 2) kinds.push("end", "end", "end");
     if (state.historical) kinds.push("country", "state", "state");
     if (ev.from) kinds.push("origin", "origin");
     const kind = kinds[rnd(kinds.length)];
+    let q;
     if (kind === "end") {
       const endY = monthsToDate(ev.e).year, dur = Math.max(1, endY - y);
-      const tol = Math.max(3, Math.round(dur * 0.3));
-      return { kind, ev, year: endY, tol, text: fill("gameQEnd", { event: ev.title, year: yearLabel(y) }), answer: yearLabel(endY) + " · " + fill("gameDuration", { n: dur }) };
-    }
-    if (kind === "order") {
+      q = { kind, ev, year: endY, tol: Math.max(3, Math.round(dur * 0.3)) };
+    } else if (kind === "order") {
       // 3 γεγονότα με διαφορετικές εποχές (>= 15 χρόνια διαφορά) και μακριά μεταξύ τους στον χάρτη (>= 1.200 χλμ.)
       const okPair = (a, b) => Math.abs(evYear(a) - evYear(b)) >= 15 && d3.geoDistance([a.lng, a.lat], [b.lng, b.lat]) * 6371 >= 1200;
       const picks = [ev];
       for (const o of shuffle(pool.slice())) { if (picks.length >= 3) break; if (picks.every((p) => okPair(p, o))) picks.push(o); }
       if (picks.length < 3) return makeQuestion(depth + 1);
-      const sorted = picks.slice().sort((a, b) => a.s - b.s);
-      return { kind, ev: null, evs: shuffle(picks), sorted, seq: [], text: t("gameQOrder"), answer: sorted.map((o) => o.title + " (" + yearLabel(evYear(o)) + ")").join(" → ") };
-    }
-    if (kind === "circle") return { kind, ev, maxKm: 2000, text: fill("gameQCircle", { event: ev.title }), answer: ev.title + (cname ? " · " + cname : "") };
-    if (kind === "map") return { kind, ev, km: 2500, text: fill("gameQMap", { event: ev.title }), answer: ev.title + (cname ? " · " + cname : "") };
-    if (kind === "origin") return { kind, ev, km: 2500, truth: [ev.from.lng, ev.from.lat], text: fill("gameQOrigin", { event: ev.title }), answer: ev.title };
-    if (kind === "continent") {
+      q = { kind, ev: null, evs: shuffle(picks), sorted: picks.slice().sort((a, b) => a.s - b.s), seq: [] };
+    } else if (kind === "circle") q = { kind, ev, maxKm: 2000 };
+    else if (kind === "map") q = { kind, ev, km: 2500 };
+    else if (kind === "origin") q = { kind, ev, km: 2500, truth: [ev.from.lng, ev.from.lat] };
+    else if (kind === "continent") {
       if (!cont) return makeQuestion(depth + 1);
-      return { kind, ev, cont, text: fill("gameQContinent", { event: ev.title }), answer: cname };
-    }
-    if (kind === "choice") {
+      q = { kind, ev, cont };
+    } else if (kind === "choice") {
       // 4 περιοχές: το σωστό σημείο + 3 άλλα γεγονότα, όλα τουλάχιστον 2.500 χλμ. μακριά μεταξύ τους
       const far = (a, b) => d3.geoDistance([a.lng, a.lat], [b.lng, b.lat]) * 6371 >= 2500;
       const picks = [ev];
       for (const o of shuffle(pool.slice())) { if (picks.length >= 4) break; if (picks.every((p) => far(p, o))) picks.push(o); }
       if (picks.length < 4) return makeQuestion(depth + 1);
       const letters = ["A", "B", "C", "D"];
-      const choices = shuffle(picks).map((o, i) => ({ letter: letters[i], geo: [o.lng, o.lat], ok: o === ev }));
-      return { kind, ev, choices, text: fill("gameQChoice", { event: ev.title }), answer: choices.find((c) => c.ok).letter + (cname ? " · " + cname : "") };
-    }
-    if (kind === "country") {
+      q = { kind, ev, choices: shuffle(picks).map((o, i) => ({ letter: letters[i], geo: [o.lng, o.lat], ok: o === ev })) };
+    } else if (kind === "country") {
       const feat = await featureAt(ev);
       if (!feat) return makeQuestion(depth + 1);
-      const nm = featName(feat);
-      return { kind, ev, feat, text: fill("gameQCountry", { event: ev.title }), answer: (nm ? nm + " · " : "") + ev.title };
+      q = { kind, ev, feat, hy: basemapYearFor(y) };
+    } else if (kind === "state") {
+      q = await makeStateQuestion();
+      if (!q) return makeQuestion(depth + 1);
+    } else q = { kind: "tl", ev, year: y, tol: tolerance(y) };
+    return describeQ(q);
+  }
+  const contName = (c) => (c ? c[state.lang] || c.el : "");
+  // Κείμενο ερώτησης + σωστή απάντηση στη γλώσσα του παίκτη (κοινό για τοπικό και online παιχνίδι)
+  function describeQ(q) {
+    const ev = q.ev, title = ev ? ev.title : "";
+    const cname = ev ? contName(CONTINENTS.list.find((k) => k.key === ev._cont)) : "";
+    const withCont = title + (cname ? " · " + cname : "");
+    switch (q.kind) {
+      case "end": { const y = evYear(ev); q.text = fill("gameQEnd", { event: title, year: yearLabel(y) }); q.answer = yearLabel(q.year) + " · " + fill("gameDuration", { n: Math.max(1, q.year - y) }); break; }
+      case "order": q.text = t("gameQOrder"); q.answer = q.sorted.map((o) => o.title + " (" + yearLabel(evYear(o)) + ")").join(" → "); break;
+      case "circle": q.text = fill("gameQCircle", { event: title }); q.answer = withCont; break;
+      case "map": q.text = fill("gameQMap", { event: title }); q.answer = withCont; break;
+      case "origin": q.text = fill("gameQOrigin", { event: title }); q.answer = title; break;
+      case "continent": q.text = fill("gameQContinent", { event: title }); q.answer = contName(q.cont); break;
+      case "choice": q.text = fill("gameQChoice", { event: title }); q.answer = q.choices.find((c) => c.ok).letter + (cname ? " · " + cname : ""); break;
+      case "country": { const nm = featName(q.feat); q.text = fill("gameQCountry", { event: title }); q.answer = (nm ? nm + " · " : "") + title; break; }
+      case "state": { const yl = yearLabel(q.year); q.text = fill("gameQState", { name: featName(q.feat), year: yl }); q.answer = featName(q.feat) + " · " + yl; break; }
+      default: q.text = fill("gameQWhen", { event: title }); q.answer = yearLabel(q.year);
     }
-    if (kind === "state") {
-      const q = await makeStateQuestion();
-      return q || makeQuestion(depth + 1);
+    return q;
+  }
+  // Online: η ερώτηση ταξιδεύει ως ids/αριθμοί· κάθε browser ξαναχτίζει κείμενα και γεωμετρίες (και στη γλώσσα του)
+  const SPEC_KEYS = ["year", "tol", "km", "maxKm", "truth", "choices", "hy"];
+  function qSpec(q) {
+    const s = { kind: q.kind };
+    if (q.ev) s.id = q.ev.id;
+    if (q.evs) s.ids = q.evs.map((e) => e.id);
+    SPEC_KEYS.forEach((k) => { if (q[k] != null) s[k] = q[k]; });
+    if (q.cont) s.cont = q.cont.key;
+    if (q.feat) { s.fname = featName(q.feat); s.fc = d3.geoCentroid(q.feat); }
+    return s;
+  }
+  async function qFromSpec(s) {
+    if (!s || !s.kind) return null;
+    const q = { kind: s.kind, ev: null };
+    if (s.id != null) { q.ev = EVENT_BY_ID.get(s.id); if (!q.ev) return null; }
+    if (s.ids) {
+      q.evs = s.ids.map((id) => EVENT_BY_ID.get(id));
+      if (q.evs.some((e) => !e)) return null;
+      q.sorted = q.evs.slice().sort((a, b) => a.s - b.s); q.seq = [];
     }
-    return { kind: "tl", ev, year: y, tol: tolerance(y), text: fill("gameQWhen", { event: ev.title }), answer: yearLabel(y) };
+    SPEC_KEYS.forEach((k) => { if (s[k] != null) q[k] = s[k]; });
+    if (s.cont) { q.cont = CONTINENTS.list.find((k) => k.key === s.cont); if (!q.cont) return null; }
+    if (s.fname) {
+      const entry = await loadBasemap(s.hy);
+      const feats = (entry ? entry.features : []).filter((f) => f.geometry && featName(f) === s.fname);
+      if (!feats.length) return null;
+      q.feat = feats.reduce((b, f) => (d3.geoDistance(d3.geoCentroid(f), s.fc) < d3.geoDistance(d3.geoCentroid(b), s.fc) ? f : b));
+    }
+    return describeQ(q);
   }
   const featName = (f) => (f.properties && (f.properties.NAME || f.properties.SUBJECTO)) || "";
   // Χαλαρή αποδοχή για κράτη: μέσα στα σύνορα, ή ως 800 χλμ. έξω από την «ακτίνα» του κράτους
@@ -2205,12 +2256,11 @@
       if (!feats.length) return null;
       const feat = feats[rnd(feats.length)];
       const astro = histToAstro(hy);
-      const yl = yearLabel(astro);
-      return { kind: "state", feat, year: astro, text: fill("gameQState", { name: featName(feat), year: yl }), answer: featName(feat) + " · " + yl };
+      return { kind: "state", feat, year: astro, hy };
     } catch (_) { return null; }
   }
   async function nextQuestion() {
-    if (!G.on) return;
+    if (!G.on || G.mode === 3) return;
     if (G.round >= G.total) return showFinal();
     const seq = ++G.seq;
     gameEls.status.textContent = statusText();
@@ -2229,6 +2279,7 @@
     return s;
   }
   function scoresHtml() {
+    if (G.mode === 3) return playersHtml();
     if (G.mode === 1) return '<div class="game-scores"><div class="game-score active"><div class="n">' + G.scores[0] + '</div><div class="who">' + esc(t("gameScore")) + "</div></div></div>";
     return '<div class="game-scores">' + [0, 1].map((i) => '<div class="game-score' + (i === G.player ? " active" : "") + '"><div class="n">' + G.scores[i] + '</div><div class="who">' + esc(fill("gamePlayer", { n: i + 1 })) + "</div></div>").join("") + "</div>";
   }
@@ -2250,6 +2301,7 @@
     if (q.kind !== "tl" && q.kind !== "end") hint += " " + t("gameSubmitHint") + (q.kind === "order" ? " " + t("gameOrderUndo") : "");
     showOverlay(q.text, "🎯 " + hint);
     gameEls.root.classList.add("compact");
+    gameEls.root.classList.toggle("online", G.mode === 3);
     gameEls.body.innerHTML = scoresHtml();
     document.body.classList.toggle("game-tl", q.kind === "tl" || q.kind === "end");
     renderSubmit();
@@ -2420,7 +2472,7 @@
     q.choices.forEach((c) => {
       const p = projection(c.geo);
       if (!p || !isFinite(p[0]) || !onFront(c.geo[0], c.geo[1])) return;
-      const g = gGame.append("g").attr("class", "game-choice").attr("transform", "translate(" + p[0] + "," + p[1] + ") scale(" + sc + ")");
+      const g = gGame.append("g").attr("class", "game-choice").datum(c).attr("transform", "translate(" + p[0] + "," + p[1] + ") scale(" + sc + ")");
       g.append("circle").attr("r", 22);
       g.append("text").text(c.letter);
       g.on("click", (event) => { event.stopPropagation(); pickChoice(c, g); });
@@ -2507,40 +2559,295 @@
     });
   }
   function finishAnswer(ok, answer, pick, extra) {
+    if (G.mode === 3) { holdAnswer(ok, answer, pick, extra); return; } // online: η αποκάλυψη γίνεται για όλους μαζί
     if (ok) G.scores[G.player]++;
+    G.round++;
+    revealAnswer(ok, answer, pick, extra);
+  }
+  function revealAnswer(ok, answer, pick, extra) {
     gameEls.qFb.className = "gq-fb " + (ok ? "ok" : "bad");
     gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) +
       "<small>" + (ok ? "" : esc(fill("gameAnswerWas", { answer: "" })).trim() + " ") + '<b class="ans">' + esc(answer) + "</b></small>" +
       (pick ? "<small>" + esc(fill("gameYourPick", { pick: "" })).trim() + ' <b class="off">' + esc(pick) + "</b>" + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>" : "");
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
-    G.round++; G.pick = null;
+    G.pick = null;
     document.body.classList.remove("game-tl");
     gameEls.body.innerHTML = scoresHtml();
     gameEls.qActions.classList.remove("ask");
-    gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-next">' + esc(G.round >= G.total ? t("gameResults") : t("gameNext")) + " ›</button>";
-    gameEls.qActions.querySelector("#game-next").onclick = nextQuestion;
+    const last = G.round >= G.total;
+    if (G.mode !== 3 || NET.host) {
+      gameEls.qActions.innerHTML = '<button type="button" class="primary" id="game-next">' + esc(last ? t("gameResults") : t("gameNext")) + " ›</button>";
+      gameEls.qActions.querySelector("#game-next").onclick = G.mode === 3 ? netNext : nextQuestion;
+    } else gameEls.qActions.innerHTML = '<span class="gq-wait">' + esc(fill("gameWaitNext", { name: hostName() })) + "</span>";
     // Αποκάλυψη: ο χάρτης πάει στη χρονιά του γεγονότος και το δείχνει με την αναπαράστασή του
     const ev = G.q.ev;
     document.body.classList.add("game-reveal");
     if (ev) { setTime(ev.s, { fromUser: true }); renderEvents(); rotateTo(ev.lng, ev.lat, 700); playScene(ev); }
     else if (G.q.evs) { setTime(G.q.sorted[G.q.sorted.length - 1].s, { fromUser: true }); renderEvents(); }
   }
-  function showFinal() {
+  function showFinal(players) {
     G.q = null; G.phase = "end";
-    setCircleMode(false);
+    setCircleMode(false); stopCountdown();
     gGame.selectAll("*").remove();
-    document.body.classList.remove("game-map");
+    document.body.classList.remove("game-map", "game-reveal");
     hideOverlay();
     gameEls.status.textContent = "";
     let html;
-    if (G.mode === 1) html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(fill("gameFinalSingle", { score: G.scores[0], total: G.total })) + "</p></div>";
-    else { const [a, b] = G.scores; html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(a === b ? t("gameTie") : fill("gameWinner", { n: a > b ? 1 : 2 })) + "</p>" + scoresHtml() + "</div>"; }
-    html += '<div class="game-actions"><button type="button" class="primary" id="game-again">↻ ' + esc(t("gameAgain")) + '</button><button type="button" id="game-quit">' + esc(t("close")) + "</button></div>";
+    if (G.mode === 3) {
+      const list = (players || NET.players).slice().sort((a, b) => b.score - a.score);
+      const top = list.length ? list[0].score : 0;
+      html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(t("gameFinalOnline")) + "</p></div>" +
+        '<ol class="room-rank">' + list.map((p) => '<li class="' + (p.score === top ? "top" : "") + (p.id === NET.id ? " me" : "") + '"><span class="nm">' + esc(p.name) + (p.id === NET.id ? " <small>(" + esc(t("gameYou")) + ")</small>" : "") + "</span><b>" + p.score + " / " + G.total + "</b></li>").join("") + "</ol>" +
+        '<div class="game-actions">' + (NET.host ? '<button type="button" class="primary" id="game-again">↻ ' + esc(t("gameAgain")) + "</button>" : "") + '<button type="button" id="game-quit">' + esc(t("gameLeave")) + "</button></div>" +
+        (NET.host ? "" : '<p class="game-hint">' + esc(fill("gameWaitHost", { name: hostName() })) + "</p>");
+    } else {
+      if (G.mode === 1) html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(fill("gameFinalSingle", { score: G.scores[0], total: G.total })) + "</p></div>";
+      else { const [a, b] = G.scores; html = '<div class="game-final"><div class="big">🏆</div><p class="game-q">' + esc(a === b ? t("gameTie") : fill("gameWinner", { n: a > b ? 1 : 2 })) + "</p>" + scoresHtml() + "</div>"; }
+      html += '<div class="game-actions"><button type="button" class="primary" id="game-again">↻ ' + esc(t("gameAgain")) + '</button><button type="button" id="game-quit">' + esc(t("close")) + "</button></div>";
+    }
     gameEls.body.innerHTML = html;
-    gameEls.body.querySelector("#game-again").onclick = showModeSelect;
+    const again = gameEls.body.querySelector("#game-again");
+    if (again) again.onclick = G.mode === 3 ? () => netSend({ type: "restart" }) : showModeSelect;
     gameEls.body.querySelector("#game-quit").onclick = closeGame;
   }
+
+  // ---------- Online multiplayer: δωμάτια μέσω WebSocket (src/worker.js) ----------
+  // Ο οικοδεσπότης (πρώτος που μπήκε) φτιάχνει τις ερωτήσεις και τις στέλνει ως «spec»· ο server τις
+  // μοιράζει σε όλους, μαζεύει τις απαντήσεις και κάνει την αποκάλυψη όταν απαντήσουν όλοι ή λήξει ο χρόνος.
+  const NET = { ws: null, code: "", id: "", host: false, hostId: "", players: [], phase: "", timer: null, held: null, retry: null, genRound: -1, deadline: 0 };
+  const NAME_KEY = "we-player-name", PID_KEY = "we-player-id";
+  function myId() {
+    let id = "";
+    try { id = sessionStorage.getItem(PID_KEY) || ""; } catch (_) { /* ignore */ }
+    if (!id) { id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); try { sessionStorage.setItem(PID_KEY, id); } catch (_) { /* ignore */ } }
+    return id;
+  }
+  function myName() {
+    let n = "";
+    try { n = localStorage.getItem(NAME_KEY) || ""; } catch (_) { /* ignore */ }
+    if (!n) { n = (state.lang === "el" ? "Παίκτης " : "Player ") + Math.floor(100 + Math.random() * 900); saveName(n); }
+    return n;
+  }
+  function saveName(n) { try { localStorage.setItem(NAME_KEY, n); } catch (_) { /* ignore */ } }
+  function hostName() { const h = NET.players.find((p) => p.id === NET.hostId); return h ? h.name : "…"; }
+  function netSend(msg) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(msg)); }
+  function netConnect(code) {
+    netClose();
+    NET.code = code; NET.id = myId();
+    const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/api/room/" + code + "/ws");
+    NET.ws = ws;
+    ws.onopen = () => netSend({ type: "hello", id: NET.id, name: myName() });
+    ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch (_) { return; } onNetMessage(m); };
+    ws.onclose = () => {
+      if (NET.ws !== ws) return;
+      NET.ws = null;
+      if (G.on && G.mode === 3 && NET.code) { setRoomStatus(t("gameReconnecting")); NET.retry = setTimeout(() => netConnect(NET.code), 2000); }
+    };
+  }
+  function netClose() {
+    clearTimeout(NET.retry); NET.retry = null;
+    const ws = NET.ws; NET.ws = null;
+    if (ws) { try { ws.close(1000); } catch (_) { /* ignore */ } }
+  }
+  function netLeave() {
+    if (G.mode !== 3) return;
+    netSend({ type: "leave" });
+    netClose(); stopCountdown();
+    NET.code = ""; NET.players = []; NET.held = null; NET.host = false; NET.hostId = "";
+    gGame.style("visibility", null);
+    gameEls.root.classList.remove("online");
+    if (/[?&]room=/.test(location.search)) history.replaceState(null, "", location.pathname);
+  }
+  function roomMsg(msg) { const el = gameEls.body.querySelector("#room-msg"); if (el) el.textContent = msg; }
+  function setRoomStatus(msg) { const el = gameEls.body.querySelector("#room-status"); if (el) el.textContent = msg; }
+  async function createRoom() {
+    roomMsg(t("gameConnecting"));
+    try {
+      const r = await fetch("/api/room/new", { method: "POST" });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data.code) { roomMsg(data.error === "full" ? fill("gameRoomsFull", { n: data.max || 10 }) : t("gameNetError")); return; }
+      joinRoom(data.code);
+    } catch (_) { roomMsg(t("gameNetError")); }
+  }
+  function joinRoom(code) {
+    code = String(code || "").trim().toUpperCase();
+    if (!/^[A-Z0-9]{4,6}$/.test(code)) { roomMsg(t("gameBadCode")); return; }
+    if (!G.on) openGame();
+    G.mode = 3; G.round = 0; G.q = null; G.phase = ""; G.total = loadTotal();
+    NET.players = []; NET.host = false; NET.hostId = ""; NET.phase = ""; NET.held = null; NET.genRound = -1;
+    gameEls.root.classList.add("online");
+    history.replaceState(null, "", location.pathname + "?room=" + code);
+    renderLobby(t("gameConnecting"));
+    netConnect(code);
+  }
+  function leaveToMenu(msg) {
+    NET.code = ""; netClose(); stopCountdown();
+    G.mode = 1; G.q = null; G.phase = "";
+    gameEls.root.classList.remove("online");
+    history.replaceState(null, "", location.pathname);
+    showModeSelect();
+    roomMsg(msg);
+  }
+  function onNetMessage(m) {
+    if (!G.on || G.mode !== 3) return;
+    switch (m.type) {
+      case "error":
+        leaveToMenu(m.code === "started" ? t("gameRoomStarted") : m.code === "full" ? t("gameRoomFull") : t("gameRoomNotFound"));
+        break;
+      case "state": {
+        NET.players = m.players || []; NET.hostId = m.hostId || ""; NET.host = NET.hostId === NET.id; NET.phase = m.phase;
+        if (m.total) G.total = m.total;
+        if (m.phase === "lobby") { G.round = 0; G.q = null; G.phase = ""; renderLobby(); }
+        else if (m.phase === "starting") {
+          if (NET.host && NET.genRound !== m.round) { NET.genRound = m.round; hostMakeQuestion(); }
+          if (G.phase !== "fb") { gameEls.status.textContent = ""; gameEls.body.innerHTML = '<p class="game-hint">' + esc(t("gameLoading")) + "</p>"; }
+        } else if (G.phase === "ask" || G.phase === "fb") { gameEls.body.innerHTML = scoresHtml(); updateWaitLine(); }
+        break;
+      }
+      case "question": onNetQuestion(m); break;
+      case "reveal": onNetReveal(m); break;
+      case "final": showFinal(m.players); break;
+      default: break;
+    }
+  }
+  async function hostMakeQuestion() {
+    const round = NET.genRound;
+    const q = await makeQuestion();
+    if (!G.on || G.mode !== 3 || !NET.host || NET.phase !== "starting" || NET.genRound !== round) return;
+    if (!q) { roomMsg(t("gameNetError")); return; }
+    netSend({ type: "question", spec: qSpec(q) });
+  }
+  async function onNetQuestion(m) {
+    const q = await qFromSpec(m.spec);
+    if (!G.on || G.mode !== 3) return;
+    if (!q) { netSend({ type: "answer", ok: false, pick: "" }); return; } // δεν χτίζεται σε αυτόν τον browser: μετράει λάθος
+    G.q = q; G.phase = "ask"; G.pick = null; G.round = m.round - 1; G.total = m.total;
+    NET.held = null; NET.deadline = m.deadline + (Date.now() - m.now); // ώρα server -> ώρα browser
+    gGame.style("visibility", null);
+    hideOverlay();
+    document.body.classList.remove("game-reveal");
+    renderQuestion();
+    startCountdown(NET.deadline);
+  }
+  // Η απάντηση βαθμολογήθηκε τοπικά· τα σημάδια κρύβονται και στέλνεται στον server μέχρι την κοινή αποκάλυψη
+  function holdAnswer(ok, answer, pick, extra) {
+    NET.held = { ok, answer, pick, extra };
+    gGame.style("visibility", "hidden");
+    document.body.classList.remove("game-map", "game-tl");
+    gameEls.qActions.classList.remove("ask"); gameEls.qActions.innerHTML = "";
+    gameEls.qFb.className = "gq-fb wait";
+    gameEls.qFb.innerHTML = esc(t("gameSent")) + '<small id="gq-waitline"></small>';
+    netSend({ type: "answer", ok, pick: pick || "" });
+    updateWaitLine();
+  }
+  function updateWaitLine() {
+    const el = $("#gq-waitline");
+    if (!el) return;
+    const on = NET.players.filter((p) => p.online);
+    el.textContent = fill("gameWaitOthers", { n: on.filter((p) => p.answered).length, total: on.length });
+  }
+  function onNetReveal(m) {
+    stopCountdown();
+    if (m.results) NET.players = m.results;
+    if (!G.q || G.phase === "end") return;
+    G.round = m.round; G.total = m.total;
+    if (!NET.held) { // δεν πρόλαβε να απαντήσει
+      G.phase = "fb"; setCircleMode(false);
+      gGame.selectAll(".game-mark.pick, .game-draw, .game-draw-lbl").remove();
+      revealTruthOnly();
+      NET.held = { ok: false, answer: G.q.answer, pick: t("gameNoAnswer"), extra: null };
+    }
+    gGame.style("visibility", null);
+    const h = NET.held; NET.held = null;
+    revealAnswer(h.ok, h.answer, h.pick, h.extra);
+  }
+  // Σημάδια της σωστής απάντησης χωρίς επιλογή παίκτη (όταν έληξε ο χρόνος)
+  function revealTruthOnly() {
+    const q = G.q;
+    if (q.kind === "choice") { gGame.selectAll(".game-choice").on("click", null).classed("off", (d) => !d.ok).classed("correct", (d) => d.ok); return; }
+    if (q.kind === "order") {
+      gGame.selectAll(".game-order").on("click", null).each(function (d) {
+        const sel = d3.select(this);
+        sel.classed("correct", true).select("text.num").text(q.sorted.indexOf(d) + 1);
+        sel.select(".lbl text").text(TYPES[d.type].icon + " " + truncate(d.title, 30) + " · " + yearLabel(evYear(d)));
+      });
+      return;
+    }
+    if (q.kind === "country" || q.kind === "state") { const z = featureZone(q.feat); drawZone(z.center, z.km); gGame.append("path").attr("class", "game-region").attr("d", safePath(q.feat)); if (q.ev) drawGameMarks(null, [q.ev.lng, q.ev.lat], false); return; }
+    if (q.kind === "tl" || q.kind === "end") return;
+    const truth = q.truth || [q.ev.lng, q.ev.lat];
+    if (q.kind === "continent") drawRegionPolys((CONTINENTS.polys && CONTINENTS.polys[q.cont.key]) || []);
+    if (q.km) drawZone(truth, q.km);
+    drawGameMarks(null, truth, false);
+  }
+  function netNext() { netSend({ type: G.round >= G.total ? "finish" : "next" }); }
+  function startCountdown(deadline) {
+    stopCountdown();
+    const tick = () => {
+      const s = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      gameEls.status.textContent = statusText() + " · ⏱ " + s;
+      gameEls.status.classList.toggle("urgent", s <= 10);
+      if (s <= 0) { stopCountdown(); if (G.phase === "ask" && !NET.held && pickReady()) submitAnswer(); }
+    };
+    tick();
+    NET.timer = setInterval(tick, 250);
+  }
+  function stopCountdown() { if (NET.timer) clearInterval(NET.timer); NET.timer = null; gameEls.status.classList.remove("urgent"); }
+  // Κάρτα σκορ στο online: όλοι οι παίκτες, με ✓ σε όποιον έχει απαντήσει και ✅/❌ στην αποκάλυψη
+  function playersHtml() {
+    const list = NET.players.slice().sort((a, b) => b.score - a.score);
+    return '<ul class="room-score">' + list.map((p) => '<li class="' + (p.id === NET.id ? "me" : "") + (p.online ? "" : " off") + '"><span class="st">' + (p.ok != null ? (p.ok ? "✅" : "❌") : p.answered ? "✓" : "…") + '</span><span class="nm">' + esc(p.name) + "</span><b>" + p.score + "</b></li>").join("") + "</ul>";
+  }
+  function playersListHtml() {
+    return NET.players.map((p) => '<li class="' + (p.online ? "" : "off") + (p.id === NET.id ? " me" : "") + '">' + (p.id === NET.hostId ? "⭐ " : "") + esc(p.name) + (p.id === NET.id ? " <small>(" + esc(t("gameYou")) + ")</small>" : "") + (p.online ? "" : " <small>(" + esc(t("gameOffline")) + ")</small>") + "</li>").join("");
+  }
+  function renderLobby(msg) {
+    if (!G.on || G.mode !== 3) return;
+    hideOverlay(); gGame.selectAll("*").remove(); setCircleMode(false); stopCountdown();
+    document.body.classList.remove("game-reveal", "game-map", "game-tl");
+    gameEls.status.textContent = "";
+    // Αν ο παίκτης γράφει το όνομά του, ανανεώνουμε μόνο τη λίστα για να μη χαθεί η πληκτρολόγηση
+    const nameInp = gameEls.body.querySelector("#room-name");
+    if (nameInp && document.activeElement === nameInp) {
+      const ul = gameEls.body.querySelector(".room-players"); if (ul) ul.innerHTML = playersListHtml();
+      const cnt = gameEls.body.querySelector(".room-players-title"); if (cnt) cnt.textContent = t("gamePlayers") + " (" + NET.players.length + ")";
+      return;
+    }
+    const link = location.origin + location.pathname + "?room=" + NET.code;
+    const me = NET.players.find((p) => p.id === NET.id);
+    let html = '<p class="game-q">🌐 ' + esc(t("gameRoom")) + ' <span class="room-code">' + esc(NET.code) + "</span></p>" +
+      '<div class="room-share"><input class="room-link" readonly value="' + esc(link) + '"><button type="button" id="room-copy">' + esc(t("gameCopyLink")) + "</button></div>" +
+      '<p class="game-hint">' + esc(t("gameInvite")) + "</p>" +
+      '<label class="room-name">' + esc(t("gameYourName")) + ' <input id="room-name" maxlength="24" value="' + esc(me ? me.name : myName()) + '"></label>' +
+      '<p class="room-players-title">' + esc(t("gamePlayers")) + " (" + NET.players.length + ')</p><ul class="room-players">' + playersListHtml() + "</ul>";
+    if (NET.host) {
+      html += '<p class="game-hint">' + esc(t("gameHostYou")) + "</p>" +
+        '<div class="game-total"><span class="lbl">' + esc(t("gameQuestions")) + "</span>" + TOTALS.map((n) => '<button type="button" data-total="' + n + '"' + (n === G.total ? ' class="on"' : "") + ">" + n + "</button>").join("") + "</div>" +
+        '<div class="game-actions"><button type="button" class="primary" id="room-start">▶ ' + esc(t("gameStart")) + '</button><button type="button" id="room-leave">' + esc(t("gameLeave")) + "</button></div>";
+    } else {
+      html += '<div class="game-actions"><button type="button" id="room-leave">' + esc(t("gameLeave")) + "</button></div>";
+    }
+    html += '<p class="game-hint room-status" id="room-status">' + esc(msg || (!NET.host && NET.players.length ? fill("gameWaitHost", { name: hostName() }) : "")) + "</p>";
+    gameEls.body.innerHTML = html;
+    const copy = gameEls.body.querySelector("#room-copy"), linkInp = gameEls.body.querySelector(".room-link");
+    copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(link); } catch (_) { linkInp.select(); try { document.execCommand("copy"); } catch (__) { /* ignore */ } }
+      copy.textContent = t("gameCopied"); setTimeout(() => { copy.textContent = t("gameCopyLink"); }, 1500);
+    };
+    linkInp.addEventListener("focus", () => linkInp.select());
+    const nm = gameEls.body.querySelector("#room-name");
+    nm.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") nm.blur(); });
+    nm.addEventListener("change", () => { const v = nm.value.trim().slice(0, 24); if (!v) return; saveName(v); netSend({ type: "name", name: v }); });
+    gameEls.body.querySelectorAll("[data-total]").forEach((b) => {
+      b.onclick = () => { G.total = Number(b.dataset.total); try { localStorage.setItem(TOTAL_KEY, String(G.total)); } catch (_) { /* ignore */ } gameEls.body.querySelectorAll("[data-total]").forEach((x) => x.classList.toggle("on", x === b)); };
+    });
+    const start = gameEls.body.querySelector("#room-start");
+    if (start) start.onclick = () => { if (window.WorldSound) WorldSound.jingle(); netSend({ type: "start", total: G.total }); };
+    gameEls.body.querySelector("#room-leave").onclick = closeGame;
+  }
+  // Είσοδος σε δωμάτιο από link (?room=XXXX)
+  { const rp = new URLSearchParams(location.search).get("room"); if (rp) setTimeout(() => joinRoom(rp), 400); }
   gameEls.btn.addEventListener("click", () => (G.on ? closeGame() : openGame()));
   gameEls.close.addEventListener("click", closeGame);
 

@@ -1,13 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "world-events",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   },
+  // Online multiplayer: ένα Durable Object ανά δωμάτιο + ένα «μητρώο» για κωδικούς και όριο δωματίων
+  "durable_objects": {
+    "bindings": [
+      { "name": "ROOMS", "class_name": "Room" },
+      { "name": "REGISTRY", "class_name": "Registry" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Room", "Registry"] }
+  ],
   "routes": [
     { "pattern": "discoverworldevents.com", "custom_domain": true },
     { "pattern": "www.discoverworldevents.com", "custom_domain": true }

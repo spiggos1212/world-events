@@ -292,6 +292,44 @@ body.game-circle #map-wrap svg { cursor: crosshair; touch-action: none; }
 .game-mark.truth .halo { fill: none; stroke: #6fdc8c; stroke-width: 2; opacity: 0.9; animation: halo-pulse 1.4s ease-out infinite; transform-origin: center; }
 @keyframes halo-pulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(1.8); opacity: 0; } }
 .game-mark text { font-size: 12px; font-weight: 900; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+/* Online multiplayer: δωμάτιο, παίκτες, κατάταξη */
+.game.compact.online { width: 230px; }
+.game-status.urgent { color: #ff8a8a; font-weight: 800; }
+.gq-fb.wait { color: #ffd36b; }
+.gq-wait { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); font-size: 13px; color: var(--muted); backdrop-filter: blur(8px); }
+.game-online { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.game-online .game-hint { margin-bottom: 8px; }
+.game-online .game-actions { margin-top: 0; }
+.room-join { display: flex; gap: 8px; margin-top: 8px; }
+.room-join input, .room-name input, .room-link { flex: 1; min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); font: inherit; font-size: 14px; }
+.room-join input { text-transform: uppercase; letter-spacing: 0.15em; font-weight: 800; }
+.room-join button, .room-share button { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.room-join button:hover, .room-share button:hover { border-color: rgba(255, 211, 107, 0.6); }
+.room-msg { color: #ff8a8a; font-size: 12.5px; margin: 6px 0 0; }
+.room-msg:empty { display: none; }
+.room-code { display: inline-block; margin-left: 6px; padding: 2px 10px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); letter-spacing: 0.2em; font-weight: 900; user-select: all; }
+.room-share { display: flex; gap: 8px; margin: 0 0 8px; }
+.room-link { font-size: 12px; color: var(--muted); }
+.room-name { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); margin: 8px 0; }
+.room-players-title { margin: 8px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.room-players { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.room-players li { padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); font-size: 13px; font-weight: 600; }
+.room-players li.me { border-color: var(--accent); }
+.room-players li.off { opacity: 0.5; }
+.room-players small, .room-rank small { font-weight: 500; color: var(--muted); }
+.room-status { min-height: 1em; margin-bottom: 0; }
+.room-score { list-style: none; margin: 0; padding: 0; }
+.room-score li { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.room-score li:last-child { border-bottom: 0; }
+.room-score li.me .nm { color: var(--accent); }
+.room-score li.off { opacity: 0.5; }
+.room-score .st { width: 18px; text-align: center; font-size: 11px; }
+.room-score .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.room-score b { font-size: 14px; }
+.room-rank { margin: 0 0 12px; padding: 0 0 0 22px; }
+.room-rank li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.room-rank li.top { color: #ffd36b; font-weight: 800; }
+.room-rank li.me .nm { text-decoration: underline; }
 /* Κατά το παιχνίδι τα γεγονότα κρύβονται (για να μη δίνουν την απάντηση), μέχρι την αποκάλυψη */
 body.game-on:not(.game-reveal) .ev, body.game-on:not(.game-reveal) .fx { display: none !important; }
 body.game-on .event-marks, body.game-on .panel, body.game-on .panel-open-btn, body.game-on .postcard { display: none !important; }
