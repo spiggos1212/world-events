@@ -13,6 +13,7 @@ const MAX_PLAYERS = 12;           // παίκτες ανά δωμάτιο
 const QUESTION_MS = 45_000;       // χρόνος ανά ερώτηση
 const GRACE_MS = 2_500;           // ανοχή για απαντήσεις που φτάνουν λίγο μετά το όριο
 const ROOM_IDLE_MS = 30 * 60_000; // άδειο δωμάτιο: σβήνεται μετά από μισή ώρα
+const EMPTY_FREE_MS = 2 * 60_000;  // δωμάτιο χωρίς κανέναν online για 2 λεπτά δεν πιάνει θέση στο όριο των 10
 const TOTALS = [10, 20, 30, 50];
 const PROTO = 2; // έκδοση πρωτοκόλλου client/server: παλιότερος client -> του ζητάμε να ξαναφορτώσει τη σελίδα
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // χωρίς I/O/0/1 που μπερδεύονται
@@ -31,6 +32,7 @@ export default {
 
 async function handleRoomApi(request, env, url) {
   const parts = url.pathname.split("/").filter(Boolean); // ["api", "room", <code|new>, ("ws")]
+  if (parts[2] === "stats") { const r = await registry(env).fetch("https://registry/stats"); return new Response(r.body, r); }
   if (parts[2] === "new") {
     if (request.method !== "POST") return json({ error: "method" }, 405);
     const r = await registry(env).fetch("https://registry/new", { method: "POST" });
@@ -55,18 +57,29 @@ async function handleRoomApi(request, env, url) {
 
 // ---------- Registry: κωδικοί δωματίων + όριο ταυτόχρονων παιχνιδιών ----------
 export class Registry {
-  constructor(ctx) {
+  constructor(ctx, env) {
     this.ctx = ctx;
+    this.env = env;
     this.rooms = {}; // code -> τελευταία δραστηριότητα (ms)
     ctx.blockConcurrencyWhile(async () => { this.rooms = (await ctx.storage.get("rooms")) || {}; });
   }
-  prune() {
-    const cutoff = Date.now() - ROOM_IDLE_MS;
-    for (const [code, seen] of Object.entries(this.rooms)) if (seen < cutoff) delete this.rooms[code];
+  // Ενεργό = έχει παίκτες online, ή άδειασε πριν από λιγότερο από 2 λεπτά (π.χ. refresh). Τα υπόλοιπα ελευθερώνουν θέση.
+  async prune() {
+    const now = Date.now();
+    for (const [code, seen] of Object.entries(this.rooms)) {
+      if (now - seen >= ROOM_IDLE_MS) { delete this.rooms[code]; continue; }
+      if (now - seen < EMPTY_FREE_MS) continue; // φρέσκο: δεν χρειάζεται έλεγχος
+      try {
+        const r = await this.env.ROOMS.get(this.env.ROOMS.idFromName(code)).fetch("https://room/info");
+        if (r.status === 404) { delete this.rooms[code]; continue; }
+        const info = await r.json();
+        if (!info.online && now - (info.touched || seen) >= EMPTY_FREE_MS) delete this.rooms[code];
+      } catch (_) { /* αν δεν απαντήσει, το κρατάμε */ }
+    }
   }
   async fetch(request) {
     const url = new URL(request.url);
-    this.prune();
+    await this.prune();
     if (url.pathname === "/new") {
       if (Object.keys(this.rooms).length >= MAX_ROOMS) return json({ error: "full", max: MAX_ROOMS }, 503);
       let code = "";
@@ -86,7 +99,7 @@ export class Registry {
       await this.ctx.storage.put("rooms", this.rooms);
       return json({ ok: true, active: Object.keys(this.rooms).length });
     }
-    if (url.pathname === "/stats") return json({ active: Object.keys(this.rooms).length, max: MAX_ROOMS });
+    if (url.pathname === "/stats") { await this.ctx.storage.put("rooms", this.rooms); return json({ active: Object.keys(this.rooms).length, max: MAX_ROOMS, rooms: Object.keys(this.rooms) }); }
     return json({ error: "not-found" }, 404);
   }
 }
@@ -139,7 +152,7 @@ export class Room {
     }
     if (url.pathname === "/info") {
       if (!this.room) return json({ error: "not-found" }, 404);
-      return json({ code: this.room.code, phase: this.room.phase, players: Object.keys(this.room.players).length, online: this.onlineIds().size });
+      return json({ code: this.room.code, phase: this.room.phase, players: Object.keys(this.room.players).length, online: this.onlineIds().size, touched: this.room.touched });
     }
     if (url.pathname.endsWith("/ws")) {
       // Δεχόμαστε πάντα το socket: αν δεν υπάρχει δωμάτιο, στέλνουμε error και κλείνουμε
@@ -282,6 +295,7 @@ export class Room {
       const pending = Object.values(r.players).filter((pl) => online.has(pl.id) && !pl.answered);
       if (online.size && !pending.length) { await this.reveal(); return; }
     }
+    r.touched = Date.now();
     if (!this.onlineIds().size) await this.ctx.storage.setAlarm(Date.now() + ROOM_IDLE_MS); // καθάρισμα αν δεν ξαναμπεί κανείς
     await this.save();
     this.broadcastState();

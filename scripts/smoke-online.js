@@ -61,6 +61,8 @@ function client(name, code) {
   await wait(300);
   const info = await (await fetch(BASE + "/api/room/" + code + "/info")).json();
   log("info", JSON.stringify(info));
+  const stats = await (await fetch(BASE + "/api/room/stats")).json();
+  log("stats", JSON.stringify(stats));
   log("ALL OK");
   process.exit(0);
 })().catch((e) => { console.error("FAIL", e); process.exit(1); });
