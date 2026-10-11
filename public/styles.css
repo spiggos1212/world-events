@@ -226,6 +226,17 @@ body.game-tl .track::-moz-range-thumb { box-shadow: 0 0 0 6px rgba(255, 211, 107
 .game-opts button.correct { background: #2e8b57; border-color: #2e8b57; color: #fff; opacity: 1; }
 .game-opts button.wrong { background: #b03a3a; border-color: #b03a3a; color: #fff; opacity: 1; }
 .game-actions { display: flex; gap: 8px; margin-top: 12px; }
+/* Επιλογή κατηγορίας (Μικτό / Σημείο στον χάρτη / Χρονολογία) */
+.game-cat-title { margin: 0 0 6px; font-size: 12.5px; color: var(--muted); }
+.game-cat { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 10px; }
+.game-cat button { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; text-align: left; cursor: pointer; line-height: 1.3; }
+.game-cat button .ic { font-size: 18px; line-height: 1.1; }
+.game-cat button b { display: block; font-size: 13.5px; }
+.game-cat button small { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.game-cat button:hover { border-color: rgba(255, 211, 107, 0.6); }
+.game-cat button.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.game-cat button.on b { color: var(--accent); }
+.room-cat small { display: block; margin-top: 2px; }
 /* Επιλογή πλήθους ερωτήσεων (10 / 20 / 30 / 50) */
 .game-total { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .game-total .lbl { flex: 1; font-size: 12.5px; color: var(--muted); }

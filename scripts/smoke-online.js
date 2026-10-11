@@ -22,7 +22,7 @@ function client(name, code) {
   await bad.until((m) => m.type === "error" && m.code === "not-found"); log("ok: unknown room rejected");
 
   const a = client("A", code), b = client("B", code);
-  await a.open; a.send({ type: "hello", id: a.id, name: "Alice", proto: 2 });
+  await a.open; a.send({ type: "hello", id: a.id, name: "Alice", proto: 3 });
   await a.until((m) => m.type === "state" && m.hostId === a.id); log("ok: A is host");
   await b.open; b.send({ type: "hello", id: b.id, name: "Bob" }); // χωρίς proto = παλιός client
   await b.until((m) => m.type === "state" && m.players.length === 2); log("ok: 2 players");
@@ -58,6 +58,32 @@ function client(name, code) {
   const c = client("C", code); await c.open; c.send({ type: "hello", id: c.id, name: "Carol" });
   await c.until((m) => m.type === "error" && m.code === "started"); log("ok: mid-game join rejected");
   a.send({ type: "leave" });
+  await wait(300);
+
+  // Κατηγορία «point»: ο server δίνει τον πόντο στον πιο κοντινό
+  const r2 = await fetch(BASE + "/api/room/new", { method: "POST" });
+  const { code: code2 } = await r2.json();
+  const d = client("D", code2), e = client("E", code2);
+  await d.open; d.send({ type: "hello", id: d.id, name: "Dora", proto: 3 });
+  await d.until((m) => m.type === "state" && m.hostId === d.id);
+  await e.open; e.send({ type: "hello", id: e.id, name: "Eve", proto: 3 });
+  await e.until((m) => m.type === "state" && m.players.length === 2);
+  e.send({ type: "cat", cat: "point" }); await wait(200);
+  if (d.msgs.some((m) => m.type === "state" && m.cat === "point")) throw new Error("non-host changed category");
+  d.send({ type: "cat", cat: "point" });
+  await e.until((m) => m.type === "state" && m.cat === "point"); log("ok: only the host picks the category");
+  d.send({ type: "ready", ready: true }); e.send({ type: "ready", ready: true });
+  await d.until((m) => m.type === "state" && m.phase === "starting");
+  d.send({ type: "question", spec: { kind: "map", id: 1, km: 2500, truth: [23.7, 37.98] } }); // Αθήνα
+  await e.until((m) => m.type === "question" && m.round === 1);
+  d.send({ type: "answer", ok: false, pick: "Rome", geo: [12.5, 41.9] });   // ~1.050 χλμ.
+  e.send({ type: "answer", ok: true, pick: "Istanbul", geo: [28.98, 41.01] }); // ~560 χλμ.
+  const rev2 = await d.until((m) => m.type === "reveal");
+  const dora = rev2.results.find((p) => p.name === "Dora"), eve = rev2.results.find((p) => p.name === "Eve");
+  log("point reveal", JSON.stringify(rev2.results.map((p) => [p.name, p.ok, p.score, p.dist])));
+  if (!(eve.ok && eve.score === 1 && !dora.ok && dora.score === 0 && eve.dist < dora.dist)) throw new Error("closest-wins scoring wrong");
+  log("ok: point category — the closer player gets the point (client ok flag ignored)");
+  d.send({ type: "leave" }); e.send({ type: "leave" });
   await wait(300);
   const info = await (await fetch(BASE + "/api/room/" + code + "/info")).json();
   log("info", JSON.stringify(info));

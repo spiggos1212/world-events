@@ -40,11 +40,14 @@
       game: "Παιχνίδι", gameShort: "Παιχνίδι", gameWelcome: "Πόσο καλά ξέρεις την ιστορία;",
       gameQuestions: "Ερωτήσεις", gameRules: "{n} ερωτήσεις, όλες πάνω στον χάρτη ή στο timeline: πού (σημείο, ήπειρος, κράτος, 4 περιοχές, κύκλος), πότε (ξεκίνησε ή τελείωσε, σέρνοντας το timeline) και χρονολογική σειρά 3 γεγονότων.",
       gameSingle: "Ένας παίκτης", gameDual: "Δύο παίκτες", gameRound: "Ερώτηση {n} / {total}", gamePlayer: "Παίκτης {n}", gameScore: "Πόντοι",
+      gameCategory: "Κατηγορία", gameCatMix: "Μικτό", gameCatMixDesc: "Πού, πότε, χρονολογική σειρά, κράτη, 4 περιοχές, κύκλος. Κάθε σωστή απάντηση = 1 πόντος.", gameCatPoint: "Σημείο στον χάρτη", gameCatPointDesc: "Μόνο «πού συνέβη»: κάθε παίκτης βάζει ένα σημείο στον χάρτη και τον πόντο παίρνει όποιος είναι πιο κοντά στο σωστό σημείο.", gameCatDate: "Χρονολογία", gameCatDateDesc: "Μόνο «πότε συνέβη / ξεκίνησε / τελείωσε»: κάθε παίκτης διαλέγει χρονιά στο timeline και τον πόντο παίρνει όποιος είναι πιο κοντά στη σωστή χρονιά.", gameCatSoloNote: "Με έναν παίκτη μετράει σωστό αν είσαι μέσα στην ανοχή (2.500 χλμ. ή ±χρόνια ανάλογα με την εποχή).",
+      gameQStart: "Πότε ξεκίνησε: {event};", gameMapHintClose: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Τον πόντο παίρνει όποιος είναι πιο κοντά στο σωστό σημείο.", gameTlHintClose: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Τον πόντο παίρνει όποιος είναι πιο κοντά στη σωστή χρονιά. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.", gameEndHintClose: "Ο χάρτης είναι στη χρονιά που ξεκίνησε. Σύρε το timeline στη χρονιά που νομίζεις ότι τελείωσε και πάτα «Απάντηση». Τον πόντο παίρνει όποιος είναι πιο κοντά.",
+      gameClosest: "Πιο κοντά! +1", gameCloserWas: "Πιο κοντά ήταν: {name}", gameWinsRound: "{name} πιο κοντά! +1", gameTieRound: "Ισοπαλία, ίδια απόσταση!", gameNextPlayer: "Ο Παίκτης {n} απάντησε ✓ Τώρα ο Παίκτης {m}, στην ίδια ερώτηση.", gameNobodyClose: "Κανείς δεν απάντησε εγκαίρως",
       gameQYear: "Ποιο γεγονός συνέβη το {year};", gameQWhere: "Σε ποια ήπειρο συνέβη: {event};", gameQWhen: "Πότε συνέβη: {event};", gameYourPick: "Η επιλογή σου είναι: {pick}", gameNoLand: "εκτός ηπείρου (θάλασσα)", gameNoState: "εκτός κράτους", gamePickPoint: "σημείο {km} χλμ. μακριά από το σωστό", gamePickCircle: "κύκλος ακτίνας {r} χλμ., {km} χλμ. από το σωστό σημείο", gamePickArea: "περιοχή {letter}",
       gameQMap: "Πού συνέβη: {event};", gameQOrigin: "Από πού ξεκίνησε: {event};", gameQContinent: "Σε ποια ήπειρο συνέβη: {event};", gameContinentHint: "Κάνε κλικ πάνω στη σωστή ήπειρο.", gameQCountry: "Σε ποιο κράτος συνέβη: {event};", gameCountryHint: "Ο χάρτης δείχνει τα σύνορα εκείνης της εποχής. Κάνε κλικ μέσα στο σωστό κράτος (μετράει και λίγο έξω από τα σύνορα, ως 300 χλμ.).", gameQState: "Πού ήταν: {name}, το {year};", gameQChoice: "Σε ποια από τις 4 περιοχές συνέβη: {event};", gameQCircle: "Κύκλωσε την περιοχή όπου συνέβη: {event}", gameQOrder: "Βάλε τα 3 γεγονότα σε χρονολογική σειρά", gameOrderHint: "Κάνε κλικ στα γεγονότα στον χάρτη με τη σειρά που έγιναν: πρώτα το παλιότερο, τελευταίο το νεότερο.", gameOrderPick: "{seq}", gameQEnd: "Πότε τελείωσε: {event}; (ξεκίνησε το {year})", gameEndHint: "Ο χάρτης είναι στη χρονιά που ξεκίνησε. Σύρε το timeline στη χρονιά που νομίζεις ότι τελείωσε και πάτα «Απάντηση». Ανοχή ±{n} χρόνια.", gameDuration: "διάρκεια {n} χρόνια", gameCircleHint: "Πάτα και σύρε πάνω στον χάρτη για να σχεδιάσεις κύκλο γύρω από την περιοχή. Μέγιστη ακτίνα {km} χλμ.", gameRadius: "Ακτίνα κύκλου: {km} χλμ.", gameChoiceHint: "Κάνε κλικ σε έναν από τους κύκλους A, B, C, D στον χάρτη.", gameLoading: "Ετοιμάζεται η ερώτηση…", gameMapHint: "Κάνε κλικ στον χάρτη στο σημείο που νομίζεις. Μετράει σωστό αν είσαι μέσα σε {km} χλμ.", gameDistance: "Απόσταση: {km} χλμ.",
       gameTlHint: "Σύρε το timeline κάτω στη χρονιά που νομίζεις και πάτα «Απάντηση». Μετράει σωστό αν είσαι μέσα σε {n} χρόνια. Με τα βελάκια ← → μετακινείσαι 10 χρόνια.",
       gameAnswer: "Απάντηση", gameSubmitHint: "Μπορείς να αλλάξεις την επιλογή σου όσες φορές θέλεις· όταν είσαι σίγουρος, πάτα «Απάντηση».", gameOrderUndo: "Κλικ ξανά σε καρφίτσα για να την αφαιρέσεις από τη σειρά.", gameCorrect: "Σωστό! +1", gameWrong: "Λάθος", gameAnswerWas: "Η σωστή απάντηση είναι: {answer}", gameAnswerOk: "{answer}", gameOff: "απόκλιση {n} έτη",
-      gameOnlineHint: "Παίξε online με φίλους από άλλους υπολογιστές: φτιάξε δωμάτιο και στείλε τους το link ή τον κωδικό.", gameCreateRoom: "Νέο δωμάτιο", gameJoinRoom: "Μπες", gameRoomCode: "Κωδικός", gameRoom: "Δωμάτιο", gameYourName: "Το όνομά σου", gamePlayers: "Παίκτες", gameCopyLink: "Αντιγραφή link", gameCopied: "Αντιγράφηκε!", gameStart: "Έναρξη", gameWaitHost: "Περιμένουμε τον/την {name} να ξεκινήσει το παιχνίδι…", gameInvite: "Στείλε το link ή τον κωδικό στους φίλους σου. Όλοι βλέπουν τις ίδιες ερωτήσεις, με 45 δευτερόλεπτα για κάθε μία.", gameLeave: "Αποχώρηση", gameConnecting: "Σύνδεση…", gameReconnecting: "Χάθηκε η σύνδεση, προσπαθούμε ξανά…", gameRoomNotFound: "Το δωμάτιο δεν βρέθηκε. Έλεγξε τον κωδικό.", gameRoomStarted: "Το παιχνίδι σε αυτό το δωμάτιο έχει ήδη ξεκινήσει. Περίμενε να τελειώσει ή φτιάξε νέο δωμάτιο.", gameRoomFull: "Το δωμάτιο είναι γεμάτο.", gameRoomsFull: "Παίζονται ήδη {n} παιχνίδια ταυτόχρονα (το μέγιστο). Δοκίμασε ξανά σε λίγο.", gameBadCode: "Ο κωδικός είναι 4 γράμματα/αριθμοί.", gameNetError: "Κάτι πήγε στραβά με τη σύνδεση. Δοκίμασε ξανά.", gameSent: "Η απάντηση καταχωρήθηκε ✓", gameWaitOthers: "Περιμένουμε τους υπόλοιπους ({n}/{total})…", gameNoAnswer: "δεν απάντησες εγκαίρως", gameWaitNext: "Περιμένουμε τον/την {name} για την επόμενη ερώτηση…", gameYou: "εσύ", gameOffline: "εκτός σύνδεσης", gameFinalOnline: "Τελική κατάταξη", gameHostYou: "Είσαι ο οικοδεσπότης: διαλέγεις πόσες ερωτήσεις θα έχει το παιχνίδι.", gameReady: "Έτοιμος (πάτα για ακύρωση)", gameReadyWait: "Περιμένουμε και τους υπόλοιπους να πατήσουν «Έναρξη» ({n}/{total})…", gameNeedTwo: "Χρειάζονται τουλάχιστον 2 παίκτες στο δωμάτιο. Στείλε το link σε έναν φίλο!", gameStartRule: "Το παιχνίδι ξεκινά μόλις όλοι οι παίκτες πατήσουν «Έναρξη».",
+      gameOnlineHint: "Παίξε online με φίλους από άλλους υπολογιστές: φτιάξε δωμάτιο και στείλε τους το link ή τον κωδικό.", gameCreateRoom: "Νέο δωμάτιο", gameJoinRoom: "Μπες", gameRoomCode: "Κωδικός", gameRoom: "Δωμάτιο", gameYourName: "Το όνομά σου", gamePlayers: "Παίκτες", gameCopyLink: "Αντιγραφή link", gameCopied: "Αντιγράφηκε!", gameStart: "Έναρξη", gameWaitHost: "Περιμένουμε τον/την {name} να ξεκινήσει το παιχνίδι…", gameInvite: "Στείλε το link ή τον κωδικό στους φίλους σου. Όλοι βλέπουν τις ίδιες ερωτήσεις, με 45 δευτερόλεπτα για κάθε μία.", gameLeave: "Αποχώρηση", gameConnecting: "Σύνδεση…", gameReconnecting: "Χάθηκε η σύνδεση, προσπαθούμε ξανά…", gameRoomNotFound: "Το δωμάτιο δεν βρέθηκε. Έλεγξε τον κωδικό.", gameRoomStarted: "Το παιχνίδι σε αυτό το δωμάτιο έχει ήδη ξεκινήσει. Περίμενε να τελειώσει ή φτιάξε νέο δωμάτιο.", gameRoomFull: "Το δωμάτιο είναι γεμάτο.", gameRoomsFull: "Παίζονται ήδη {n} παιχνίδια ταυτόχρονα (το μέγιστο). Δοκίμασε ξανά σε λίγο.", gameBadCode: "Ο κωδικός είναι 4 γράμματα/αριθμοί.", gameNetError: "Κάτι πήγε στραβά με τη σύνδεση. Δοκίμασε ξανά.", gameSent: "Η απάντηση καταχωρήθηκε ✓", gameWaitOthers: "Περιμένουμε τους υπόλοιπους ({n}/{total})…", gameNoAnswer: "δεν απάντησες εγκαίρως", gameWaitNext: "Περιμένουμε τον/την {name} για την επόμενη ερώτηση…", gameYou: "εσύ", gameOffline: "εκτός σύνδεσης", gameFinalOnline: "Τελική κατάταξη", gameHostYou: "Είσαι ο οικοδεσπότης: διαλέγεις την κατηγορία και πόσες ερωτήσεις θα έχει το παιχνίδι.", gameReady: "Έτοιμος (πάτα για ακύρωση)", gameReadyWait: "Περιμένουμε και τους υπόλοιπους να πατήσουν «Έναρξη» ({n}/{total})…", gameNeedTwo: "Χρειάζονται τουλάχιστον 2 παίκτες στο δωμάτιο. Στείλε το link σε έναν φίλο!", gameStartRule: "Το παιχνίδι ξεκινά μόλις όλοι οι παίκτες πατήσουν «Έναρξη».",
       gameNext: "Επόμενη ερώτηση", gameResults: "Αποτελέσματα", gameFinalSingle: "Σκορ: {score} / {total}", gameTie: "Ισοπαλία!", gameWinner: "Νικητής: Παίκτης {n}!", gameAgain: "Ξανά",
       videoCredit: "Βίντεο:", soundOn: "Ήχος: ενεργός (κλικ για σίγαση)", volume: "Ένταση ήχου", typeYear: "Κλικ για να πληκτρολογήσεις έτος (π.χ. 1520· για π.Χ. γράψε -500)", typeYearAria: "Χρονολογία", narrate: "Αφήγηση", soundOff: "Ήχος: σίγαση (κλικ για ενεργοποίηση)",
       storyAria: "Ιστορία γεγονότος", close: "Κλείσιμο", readMore: "Διάβασε περισσότερα στη Wikipedia",
@@ -67,11 +70,14 @@
       game: "Game", gameShort: "Game", gameWelcome: "How well do you know history?",
       gameQuestions: "Questions", gameRules: "{n} questions, all on the map or the timeline: where (spot, continent, state, 4 areas, circle), when (started or ended, by dragging the timeline) and the chronological order of 3 events.",
       gameSingle: "Single player", gameDual: "Two players", gameRound: "Question {n} / {total}", gamePlayer: "Player {n}", gameScore: "Score",
+      gameCategory: "Category", gameCatMix: "Mixed", gameCatMixDesc: "Where, when, chronological order, states, 4 areas, circle. Every correct answer = 1 point.", gameCatPoint: "Point on the map", gameCatPointDesc: "Only \"where did it happen\": every player places a point on the map and the point goes to whoever is closest to the right spot.", gameCatDate: "Date", gameCatDateDesc: "Only \"when did it happen / start / end\": every player picks a year on the timeline and the point goes to whoever is closest to the right year.", gameCatSoloNote: "With one player it counts as correct if you are within the margin (2,500 km or ±years depending on the era).",
+      gameQStart: "When did it start: {event}?", gameMapHintClose: "Click on the map where you think it happened. The point goes to whoever is closest to the right spot.", gameTlHintClose: "Drag the timeline below to the year you think and press Answer. The point goes to whoever is closest to the right year. Arrow keys ← → move 10 years.", gameEndHintClose: "The map is at the year it started. Drag the timeline to the year you think it ended and press Answer. The point goes to whoever is closest.",
+      gameClosest: "Closest! +1", gameCloserWas: "Closest was: {name}", gameWinsRound: "{name} is closest! +1", gameTieRound: "Tie, same distance!", gameNextPlayer: "Player {n} answered ✓ Now Player {m}, same question.", gameNobodyClose: "Nobody answered in time",
       gameQYear: "Which event happened in {year}?", gameQWhere: "On which continent did this happen: {event}?", gameQWhen: "When did this happen: {event}?", gameYourPick: "Your pick is: {pick}", gameNoLand: "outside any continent (sea)", gameNoState: "outside any state", gamePickPoint: "a point {km} km from the right spot", gamePickCircle: "a circle of radius {r} km, {km} km from the right spot", gamePickArea: "area {letter}",
       gameQMap: "Where did this happen: {event}?", gameQOrigin: "Where did it start from: {event}?", gameQContinent: "On which continent did this happen: {event}?", gameContinentHint: "Click on the right continent.", gameQCountry: "In which state did this happen: {event}?", gameCountryHint: "The map shows the borders of that time. Click inside the right state (a little outside the borders, up to 300 km, also counts).", gameQState: "Where was: {name}, in {year}?", gameQChoice: "In which of the 4 areas did this happen: {event}?", gameQCircle: "Circle the area where this happened: {event}", gameQOrder: "Put the 3 events in chronological order", gameOrderHint: "Click the events on the map in the order they happened: the oldest first, the most recent last.", gameOrderPick: "{seq}", gameQEnd: "When did it end: {event}? (it started in {year})", gameEndHint: "The map is at the year it started. Drag the timeline to the year you think it ended and press Answer. Margin ±{n} years.", gameDuration: "lasted {n} years", gameCircleHint: "Press and drag on the map to draw a circle around the area. Maximum radius {km} km.", gameRadius: "Circle radius: {km} km", gameChoiceHint: "Click one of the circles A, B, C, D on the map.", gameLoading: "Preparing the question…", gameMapHint: "Click on the map where you think it happened. It counts as correct within {km} km.", gameDistance: "Distance: {km} km",
       gameTlHint: "Drag the timeline below to the year you think and press Answer. It counts as correct within {n} years. Arrow keys ← → move 10 years.",
       gameAnswer: "Answer", gameSubmitHint: "You can change your pick as many times as you like; when you're sure, press Answer.", gameOrderUndo: "Click a pin again to remove it from the sequence.", gameCorrect: "Correct! +1", gameWrong: "Wrong", gameAnswerWas: "The correct answer is: {answer}", gameAnswerOk: "{answer}", gameOff: "{n} years off",
-      gameOnlineHint: "Play online with friends on other computers: create a room and send them the link or the code.", gameCreateRoom: "New room", gameJoinRoom: "Join", gameRoomCode: "Code", gameRoom: "Room", gameYourName: "Your name", gamePlayers: "Players", gameCopyLink: "Copy link", gameCopied: "Copied!", gameStart: "Start", gameWaitHost: "Waiting for {name} to start the game…", gameInvite: "Send the link or the code to your friends. Everyone gets the same questions, with 45 seconds for each.", gameLeave: "Leave", gameConnecting: "Connecting…", gameReconnecting: "Connection lost, retrying…", gameRoomNotFound: "Room not found. Check the code.", gameRoomStarted: "The game in this room has already started. Wait for it to finish or create a new room.", gameRoomFull: "The room is full.", gameRoomsFull: "{n} games are already being played at the same time (the maximum). Try again in a little while.", gameBadCode: "The code is 4 letters/digits.", gameNetError: "Something went wrong with the connection. Please try again.", gameSent: "Answer sent ✓", gameWaitOthers: "Waiting for the others ({n}/{total})…", gameNoAnswer: "no answer in time", gameWaitNext: "Waiting for {name} to start the next question…", gameYou: "you", gameOffline: "offline", gameFinalOnline: "Final ranking", gameHostYou: "You are the host: you choose how many questions the game has.", gameReady: "Ready (press to cancel)", gameReadyWait: "Waiting for the others to press Start too ({n}/{total})…", gameNeedTwo: "At least 2 players are needed in the room. Send the link to a friend!", gameStartRule: "The game starts as soon as every player has pressed Start.",
+      gameOnlineHint: "Play online with friends on other computers: create a room and send them the link or the code.", gameCreateRoom: "New room", gameJoinRoom: "Join", gameRoomCode: "Code", gameRoom: "Room", gameYourName: "Your name", gamePlayers: "Players", gameCopyLink: "Copy link", gameCopied: "Copied!", gameStart: "Start", gameWaitHost: "Waiting for {name} to start the game…", gameInvite: "Send the link or the code to your friends. Everyone gets the same questions, with 45 seconds for each.", gameLeave: "Leave", gameConnecting: "Connecting…", gameReconnecting: "Connection lost, retrying…", gameRoomNotFound: "Room not found. Check the code.", gameRoomStarted: "The game in this room has already started. Wait for it to finish or create a new room.", gameRoomFull: "The room is full.", gameRoomsFull: "{n} games are already being played at the same time (the maximum). Try again in a little while.", gameBadCode: "The code is 4 letters/digits.", gameNetError: "Something went wrong with the connection. Please try again.", gameSent: "Answer sent ✓", gameWaitOthers: "Waiting for the others ({n}/{total})…", gameNoAnswer: "no answer in time", gameWaitNext: "Waiting for {name} to start the next question…", gameYou: "you", gameOffline: "offline", gameFinalOnline: "Final ranking", gameHostYou: "You are the host: you choose the category and how many questions the game has.", gameReady: "Ready (press to cancel)", gameReadyWait: "Waiting for the others to press Start too ({n}/{total})…", gameNeedTwo: "At least 2 players are needed in the room. Send the link to a friend!", gameStartRule: "The game starts as soon as every player has pressed Start.",
       gameNext: "Next question", gameResults: "Results", gameFinalSingle: "Score: {score} / {total}", gameTie: "It's a tie!", gameWinner: "Winner: Player {n}!", gameAgain: "Play again",
       videoCredit: "Video:", soundOn: "Sound: on (click to mute)", volume: "Volume", typeYear: "Click to type a year (e.g. 1520; for BC type -500)", typeYearAria: "Year", narrate: "Narration", soundOff: "Sound: muted (click to unmute)",
       storyAria: "Event story", close: "Close", readMore: "Read more on Wikipedia",
@@ -2047,7 +2053,23 @@
   //  choice   «Σε ποια από τις 4 περιοχές;» — 4 κύκλοι A–D πάνω στον χάρτη, κλικ σε έναν
   //  tl       «Πότε συνέβη: Χ;» — σύρσιμο του timeline (ανοχή ανάλογα με την εποχή)
   // Η ερώτηση εμφανίζεται με μεγάλα γράμματα πάνω στον χάρτη· η κάρτα δεξιά έχει σκορ και κουμπιά.
-  const G = { on: false, mode: 1, round: 0, total: 10, player: 0, scores: [0, 0], q: null, phase: "", seq: 0, pick: null }; // pick: η προσωρινή απάντηση πριν το «Απάντηση»
+  // Κατηγορίες: «Μικτό» (όλα τα παραπάνω, σωστό/λάθος), «Σημείο στον χάρτη» (μόνο map, κερδίζει ο πιο κοντινός),
+  // «Χρονολογία» (μόνο tl/end, κερδίζει ο πιο κοντινός). Στις δύο τελευταίες, με 2 τοπικούς παίκτες απαντούν και οι
+  // δύο την ίδια ερώτηση (ο ένας μετά τον άλλο)· online ο server συγκρίνει τις αποστάσεις. Μόνος: σωστό/λάθος με ανοχή.
+  // cat: κατηγορία παιχνιδιού — "mix" (όλα τα είδη, σωστό/λάθος), "point" (μόνο «πού», κερδίζει ο πιο κοντινός), "date" (μόνο «πότε», κερδίζει ο πιο κοντινός)
+  // dual: στο τοπικό παιχνίδι 2 παικτών με point/date, οι απαντήσεις των δύο παικτών στην ίδια ερώτηση
+  const G = { on: false, mode: 1, cat: "mix", round: 0, total: 10, player: 0, scores: [0, 0], q: null, phase: "", seq: 0, pick: null, dual: [] }; // pick: η προσωρινή απάντηση πριν το «Απάντηση»
+  const CATS = ["mix", "point", "date"], CAT_KEY = "we-game-cat";
+  const CAT_ICON = { mix: "🎲", point: "📍", date: "📅" };
+  const catName = (c) => t(c === "point" ? "gameCatPoint" : c === "date" ? "gameCatDate" : "gameCatMix");
+  const catDesc = (c) => t(c === "point" ? "gameCatPointDesc" : c === "date" ? "gameCatDateDesc" : "gameCatMixDesc");
+  function loadCat() { let c = "mix"; try { c = localStorage.getItem(CAT_KEY) || "mix"; } catch (_) { /* ignore */ } return CATS.includes(c) ? c : "mix"; }
+  function saveCat(c) { try { localStorage.setItem(CAT_KEY, c); } catch (_) { /* ignore */ } }
+  // «Κερδίζει ο πιο κοντινός»: με 2+ παίκτες στις κατηγορίες point/date (μόνος = σωστό/λάθος με ανοχή)
+  const closest = () => G.cat !== "mix" && G.mode !== 1;
+  function catButtonsHtml(cur) {
+    return '<div class="game-cat">' + CATS.map((c) => '<button type="button" data-cat="' + c + '"' + (c === cur ? ' class="on"' : "") + '><span class="ic">' + CAT_ICON[c] + '</span><span><b>' + esc(catName(c)) + "</b><small>" + esc(catDesc(c)) + "</small></span></button>").join("") + "</div>";
+  }
   const gameEls = { root: $("#game"), body: $("#game-body"), status: $("#game-status"), btn: $("#game-btn"), close: $("#game-close"), overlay: $("#game-overlay"), qText: $("#gq-text"), qHint: $("#gq-hint"), qFb: $("#gq-fb"), qActions: $("#gq-actions") };
   const gameOn = () => G.on;
   const rnd = (n) => Math.floor(Math.random() * n);
@@ -2100,8 +2122,10 @@
     document.body.classList.remove("game-reveal", "game-map");
     gGame.selectAll("*").remove();
     hideOverlay();
-    G.total = loadTotal();
-    gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint" id="game-rules">' + esc(fill("gameRules", { n: G.total })) + "</p>" +
+    G.total = loadTotal(); G.cat = loadCat();
+    const rulesText = () => (G.cat === "mix" ? fill("gameRules", { n: G.total }) : catDesc(G.cat) + " " + t("gameCatSoloNote"));
+    gameEls.body.innerHTML = '<p class="game-q">' + esc(t("gameWelcome")) + '</p><p class="game-hint" id="game-rules">' + esc(rulesText()) + "</p>" +
+      '<p class="game-cat-title">' + esc(t("gameCategory")) + "</p>" + catButtonsHtml(G.cat) +
       '<div class="game-total"><span class="lbl">' + esc(t("gameQuestions")) + "</span>" + TOTALS.map((n) => '<button type="button" data-total="' + n + '"' + (n === G.total ? ' class="on"' : "") + ">" + n + "</button>").join("") + "</div>" +
       '<div class="game-actions"><button type="button" class="primary" data-mode="1">👤 ' + esc(t("gameSingle")) + '</button><button type="button" data-mode="2">👥 ' + esc(t("gameDual")) + "</button></div>" +
       '<div class="game-online"><p class="game-hint">🌐 ' + esc(t("gameOnlineHint")) + '</p><div class="game-actions"><button type="button" class="primary" id="room-create">🌐 ' + esc(t("gameCreateRoom")) + "</button></div>" +
@@ -2115,13 +2139,20 @@
         G.total = Number(b.dataset.total);
         try { localStorage.setItem(TOTAL_KEY, String(G.total)); } catch (_) { /* ignore */ }
         gameEls.body.querySelectorAll("[data-total]").forEach((x) => x.classList.toggle("on", x === b));
-        gameEls.body.querySelector("#game-rules").textContent = fill("gameRules", { n: G.total });
+        gameEls.body.querySelector("#game-rules").textContent = rulesText();
+      };
+    });
+    gameEls.body.querySelectorAll("[data-cat]").forEach((b) => {
+      b.onclick = () => {
+        G.cat = b.dataset.cat; saveCat(G.cat);
+        gameEls.body.querySelectorAll("[data-cat]").forEach((x) => x.classList.toggle("on", x === b));
+        gameEls.body.querySelector("#game-rules").textContent = rulesText();
       };
     });
     gameEls.body.querySelectorAll("[data-mode]").forEach((b) => { b.onclick = () => startGame(Number(b.dataset.mode)); });
   }
   function startGame(mode) {
-    G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0];
+    G.mode = mode; G.round = 0; G.player = 0; G.scores = [0, 0]; G.dual = [];
     if (window.WorldSound) WorldSound.jingle(); // παιχνιδιάρικος ήχος έναρξης
     nextQuestion();
   }
@@ -2131,10 +2162,16 @@
     const ev = pool[rnd(pool.length)];
     const y = evYear(ev);
     const cont = CONTINENTS.list.find((k) => k.key === ev._cont);
-    const kinds = ["map", "map", "continent", "choice", "choice", "circle", "circle", "tl", "tl", "order", "order"];
-    if (ev.e != null && (ev.e - ev.s) / 12 >= 2) kinds.push("end", "end", "end");
-    if (state.historical) kinds.push("country", "state", "state");
-    if (ev.from) kinds.push("origin", "origin");
+    const lasting = ev.e != null && (ev.e - ev.s) / 12 >= 2;
+    let kinds;
+    if (G.cat === "point") kinds = ["map"];
+    else if (G.cat === "date") kinds = lasting ? ["tl", "end"] : ["tl"];
+    else {
+      kinds = ["map", "map", "continent", "choice", "choice", "circle", "circle", "tl", "tl", "order", "order"];
+      if (lasting) kinds.push("end", "end", "end");
+      if (state.historical) kinds.push("country", "state", "state");
+      if (ev.from) kinds.push("origin", "origin");
+    }
     const kind = kinds[rnd(kinds.length)];
     let q;
     if (kind === "end") {
@@ -2148,7 +2185,7 @@
       if (picks.length < 3) return makeQuestion(depth + 1);
       q = { kind, ev: null, evs: shuffle(picks), sorted: picks.slice().sort((a, b) => a.s - b.s), seq: [] };
     } else if (kind === "circle") q = { kind, ev, maxKm: 2000 };
-    else if (kind === "map") q = { kind, ev, km: 2500 };
+    else if (kind === "map") q = { kind, ev, km: 2500, truth: [ev.lng, ev.lat] }; // truth: ο server το χρειάζεται για το «πιο κοντά»
     else if (kind === "origin") q = { kind, ev, km: 2500, truth: [ev.from.lng, ev.from.lat] };
     else if (kind === "continent") {
       if (!cont) return makeQuestion(depth + 1);
@@ -2187,7 +2224,7 @@
       case "choice": q.text = fill("gameQChoice", { event: title }); q.answer = q.choices.find((c) => c.ok).letter + (cname ? " · " + cname : ""); break;
       case "country": { const nm = featName(q.feat); q.text = fill("gameQCountry", { event: title }); q.answer = (nm ? nm + " · " : "") + title; break; }
       case "state": { const yl = yearLabel(q.year); q.text = fill("gameQState", { name: featName(q.feat), year: yl }); q.answer = featName(q.feat) + " · " + yl; break; }
-      default: q.text = fill("gameQWhen", { event: title }); q.answer = yearLabel(q.year);
+      default: q.text = fill(ev && ev.e != null && (ev.e - ev.s) / 12 >= 2 ? "gameQStart" : "gameQWhen", { event: title }); q.answer = yearLabel(q.year);
     }
     return q;
   }
@@ -2268,8 +2305,8 @@
     const q = await makeQuestion();
     if (!G.on || seq !== G.seq) return;
     if (!q) { closeGame(); return; }
-    G.q = q; G.phase = "ask"; G.pick = null;
-    if (G.mode === 2) G.player = G.round % 2;
+    G.q = q; G.phase = "ask"; G.pick = null; G.dual = [];
+    if (G.mode === 2) G.player = closest() ? 0 : G.round % 2; // point/date: και οι δύο απαντούν την ίδια ερώτηση, πρώτα ο Παίκτης 1
     document.body.classList.remove("game-reveal");
     renderQuestion();
   }
@@ -2295,9 +2332,9 @@
     else if (q.kind === "choice") hint = t("gameChoiceHint");
     else if (q.kind === "circle") hint = fill("gameCircleHint", { km: fmtNum(q.maxKm) });
     else if (q.kind === "order") hint = t("gameOrderHint");
-    else if (q.kind === "end") hint = fill("gameEndHint", { n: q.tol });
-    else if (q.kind === "tl") hint = fill("gameTlHint", { n: q.tol });
-    else hint = fill("gameMapHint", { km: fmtNum(q.km) });
+    else if (q.kind === "end") hint = closest() ? t("gameEndHintClose") : fill("gameEndHint", { n: q.tol });
+    else if (q.kind === "tl") hint = closest() ? t("gameTlHintClose") : fill("gameTlHint", { n: q.tol });
+    else hint = closest() ? t("gameMapHintClose") : fill("gameMapHint", { km: fmtNum(q.km) });
     if (q.kind !== "tl" && q.kind !== "end") hint += " " + t("gameSubmitHint") + (q.kind === "order" ? " " + t("gameOrderUndo") : "");
     showOverlay(q.text, "🎯 " + hint);
     gameEls.root.classList.add("compact");
@@ -2414,6 +2451,7 @@
     G.phase = "fb";
     const q = G.q, y = curYear();
     const diff = Math.abs(q.year - y);
+    G.pick = { year: y };
     finishAnswer(diff <= q.tol, q.answer, yearLabel(y), diff > 0 ? fill("gameOff", { n: diff }) : null);
   }
   // Κλικ στον χάρτη: σημείο -> γεωγραφικές συντεταγμένες -> απάντηση ανάλογα με τον τύπο της ερώτησης
@@ -2558,16 +2596,69 @@
       if (cls === "truth" && G.q && G.q.ev) { const ev = G.q.ev; g.on("click", (event) => { event.stopPropagation(); showEvent(ev); }).append("title").text(ev.title); }
     });
   }
+  // Το σημάδι της προσωρινής απάντησης (σημείο / κύκλος / γράμμα / χρονιά) όπως ταξιδεύει στους άλλους παίκτες
+  function pickMark() {
+    const mark = {}, pk = G.pick;
+    if (pk && G.q) {
+      if (G.q.kind === "circle" && pk.center) { mark.geo = pk.center; mark.km = pk.km; }
+      else if (pk.geo) mark.geo = pk.geo;
+      else if (pk.c && pk.c.letter) mark.letter = pk.c.letter;
+      if (pk.year != null) mark.year = pk.year;
+    }
+    return mark;
+  }
+  // Απόσταση της απάντησης από τη σωστή (χλμ. στο point, χρόνια στο date)· Infinity χωρίς απάντηση
+  function pickDist() {
+    const q = G.q, pk = G.pick;
+    if (!q || !pk) return Infinity;
+    if (G.cat === "point") return pk.geo ? d3.geoDistance(pk.geo, q.truth || [q.ev.lng, q.ev.lat]) * 6371 : Infinity;
+    return pk.year != null && q.year != null ? Math.abs(pk.year - q.year) : Infinity;
+  }
   function finishAnswer(ok, answer, pick, extra) {
     if (G.mode === 3) { holdAnswer(ok, answer, pick, extra); return; } // online: η αποκάλυψη γίνεται για όλους μαζί
+    if (G.mode === 2 && closest()) { dualHold(ok, answer, pick, extra); return; } // 2 παίκτες, ίδια ερώτηση: κερδίζει ο πιο κοντινός
     if (ok) G.scores[G.player]++;
     G.round++;
     revealAnswer(ok, answer, pick, extra);
   }
-  function revealAnswer(ok, answer, pick, extra) {
-    gameEls.qFb.className = "gq-fb " + (ok ? "ok" : "bad");
-    gameEls.qFb.innerHTML = esc(ok ? t("gameCorrect") : t("gameWrong")) +
-      "<small>" + (ok ? "" : esc(fill("gameAnswerWas", { answer: "" })).trim() + " ") + '<b class="ans">' + esc(answer) + "</b></small>" +
+  // Τοπικό παιχνίδι 2 παικτών στις κατηγορίες point/date: ο Παίκτης 1 απαντά, κρύβεται η επιλογή του,
+  // ο Παίκτης 2 απαντά την ίδια ερώτηση και μετά αποκαλύπτονται και οι δύο· τον πόντο παίρνει ο πιο κοντινός
+  function dualHold(ok, answer, pick, extra) {
+    G.dual.push({ ok, answer, pick, extra, dist: pickDist(), mark: pickMark() });
+    if (G.dual.length < 2) {
+      G.player = 1; G.pick = null; G.phase = "ask";
+      renderQuestion();
+      gameEls.qFb.className = "gq-fb wait";
+      gameEls.qFb.textContent = fill("gameNextPlayer", { n: 1, m: 2 });
+      if (window.WorldSound) WorldSound.ding(true);
+      return;
+    }
+    const [a, b] = G.dual;
+    const win = a.dist < b.dist ? 0 : b.dist < a.dist ? 1 : -1;
+    if (win >= 0) G.scores[win]++;
+    G.round++;
+    drawLocalRivalMark(a.mark, fill("gamePlayer", { n: 1 }), win === 0);
+    const lines = [0, 1].map((i) => esc(fill("gamePlayer", { n: i + 1 })) + ': <b class="' + (win === i ? "ans" : "off") + '">' + esc(G.dual[i].pick) + (G.dual[i].extra ? " · " + esc(G.dual[i].extra) : "") + "</b>");
+    G.dual = [];
+    revealAnswer(win >= 0, answer, null, null, { head: win < 0 ? t("gameTieRound") : fill("gameWinsRound", { name: fill("gamePlayer", { n: win + 1 }) }), cls: win < 0 ? "wait" : "ok", lines });
+  }
+  // Στην αποκάλυψη του τοπικού παιχνιδιού: το σημείο του Παίκτη 1 (ο Παίκτης 2 έχει ήδη το δικό του στον χάρτη)
+  function drawLocalRivalMark(m, name, won) {
+    if (!m || !m.geo) return;
+    const pt = projection(m.geo);
+    if (!pt || !isFinite(pt[0]) || !onFront(m.geo[0], m.geo[1])) return;
+    const g = gGame.append("g").attr("class", "game-mark rival " + (won ? "ok" : "bad")).attr("transform", "translate(" + pt[0] + "," + pt[1] + ") scale(" + bodyScale() + ")");
+    g.append("circle").attr("r", 10);
+    g.append("text").text("1");
+    g.append("text").attr("class", "lbl").attr("y", 22).text(name);
+  }
+  // opts: { head, cls, lines } — προαιρετική επικεφαλίδα/χρώμα και γραμμές ανά παίκτη (κατηγορίες «πιο κοντά»)
+  function revealAnswer(ok, answer, pick, extra, opts) {
+    opts = opts || {};
+    gameEls.qFb.className = "gq-fb " + (opts.cls || (ok ? "ok" : "bad"));
+    gameEls.qFb.innerHTML = esc(opts.head || (ok ? t("gameCorrect") : t("gameWrong"))) +
+      "<small>" + (ok && !opts.head ? "" : esc(fill("gameAnswerWas", { answer: "" })).trim() + " ") + '<b class="ans">' + esc(answer) + "</b></small>" +
+      (opts.lines ? opts.lines.map((l) => "<small>" + l + "</small>").join("") : "") +
       (pick ? "<small>" + esc(fill("gameYourPick", { pick: "" })).trim() + ' <b class="off">' + esc(pick) + "</b>" + (extra ? ' · <b class="off">' + esc(extra) + "</b>" : "") + "</small>" : "");
     document.body.classList.remove("game-map");
     if (window.WorldSound) WorldSound.ding(ok);
@@ -2637,7 +2728,7 @@
     NET.code = code; NET.id = myId();
     const ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/api/room/" + code + "/ws");
     NET.ws = ws;
-    ws.onopen = () => netSend({ type: "hello", id: NET.id, name: myName(), proto: 2 });
+    ws.onopen = () => netSend({ type: "hello", id: NET.id, name: myName(), proto: 3 });
     ws.onmessage = (e) => { let m; try { m = JSON.parse(e.data); } catch (_) { return; } onNetMessage(m); };
     ws.onclose = () => {
       if (NET.ws !== ws) return;
@@ -2674,7 +2765,7 @@
     code = String(code || "").trim().toUpperCase();
     if (!/^[A-Z0-9]{4,6}$/.test(code)) { roomMsg(t("gameBadCode")); return; }
     if (!G.on) openGame();
-    G.mode = 3; G.round = 0; G.q = null; G.phase = ""; G.total = loadTotal();
+    G.mode = 3; G.round = 0; G.q = null; G.phase = ""; G.total = loadTotal(); G.cat = loadCat();
     NET.players = []; NET.host = false; NET.hostId = ""; NET.phase = ""; NET.held = null; NET.genRound = -1; NET.sentTotal = false;
     gameEls.root.classList.add("online");
     history.replaceState(null, "", location.pathname + "?room=" + code);
@@ -2699,7 +2790,13 @@
       case "state": {
         NET.players = m.players || []; NET.hostId = m.hostId || ""; NET.host = NET.hostId === NET.id; NET.phase = m.phase;
         if (m.total) G.total = m.total;
-        if (m.phase === "lobby") { G.round = 0; G.q = null; G.phase = ""; if (NET.host && m.total !== loadTotal() && !NET.sentTotal) { NET.sentTotal = true; G.total = loadTotal(); netSend({ type: "total", total: G.total }); } renderLobby(); }
+        if (CATS.includes(m.cat)) G.cat = m.cat;
+        if (m.phase === "lobby") {
+          G.round = 0; G.q = null; G.phase = "";
+          // ο οικοδεσπότης φέρνει στο δωμάτιο την τελευταία του επιλογή (πλήθος + κατηγορία), μία φορά
+          if (NET.host && !NET.sentTotal) { NET.sentTotal = true; if (m.total !== loadTotal()) { G.total = loadTotal(); netSend({ type: "total", total: G.total }); } if (m.cat !== loadCat()) { G.cat = loadCat(); netSend({ type: "cat", cat: G.cat }); } }
+          renderLobby();
+        }
         else if (m.phase === "starting") {
           if (NET.host && NET.genRound !== m.round) { NET.genRound = m.round; hostMakeQuestion(); }
           if (G.phase !== "fb") { if (!G.q && window.WorldSound) WorldSound.jingle(); gameEls.status.textContent = ""; gameEls.body.innerHTML = '<p class="game-hint">' + esc(t("gameLoading")) + "</p>"; }
@@ -2742,14 +2839,8 @@
     gameEls.qActions.classList.remove("ask"); gameEls.qActions.innerHTML = "";
     gameEls.qFb.className = "gq-fb wait";
     gameEls.qFb.innerHTML = esc(t("gameSent")) + '<small id="gq-waitline"></small>';
-    // Οι άλλοι βλέπουν στην αποκάλυψη την επιλογή μας: το κείμενο και το σημείο / τον κύκλο / το γράμμα πάνω στον χάρτη
-    const mark = {}, pk = G.pick;
-    if (pk && G.q) {
-      if (G.q.kind === "circle" && pk.center) { mark.geo = pk.center; mark.km = pk.km; }
-      else if (pk.geo) mark.geo = pk.geo;
-      else if (pk.c && pk.c.letter) mark.letter = pk.c.letter;
-    }
-    netSend({ type: "answer", ok, pick: (pick || "") + (pick && extra ? " · " + extra : ""), ...mark });
+    // Οι άλλοι βλέπουν στην αποκάλυψη την επιλογή μας: το κείμενο και το σημείο / τον κύκλο / το γράμμα / τη χρονιά πάνω στον χάρτη
+    netSend({ type: "answer", ok, pick: (pick || "") + (pick && extra ? " · " + extra : ""), ...pickMark() });
     updateWaitLine();
   }
   function updateWaitLine() {
@@ -2771,7 +2862,12 @@
     }
     gGame.style("visibility", null);
     const h = NET.held; NET.held = null;
-    revealAnswer(h.ok, h.answer, h.pick, h.extra);
+    if (G.cat !== "mix") { // point/date: ο server έκρινε ποιος ήταν πιο κοντά (ok = πήρε τον πόντο)
+      const me = NET.players.find((p) => p.id === NET.id), winners = NET.players.filter((p) => p.ok).map((p) => p.name);
+      h.ok = !!(me && me.ok);
+      const head = h.ok ? t("gameClosest") : winners.length ? fill("gameCloserWas", { name: winners.join(", ") }) : t("gameNobodyClose");
+      revealAnswer(h.ok, h.answer, h.pick, h.extra, { head });
+    } else revealAnswer(h.ok, h.answer, h.pick, h.extra);
     drawRivalMarks();
   }
   // Στην αποκάλυψη: τα σημεία / οι κύκλοι / τα γράμματα που διάλεξαν οι άλλοι παίκτες, με το όνομά τους
@@ -2839,7 +2935,7 @@
   function playersHtml() {
     const list = NET.players.slice().sort((a, b) => b.score - a.score);
     return '<ul class="room-score">' + list.map((p) => '<li class="' + (p.id === NET.id ? "me" : "") + (p.online ? "" : " off") + '"><span class="st">' + (p.ok != null ? (p.ok ? "✅" : "❌") : p.answered ? "✓" : "…") + '</span><span class="nm">' + esc(p.name) + "</span><b>" + p.score + "</b>" +
-      (p.ok != null ? '<small class="pk' + (p.ok ? " ok" : "") + '">' + esc(p.pick || t("gameNoAnswer")) + "</small>" : "") + "</li>").join("") + "</ul>";
+      (p.ok != null ? '<small class="pk' + (p.ok ? " ok" : "") + '">' + (p.ok && G.cat !== "mix" ? "🏆 " : "") + esc(p.pick || t("gameNoAnswer")) + "</small>" : "") + "</li>").join("") + "</ul>";
   }
   function playersListHtml() {
     return NET.players.map((p) => '<li class="' + (p.online ? "" : "off") + (p.id === NET.id ? " me" : "") + '">' + (p.ready ? "✅ " : "") + (p.id === NET.hostId ? "⭐ " : "") + esc(p.name) + (p.id === NET.id ? " <small>(" + esc(t("gameYou")) + ")</small>" : "") + (p.online ? "" : " <small>(" + esc(t("gameOffline")) + ")</small>") + "</li>").join("");
@@ -2866,8 +2962,10 @@
     const online = NET.players.filter((p) => p.online), readyN = online.filter((p) => p.ready).length, meReady = !!(me && me.ready);
     if (NET.host) {
       html += '<p class="game-hint">' + esc(t("gameHostYou")) + "</p>" +
+        '<p class="game-cat-title">' + esc(t("gameCategory")) + "</p>" + catButtonsHtml(G.cat) +
         '<div class="game-total"><span class="lbl">' + esc(t("gameQuestions")) + "</span>" + TOTALS.map((n) => '<button type="button" data-total="' + n + '"' + (n === G.total ? ' class="on"' : "") + ">" + n + "</button>").join("") + "</div>";
     }
+    if (!NET.host) html += '<p class="game-hint room-cat">' + CAT_ICON[G.cat] + " <b>" + esc(catName(G.cat)) + "</b> · " + G.total + " " + esc(t("gameQuestions").toLowerCase()) + "<br><small>" + esc(catDesc(G.cat)) + "</small></p>";
     html += '<p class="game-hint">' + esc(online.length < 2 ? t("gameNeedTwo") : t("gameStartRule")) + "</p>" +
       '<div class="game-actions"><button type="button" class="primary' + (meReady ? " ready" : "") + '" id="room-start"' + (online.length < 2 && !meReady ? " disabled" : "") + ">" + (meReady ? "✓ " + esc(t("gameReady")) : "▶ " + esc(t("gameStart"))) + '</button><button type="button" id="room-leave">' + esc(t("gameLeave")) + "</button></div>";
     if (meReady) html += '<p class="game-hint">' + esc(fill("gameReadyWait", { n: readyN, total: online.length })) + "</p>";
@@ -2884,6 +2982,9 @@
     nm.addEventListener("change", () => { const v = nm.value.trim().slice(0, 24); if (!v) return; saveName(v); netSend({ type: "name", name: v }); });
     gameEls.body.querySelectorAll("[data-total]").forEach((b) => {
       b.onclick = () => { G.total = Number(b.dataset.total); try { localStorage.setItem(TOTAL_KEY, String(G.total)); } catch (_) { /* ignore */ } gameEls.body.querySelectorAll("[data-total]").forEach((x) => x.classList.toggle("on", x === b)); netSend({ type: "total", total: G.total }); };
+    });
+    gameEls.body.querySelectorAll("[data-cat]").forEach((b) => {
+      b.onclick = () => { G.cat = b.dataset.cat; saveCat(G.cat); gameEls.body.querySelectorAll("[data-cat]").forEach((x) => x.classList.toggle("on", x === b)); netSend({ type: "cat", cat: G.cat }); };
     });
     gameEls.body.querySelector("#room-start").onclick = () => netSend({ type: "ready", ready: !meReady });
     gameEls.body.querySelector("#room-leave").onclick = closeGame;
